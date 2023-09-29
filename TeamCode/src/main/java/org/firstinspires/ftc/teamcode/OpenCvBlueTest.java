@@ -28,6 +28,7 @@ public class OpenCvBlueTest extends LinearOpMode {
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
+
             public void onOpened()
             {
                 camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
