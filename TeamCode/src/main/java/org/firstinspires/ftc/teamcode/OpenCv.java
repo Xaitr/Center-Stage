@@ -66,14 +66,14 @@ public class OpenCv extends OpenCvPipeline {
 //        boolean stoneRight = rightValue > PERCENT_COLOR_THRESHOLD;
 //        boolean stoneMiddle = middleValue > PERCENT_COLOR_THRESHOLD;
 
-        if (leftValue > rightValue && middleValue > rightValue) {
+        if (rightValue > leftValue && rightValue > middleValue) {
             location = Location.RIGHT;
             telemetry.addData("Marker Location", "right");
         }
-        else if (rightValue > leftValue && middleValue > leftValue) {
+        else if (leftValue > rightValue && leftValue > middleValue) {
             location = Location.LEFT;
             telemetry.addData("Marker Location", "left");
-        } else if (rightValue > middleValue && leftValue > middleValue) {
+        } else if (middleValue > rightValue && middleValue > leftValue) {
             location = Location.MIDDLE;
             telemetry.addData("Middle", "Placeholder");
         }
