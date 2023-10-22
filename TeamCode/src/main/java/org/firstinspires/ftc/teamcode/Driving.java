@@ -5,11 +5,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -21,11 +23,17 @@ public class Driving extends OpMode
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
-    private Servo claw = null;
+    private CRServo roller = null;
+
+//    private DcMotor Intake = null;
+
+//    Outake outake = new Outake();
 
 
     @Override
     public void init() {
+
+//        outake.init(hardwareMap);
         //Declare variables for phone to recognise//
 
         //names on the config
@@ -35,7 +43,9 @@ public class Driving extends OpMode
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
 
-        claw = hardwareMap.get(Servo.class, "servo test");
+        roller = hardwareMap.get(CRServo.class, "roller test");
+//        Intake=hardwareMap.get(DcMotor.class, "Intake");
+
 
 
         leftFrontDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -47,11 +57,13 @@ public class Driving extends OpMode
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
+//        Intake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         telemetry.addData("status", "Initialized");
     }
@@ -80,11 +92,18 @@ public class Driving extends OpMode
             rightFrontPower /= 2;
             rightBackPower /= 2;
         }
+//        if (gamepad2.a) {
+//            Intake.setPower(0.5);
+//        }
+//        else if (gamepad2.b)
+//            Intake.setPower(-0.5);
+//
+
         if (gamepad1.a) {
-            claw.setPosition(0.135);
+           roller.setPower(1);
         }
         else if (gamepad1.b) {
-            claw.setPosition(0);
+            roller.setPower(-1);
         }
         else if (gamepad1.y) {
 
