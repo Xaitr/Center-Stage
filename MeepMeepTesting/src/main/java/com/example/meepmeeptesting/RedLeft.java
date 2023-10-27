@@ -14,10 +14,10 @@ public class RedLeft {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-34, -61, Math.toRadians(90)))
-                                .splineTo(new Vector2d(-60, -14), Math.toRadians(0))
-                                .forward(55)
-                                .splineToConstantHeading(new Vector2d(50, -34), Math.toRadians(0))
+                        drive.trajectorySequenceBuilder(new Pose2d(14, -61, Math.toRadians(270)))
+                                .lineToConstantHeading(new Vector2d(14, -37))
+                                .splineTo(new Vector2d(26, -32), Math.toRadians(0))
+                                .splineTo(new Vector2d(50, -32), Math.toRadians(0))
                                 .turn(Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(58, -14), Math.toRadians(0))
                                 .build()
