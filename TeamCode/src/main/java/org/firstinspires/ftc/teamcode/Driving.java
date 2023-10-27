@@ -23,7 +23,8 @@ public class Driving extends OpMode
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
-    private CRServo roller = null;
+    private CRServo IOservo = null; // intake and outtake servo
+
 
 //    private DcMotor Intake = null;
 
@@ -43,7 +44,7 @@ public class Driving extends OpMode
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
 
-        roller = hardwareMap.get(CRServo.class, "roller test");
+        IOservo = hardwareMap.get(CRServo.class, "roller test");
 //        Intake=hardwareMap.get(DcMotor.class, "Intake");
 
 
@@ -99,14 +100,8 @@ public class Driving extends OpMode
 //            Intake.setPower(-0.5);
 //
 
-        if (gamepad1.a) {
-           roller.setPower(1);
-        }
-        else if (gamepad1.b) {
-            roller.setPower(-1);
-        }
-        else if (gamepad1.y) {
-
+        if (gamepad2.a) {
+           IOservo.setPower(1);
         }
 
         leftFrontDrive.setPower(leftFrontPower);
