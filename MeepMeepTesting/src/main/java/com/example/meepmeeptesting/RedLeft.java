@@ -20,10 +20,10 @@ public class RedLeft {
                                 .splineTo(new Vector2d(50, -32), Math.toRadians(0))
                                 .turn(Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(58, -14), Math.toRadians(0))
-
-
-
                                 .build()
+
+
+
                 );
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
