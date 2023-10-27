@@ -14,9 +14,11 @@ public class RedRight {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-34, -61, Math.toRadians(270)))
+                        drive.trajectorySequenceBuilder(new Pose2d(-34, -61, Math.toRadians(180)))
+                                .lineToConstantHeading(new Vector2d(-34, -30))
+                                .turn(0)
                                 .lineToConstantHeading(new Vector2d(-34, -11))
-                                .splineTo(new Vector2d(-33, -10), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(-33, -10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(-16, -10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(38, -10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(50, -34), Math.toRadians(0))
