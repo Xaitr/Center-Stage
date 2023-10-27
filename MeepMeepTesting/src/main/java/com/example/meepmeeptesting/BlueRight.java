@@ -6,7 +6,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class RedLeft {
+public class BlueRight {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
@@ -14,12 +14,14 @@ public class RedLeft {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(14, -61, Math.toRadians(270)))
-                                .lineToConstantHeading(new Vector2d(14, -37))
-                                .splineTo(new Vector2d(26, -32), Math.toRadians(0))
-                                .splineTo(new Vector2d(50, -32), Math.toRadians(0))
+                        drive.trajectorySequenceBuilder(new Pose2d(-34, 57, Math.toRadians(90)))
+                                .lineToConstantHeading(new Vector2d(-33, 11))
+                                .splineTo(new Vector2d(-32, 10), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(-16, 10), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(38, 10), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(50, 34), Math.toRadians(0))
                                 .turn(Math.toRadians(0))
-                                .splineToConstantHeading(new Vector2d(58, -14), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(58, 14), Math.toRadians(0))
 
 
 
