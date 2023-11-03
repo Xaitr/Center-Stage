@@ -6,7 +6,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class RedLeft {
+public class RedLeftFront {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
@@ -16,9 +16,9 @@ public class RedLeft {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-34, -61, Math.toRadians(270)))
                                 .lineToConstantHeading(new Vector2d(-34, -35))
-                                .turn(0)
-                                .lineTo(new Vector2d(-34, -11))
-                                .splineTo(new Vector2d(-33, -10), Math.toRadians(0))
+                                .turn(-1.6)
+                                .lineToConstantHeading(new Vector2d(-34, -11))
+                                .splineToConstantHeading(new Vector2d(-33, -10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(-16, -10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(38, -10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(50, -37), Math.toRadians(0))

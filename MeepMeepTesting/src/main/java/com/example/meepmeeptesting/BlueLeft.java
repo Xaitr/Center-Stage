@@ -16,6 +16,7 @@ public class BlueLeft {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(14, 61, Math.toRadians(180)))
                                 .lineToConstantHeading(new Vector2d(14, 37))
+                                .turn(0)
                                 .splineToConstantHeading(new Vector2d(26, 32), Math.toRadians(0))
                                 .splineTo(new Vector2d(50, 32), Math.toRadians(0))
                                 .turn(Math.toRadians(0))
