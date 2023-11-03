@@ -24,17 +24,19 @@ public class Driving extends OpMode
     private DcMotor rightBackDrive = null;
 
     private CRServo IOservo = null; // intake and outtake servo
+    private Servo RightServo = null;
+    private Servo LeftServo =null;
 
 
-//    private DcMotor Intake = null;
+    private DcMotor Intake = null;
 
-//    Outake outake = new Outake();
+    Outake outake = new Outake();
 
 
     @Override
     public void init() {
 
-//        outake.init(hardwareMap);
+        outake.init(hardwareMap);
         //Declare variables for phone to recognise//
 
         //names on the config
@@ -44,8 +46,11 @@ public class Driving extends OpMode
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
 
-        IOservo = hardwareMap.get(CRServo.class, "roller test");
-//        Intake=hardwareMap.get(DcMotor.class, "Intake");
+        IOservo = hardwareMap.get(CRServo.class, "IOservo");
+        Intake=hardwareMap.get(DcMotor.class, "Intake");
+        RightServo = hardwareMap.get(Servo.class, "Right_outtake");
+        LeftServo = hardwareMap.get(Servo.class, "Left_outtake");
+
 
 
 
@@ -58,13 +63,14 @@ public class Driving extends OpMode
         rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-//        Intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        Intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        RightServo.setDirection(Servo.Direction.REVERSE);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         telemetry.addData("status", "Initialized");
     }
@@ -93,16 +99,33 @@ public class Driving extends OpMode
             rightFrontPower /= 2;
             rightBackPower /= 2;
         }
-//        if (gamepad2.a) {
-//            Intake.setPower(0.5);
-//        }
-//        else if (gamepad2.b)
-//            Intake.setPower(-0.5);
-//
-
-        if (gamepad2.a) {
+       if (gamepad2.a) {
+           Intake.setPower(1);
            IOservo.setPower(1);
-        }
+       }
+       else if (gamepad2.b) {
+            Intake.setPower(-1);
+
+
+    }
+       else {
+       Intake.setPower(0);
+       IOservo.setPower(0);
+       }
+
+       if (gamepad2.x) {
+           outake.setHeight(100);
+//           IOservo.setPower(-1);
+       }
+       if (gamepad2.right_bumper) {
+           RightServo.setPosition(0);
+           LeftServo.setPosition(0);
+       }
+       else if (gamepad2.left_bumper) {
+           RightServo.setPosition(0.25);
+           LeftServo.setPosition(0.25);
+       }
+
 
         leftFrontDrive.setPower(leftFrontPower);
         rightFrontDrive.setPower(rightFrontPower);

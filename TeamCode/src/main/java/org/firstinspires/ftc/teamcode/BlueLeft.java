@@ -1,19 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.openftc.easyopencv.OpenCvWebcam;
-import org.firstinspires.ftc.teamcode.OpenCvblue;
 
-@Autonomous(name="Skystone Detecotor", group="Auto")
-public class OpenCvBlueTest extends LinearOpMode {
+@Autonomous
+public class BlueLeft extends LinearOpMode {
     OpenCvCamera camera;
 
     @Override
@@ -44,9 +40,16 @@ public class OpenCvBlueTest extends LinearOpMode {
             case LEFT:
                 telemetry.addData("Left side","proceed");
                 telemetry.update();
+
+
                 break;
             case RIGHT:
                 telemetry.addData("Right Side","proceed");
+                telemetry.update();
+                break;
+
+            case MIDDLE:
+                telemetry.addData("Middle","proceed");
                 telemetry.update();
                 break;
             case NOT_FOUND:

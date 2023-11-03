@@ -13,7 +13,7 @@ public class Outake {
     private DcMotorEx lift_left;
     private DcMotorEx lift_right;
 
-    private CRServo IOServo;  // outtake servo
+
 
     double lastError = 0;
 
@@ -38,7 +38,7 @@ public class Outake {
 
         lift_left = hardwareMap.get(DcMotorEx.class, "left_lift");
         lift_right = hardwareMap.get(DcMotorEx.class, "right_lift");
-        IOServo = hardwareMap.get(CRServo.class, "Reverse outtake servo");
+
 
 
 
