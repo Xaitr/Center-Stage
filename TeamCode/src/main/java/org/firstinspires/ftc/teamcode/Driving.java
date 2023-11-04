@@ -105,6 +105,7 @@ public class Driving extends OpMode
        }
        else if (gamepad2.b) {
             Intake.setPower(-1);
+            IOservo.setPower(1);
 
 
     }

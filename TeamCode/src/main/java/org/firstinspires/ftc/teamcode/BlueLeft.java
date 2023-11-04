@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -42,16 +44,22 @@ public class BlueLeft extends LinearOpMode {
                 telemetry.update();
 
 
+
+
                 break;
             case RIGHT:
                 telemetry.addData("Right Side","proceed");
                 telemetry.update();
                 break;
 
+
             case MIDDLE:
                 telemetry.addData("Middle","proceed");
                 telemetry.update();
                 break;
+
+
+
             case NOT_FOUND:
                 telemetry.addData("not found","proceed");
                 telemetry.update();

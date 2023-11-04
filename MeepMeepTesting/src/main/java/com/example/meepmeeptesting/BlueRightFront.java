@@ -25,9 +25,6 @@ public class BlueRightFront {
                                 .splineToConstantHeading(new Vector2d(50, 34), Math.toRadians(0))
                                 .turn(Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(58, 14), Math.toRadians(0))
-
-
-
                                 .build()
                 );
 

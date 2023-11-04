@@ -47,12 +47,12 @@ public class Outake {
 
         lift_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift_left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lift_right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         lift_left.setDirection(DcMotorSimple.Direction.REVERSE);
-        lift_right.setDirection(DcMotorSimple.Direction.FORWARD);
+        lift_right.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         lift_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -66,7 +66,8 @@ public class Outake {
         double ticks_per_mm = (384.5 / 112);
         double value = height * ticks_per_mm;
         int target = (int)value;
-        lift_left.setTargetPosition(target);
+//        lift_left.setTargetPosition(target);
+        lift_right.setTargetPosition(target);
         lift_left.setVelocity(2785);
         lift_right.setVelocity(2785);
     }
@@ -99,7 +100,7 @@ public class Outake {
 
 
     public double getHeight(){return lift_left.getCurrentPosition() / (384.5/112);}
-    public double getRightHeight(){return lift_right.getCurrentPosition() / (384.5/112);}
+//    public double getRightHeight(){return lift_right.getCurrentPosition() / (384.5/112);}
 
 
 }

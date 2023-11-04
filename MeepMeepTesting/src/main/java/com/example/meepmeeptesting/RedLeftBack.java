@@ -24,8 +24,6 @@ public class RedLeftBack {
                                 .splineToConstantHeading(new Vector2d(50, -37), Math.toRadians(0))
                                 .turn(Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(56, -14), Math.toRadians(0))
-
-
                                 .build()
                 );
 
