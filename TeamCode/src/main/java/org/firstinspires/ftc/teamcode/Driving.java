@@ -47,7 +47,7 @@ public class Driving extends OpMode
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
 
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
-        Intake=hardwareMap.get(DcMotor.class, "Intake");
+        Intake=hardwareMap.get(DcMotor.class, "intake");
         RightServo = hardwareMap.get(Servo.class, "Right_outtake");
         LeftServo = hardwareMap.get(Servo.class, "Left_outtake");
 
@@ -88,9 +88,9 @@ public class Driving extends OpMode
         double drive = -gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
         double turn = gamepad1.right_stick_x;
-        leftFrontPower = Range.clip(drive + turn + strafe, -1, 1);
+        leftFrontPower = Range.clip(drive + turn - strafe, -1, 1);
         rightFrontPower = Range.clip(drive - turn - strafe, -1, 1);
-        leftBackPower = Range.clip(drive + turn - strafe, -1, 1);
+        leftBackPower = Range.clip(drive + turn + strafe, -1, 1);
         rightBackPower = Range.clip(drive - turn + strafe, -1, 1);
 
         if(gamepad1.right_bumper){
