@@ -89,9 +89,9 @@ public class Driving extends OpMode
         double strafe = gamepad1.left_stick_x;
         double turn = gamepad1.right_stick_x;
         leftFrontPower = Range.clip(drive + turn - strafe, -1, 1);
-        rightFrontPower = Range.clip(drive - turn - strafe, -1, 1);
+        rightFrontPower = Range.clip(drive - turn + strafe, -1, 1);
         leftBackPower = Range.clip(drive + turn + strafe, -1, 1);
-        rightBackPower = Range.clip(drive - turn + strafe, -1, 1);
+        rightBackPower = Range.clip(drive - turn - strafe, -1, 1);
 
         if(gamepad1.right_bumper){
             leftFrontPower /= 2;
