@@ -14,7 +14,6 @@ public class Outake {
     private DcMotorEx lift_right;
 
 
-
     double lastError = 0;
 
 

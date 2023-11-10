@@ -5,11 +5,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.CRServo;
 
@@ -22,16 +24,31 @@ public class Driving extends OpMode
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+    private DcMotor leftLift = null;
 
     private CRServo IOservo = null; // intake and outtake servo
-    private Servo RightServo = null;
-    private Servo LeftServo =null;
+    private Servo rightServo = null;
+    private Servo leftServo =null;
 
 
     private DcMotor Intake = null;
 
     Outake outake = new Outake();
+    // Enum to represent lift state
+    private enum LiftState {
+        LIFT_START,
+        LIFT_EXTEND,
+        BOX_EXTEND,
+        LIFT_DUMP,
+        BOX_RETRACT,
+        LIFT_RETRACT,
+        LIFT_RETRACTED
+    };
+    //Timer for waiting for pixels to spin out
+    ElapsedTime liftTimer = new ElapsedTime();
 
+    //Initial Lift Position
+    LiftState liftState = LiftState.LIFT_START;
 
     @Override
     public void init() {
@@ -45,11 +62,12 @@ public class Driving extends OpMode
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front");
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
+        leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
 
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         Intake=hardwareMap.get(DcMotor.class, "intake");
-        RightServo = hardwareMap.get(Servo.class, "Right_outtake");
-        LeftServo = hardwareMap.get(Servo.class, "Left_outtake");
+        rightServo = hardwareMap.get(Servo.class, "Right_outtake");
+        leftServo = hardwareMap.get(Servo.class, "Left_outtake");
 
 
 
@@ -64,7 +82,7 @@ public class Driving extends OpMode
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
         Intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        RightServo.setDirection(Servo.Direction.REVERSE);
+        rightServo.setDirection(Servo.Direction.REVERSE);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -113,7 +131,7 @@ public class Driving extends OpMode
        Intake.setPower(0);
        IOservo.setPower(0);
        }
-
+/*
        if (gamepad2.x) {
            outake.setHeight(100);
 //           IOservo.setPower(-1);
@@ -126,7 +144,7 @@ public class Driving extends OpMode
            RightServo.setPosition(0.25);
            LeftServo.setPosition(0.25);
        }
-
+*/
 
         leftFrontDrive.setPower(leftFrontPower);
         rightFrontDrive.setPower(rightFrontPower);
@@ -136,6 +154,63 @@ public class Driving extends OpMode
         //Claw Code: Opens with GP2 X and opens less when past vertical position
         // BIGGER CLOSES MORE*********************
 
+        //Switch Case for Lift gm0.org
+        switch (liftState) {
+            case LIFT_START:
+                // In Idle state, wait until Driver 2 right bumper is pressed
+                if (gamepad2.right_bumper) {
+                    //Extend Lift
+                    liftState = LiftState.LIFT_EXTEND;
+                }
+                break;
+            case LIFT_EXTEND:
+                //Check if lift has fully extended
+                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftHigh) < 10) {
+                    //Deploy box
+
+                    liftState = liftState.BOX_EXTEND;
+                }
+                break;
+            case BOX_EXTEND:
+                //Wait for servo to reach position
+                if (rightServo.getPosition() == LiftConstants.rightBoxReady) {
+                    liftState = liftState.LIFT_DUMP;
+                }
+                break;
+            case LIFT_DUMP:
+                //Wait for Driver 2 to press x for release
+                if (gamepad2.x) {
+                    //Turn on Outtake Servo
+                    liftState = liftState.BOX_RETRACT;
+                    //Reset outtake timer
+                    liftTimer.reset();
+                }
+                break;
+            case BOX_RETRACT:
+                //Wait for pixels to spin out
+                if (liftTimer.seconds() >= LiftConstants.dumpTime) {
+                    //Turn off Outtake Servo
+                    //Retract Box
+                    liftState = liftState.LIFT_RETRACT;
+                }
+                break;
+            case LIFT_RETRACT:
+                // Wait for servo to return to Idle
+                if (rightServo.getPosition() == LiftConstants.rightBoxIdle) {
+                    //Retract Lift
+                    liftState = liftState.LIFT_RETRACTED;
+                }
+                break;
+            case LIFT_RETRACTED:
+                //Wait for Lift to return to idle
+                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
+                    liftState = liftState.LIFT_START;
+                }
+                break;
+            default:
+                //Should never happen but just in case
+                liftState = liftState.LIFT_START;
+        }
     }
 
     @Override
