@@ -42,7 +42,11 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     private List<Integer> lastEncPositions;
     private List<Integer> lastEncVels;
 
-    public StandardTrackingWheelLocalizer(HardwareMap hardwareMap, List<Integer> lastEncPositions, List<Integer> lastEncVels) {
+    private double leftStart;
+    private double rightStart;
+    private double frontStart;
+
+    public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
                 new Pose2d(0, LATERAL_DISTANCE / 2, 0), // left
                 new Pose2d(0, -LATERAL_DISTANCE / 2, 0), // right
@@ -53,13 +57,17 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
         leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "left_back"));
         rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "intake"));
-        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "winch"));
+        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "left_front"));
         this.lastEncPositions = lastEncPositions;
         this.lastEncVels = lastEncVels;
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         leftEncoder.setDirection(Encoder.Direction.REVERSE);
         frontEncoder.setDirection(Encoder.Direction.REVERSE);
+
+        leftStart = leftEncoder.getCurrentPosition();
+        rightStart = rightEncoder.getCurrentPosition();
+        frontStart = frontEncoder.getCurrentPosition();
     }
 
     public static double encoderTicksToInches(double ticks) {
@@ -83,6 +91,16 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
                 encoderTicksToInches(rightPos) * X_MULTIPLIER,
                 encoderTicksToInches(frontPos) * Y_MULTIPLIER
         );
+    }
+
+    public double getLeftOdometer() {
+        return DriveConstants.encoderTicksToInches(leftEncoder.getCurrentPosition() - leftStart);
+    }
+    public double getRightOdometer() {
+        return DriveConstants.encoderTicksToInches(rightEncoder.getCurrentPosition() - rightStart);
+    }
+    public double getBackOdometer() {
+        return (DriveConstants.encoderTicksToInches(frontEncoder.getCurrentPosition() - frontStart));
     }
 
     @NonNull
