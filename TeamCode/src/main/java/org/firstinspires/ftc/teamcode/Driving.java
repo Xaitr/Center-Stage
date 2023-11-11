@@ -33,7 +33,7 @@ public class Driving extends OpMode
 
     private DcMotor Intake = null;
 
-    Outake outake = new Outake();
+    PidControl2 lift = new PidControl2();
     // Enum to represent lift state
     private enum LiftState {
         LIFT_START,
@@ -43,7 +43,8 @@ public class Driving extends OpMode
         BOX_RETRACT,
         LIFT_RETRACT,
         LIFT_RETRACTED
-    };
+    }
+
     //Timer for waiting for pixels to spin out
     ElapsedTime liftTimer = new ElapsedTime();
 
@@ -53,7 +54,7 @@ public class Driving extends OpMode
     @Override
     public void init() {
 
-        outake.init(hardwareMap);
+        lift.init(hardwareMap);
         //Declare variables for phone to recognise//
 
         //names on the config
@@ -160,6 +161,7 @@ public class Driving extends OpMode
                 // In Idle state, wait until Driver 2 right bumper is pressed
                 if (gamepad2.right_bumper) {
                     //Extend Lift
+                    lift.setHeight(LiftConstants.liftHigh);
                     liftState = LiftState.LIFT_EXTEND;
                 }
                 break;
@@ -167,21 +169,21 @@ public class Driving extends OpMode
                 //Check if lift has fully extended
                 if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftHigh) < 10) {
                     //Deploy box
-
-                    liftState = liftState.BOX_EXTEND;
+                    lift.extendBox();
+                    liftState = LiftState.BOX_EXTEND;
                 }
                 break;
             case BOX_EXTEND:
                 //Wait for servo to reach position
                 if (rightServo.getPosition() == LiftConstants.rightBoxReady) {
-                    liftState = liftState.LIFT_DUMP;
+                    liftState = LiftState.LIFT_DUMP;
                 }
                 break;
             case LIFT_DUMP:
                 //Wait for Driver 2 to press x for release
                 if (gamepad2.x) {
                     //Turn on Outtake Servo
-                    liftState = liftState.BOX_RETRACT;
+                    liftState = LiftState.BOX_RETRACT;
                     //Reset outtake timer
                     liftTimer.reset();
                 }
@@ -191,25 +193,27 @@ public class Driving extends OpMode
                 if (liftTimer.seconds() >= LiftConstants.dumpTime) {
                     //Turn off Outtake Servo
                     //Retract Box
-                    liftState = liftState.LIFT_RETRACT;
+                    lift.retractBox();
+                    liftState = LiftState.LIFT_RETRACT;
                 }
                 break;
             case LIFT_RETRACT:
                 // Wait for servo to return to Idle
                 if (rightServo.getPosition() == LiftConstants.rightBoxIdle) {
                     //Retract Lift
-                    liftState = liftState.LIFT_RETRACTED;
+                    lift.setHeight(LiftConstants.liftRetracted);
+                    liftState = LiftState.LIFT_RETRACTED;
                 }
                 break;
             case LIFT_RETRACTED:
                 //Wait for Lift to return to idle
                 if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
-                    liftState = liftState.LIFT_START;
+                    liftState = LiftState.LIFT_START;
                 }
                 break;
             default:
                 //Should never happen but just in case
-                liftState = liftState.LIFT_START;
+                liftState = LiftState.LIFT_START;
         }
     }
 

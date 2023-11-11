@@ -5,22 +5,26 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp
-public class PidControl2 extends LinearOpMode {
+public class PidControl2 {
     DcMotorEx leftLift;
     DcMotorEx rightLift;
 
     double integralSum =0;
-    double Kp =0.04;
+    double Kp =0.14;
     double Ki =0;
-    double Kd = 0;
+    double Kd = 0.0001;
 
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
-    @Override
-    public void runOpMode() throws InterruptedException {
+    private Servo rightServo = null;
+    private Servo leftServo =null;
+    LiftConstants constants = new LiftConstants();
+
+    public void init(HardwareMap hardwareMap) {
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
         rightLift = hardwareMap.get(DcMotorEx.class, "right_lift");
 
@@ -36,12 +40,9 @@ public class PidControl2 extends LinearOpMode {
         leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        waitForStart();
-        while  (opModeIsActive()) {
-            double power = PIDControl( 1000, leftLift.getCurrentPosition());
-            leftLift.setPower(power);
-            rightLift.setPower(power);
-        }
+        rightServo = hardwareMap.get(Servo.class, "Right_outtake");
+        leftServo = hardwareMap.get(Servo.class, "Left_outtake");
+
     }
     public double PIDControl(double reference, double state) {
         double error = reference - state;
@@ -53,6 +54,19 @@ public class PidControl2 extends LinearOpMode {
 
         double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
         return output;
+    }
+    public void setHeight(double height) {
+        double power = PIDControl(height, leftLift.getCurrentPosition());
+        leftLift.setPower(power);
+        rightLift.setPower(power);
+    }
+    public void extendBox() {
+        rightServo.setPosition(LiftConstants.rightBoxReady);
+        leftServo.setPosition(LiftConstants.leftBoxReady);
+    }
+    public void retractBox() {
+        rightServo.setPosition(LiftConstants.rightBoxIdle);
+        leftServo.setPosition(LiftConstants.leftBoxIdle);
     }
 }
 
