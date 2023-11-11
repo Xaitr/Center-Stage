@@ -15,13 +15,16 @@ public class BlueLeft3 {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(14, 61, Math.toRadians(180)))
-                                .lineToConstantHeading(new Vector2d(24, 34))
-                                .turn(Math.toRadians(30))
-                                .splineToLinearHeading(new Pose2d(50, 32, Math.toRadians(180)), Math.toRadians(0))
-//                                .splineTo(new Vector2d(50, 32), Math.toRadians(0))
-                                .turn(Math.toRadians(0))
-                                .lineToConstantHeading(new Vector2d(50, 34))
-                                .splineToConstantHeading(new Vector2d(56, 60), Math.toRadians(0))
+                                .strafeLeft(24)
+                                // spit out pixel here
+                                .strafeTo(new Vector2d (48, 37))
+                              // put pixel on board
+                                .forward(10)
+                                .splineToConstantHeading(new Vector2d (56, 58), Math.toRadians(0))
+
+
+
+
 
 
 

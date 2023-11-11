@@ -16,7 +16,6 @@ public class RedLeftBack {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-34, -61, Math.toRadians(270)))
                                 .lineToConstantHeading(new Vector2d(-34, -35))
-                                .turn(1.6)
                                 .lineToConstantHeading(new Vector2d(-34, -11))
                                 .splineToConstantHeading(new Vector2d(-33, -10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(-16, -10), Math.toRadians(0))

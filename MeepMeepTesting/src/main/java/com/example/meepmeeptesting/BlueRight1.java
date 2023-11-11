@@ -15,18 +15,16 @@ public class BlueRight1 {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-34, 57, Math.toRadians(90)))
-                                .turn(0)
-                                .lineTo(new Vector2d(-33, 30))
+                                .lineTo(new Vector2d(-40, 30))
+                                .turn(Math.toRadians (-90))
+                                // spit out pixel here
                                 .lineTo(new Vector2d(-33, 11))
-                                .splineTo(new Vector2d(-32, 10), Math.toRadians(0))
+                                .splineToSplineHeading(new Pose2d(-32, 10, Math.toRadians(180)), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(-16, 10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(38, 10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(50, 34), Math.toRadians(0))
-                                .turn(Math.toRadians(0))
+                                // put pixel on board here
                                 .splineToConstantHeading(new Vector2d(58, 14), Math.toRadians(0))
-
-
-
                                 .build()
                 );
 

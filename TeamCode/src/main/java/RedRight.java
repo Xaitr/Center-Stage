@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -17,9 +16,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Autonomous
-public class BlueRight extends LinearOpMode {
+public class RedRight extends LinearOpMode {
     Outake outake = new Outake();
-    Driving driving = new Driving();
+    Driving driving = new Driving ();
     OpenCvCamera camera;
 
     @Override
@@ -29,78 +28,89 @@ public class BlueRight extends LinearOpMode {
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        OpenCvblue detector = new OpenCvblue(telemetry);
+        OpenCvblue detector = new OpenCvblue (telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(-34, 57, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(14, -61, Math.toRadians(180));
 
 
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
             @Override
-            public void onOpened() {
-                camera.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
+            public void onOpened()
+            {
+                camera.startStreaming(1920,1080, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
-            public void onError(int errorCode) {
-            }
+            public void onError(int errorCode) {}
         });
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-40, 30))
-                .turn(Math.toRadians(-90))
+            .lineToConstantHeading(new Vector2d(14, -34))
                 .addTemporalMarker(() -> {
                     outake.setPower(-1);
                     sleep(1000); // stops program for 1000 miliseconds
                     outake.setPower(0);
                 })
                 .waitSeconds(1)
-                // spit out pixel code above
-                .lineTo(new Vector2d(-33, 11))
-                .splineToSplineHeading(new Pose2d(-32, 10, Math.toRadians(180)), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-16, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(38, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(50, 34), Math.toRadians(0))
-                // put pixel on board here
-                .splineToConstantHeading(new Vector2d(58, 14), Math.toRadians(0))
-                .build();
-
+                // spit out pixel here
+            .splineToConstantHeading(new Vector2d(24, -32), Math.toRadians(0))
+            .splineTo(new Vector2d(50, -32), Math.toRadians(0))
+            // put pixel on board here
+            .lineToConstantHeading(new Vector2d(50, -34))
+            .splineToConstantHeading(new Vector2d(56, -60), Math.toRadians(0))
+            .build();
 
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-
-                .build();
+            .lineToConstantHeading(new Vector2d(14, -34))
+            .turn(-3.15)
+                .addTemporalMarker(() -> {
+                    outake.setPower(-1);
+                    sleep(1000); // stops program for 1000 miliseconds
+                    outake.setPower(0);
+                })
+                .waitSeconds(1)
+                // spit out pixel here
+            .splineToConstantHeading(new Vector2d(24, -32), Math.toRadians(0))
+            .splineTo(new Vector2d(50, -32), Math.toRadians(0))
+            .turn(Math.toRadians(180))
+            // place pixel on board
+            .lineToConstantHeading(new Vector2d(50, -34))
+            .splineToConstantHeading(new Vector2d(56, -60), Math.toRadians(0))
+            .build();
 
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
 
 
-                .build();
 
         waitForStart();
 
 
         switch (detector.getLocation()) {
             case LEFT:
-                telemetry.addData("Left side", "proceed"); // open cv detects left spike
+                telemetry.addData("Left side","proceed"); // open cv detects left spike
                 telemetry.update();
                 robot.followTrajectorySequence(Left);
                 break;
 
 
             case RIGHT:
-                telemetry.addData("Right Side", "proceed");
+                telemetry.addData("Right Side","proceed");
                 telemetry.update();
                 break;
             //robot.followTrajectorySequence(Right);
 
 
             case MIDDLE:
-                telemetry.addData("Middle", "proceed");
+                telemetry.addData("Middle","proceed");
                 telemetry.update();
                 break;
             //robot.followTrajectorySequence(Middle);
 
 
+
             case NOT_FOUND:
-                telemetry.addData("not found", "proceed");
+                telemetry.addData("not found","proceed");
                 telemetry.update();
 
         }

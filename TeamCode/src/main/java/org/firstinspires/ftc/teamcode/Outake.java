@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Outake {
     private DcMotorEx lift_left;
     private DcMotorEx lift_right;
+    private DcMotor intake = null;
 
 
     double lastError = 0;
@@ -69,6 +70,10 @@ public class Outake {
         lift_right.setTargetPosition(target);
         lift_left.setVelocity(2785);
         lift_right.setVelocity(2785);
+    }
+
+    public void setPower (double power) {
+        intake.setPower(power);
     }
 
 
