@@ -80,6 +80,7 @@ public class RedRight extends LinearOpMode {
             .build();
 
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
+                        .build();
 
 
 
