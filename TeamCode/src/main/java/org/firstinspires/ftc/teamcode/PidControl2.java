@@ -61,12 +61,16 @@ public class PidControl2 {
         rightLift.setPower(power);
     }
     public void extendBox() {
-        rightServo.setPosition(LiftConstants.rightBoxReady);
-        leftServo.setPosition(LiftConstants.leftBoxReady);
+        rightServo.setPosition(LiftConstants.BoxReady);
+        leftServo.setPosition(LiftConstants.BoxReady);
     }
     public void retractBox() {
-        rightServo.setPosition(LiftConstants.rightBoxIdle);
-        leftServo.setPosition(LiftConstants.leftBoxIdle);
+        rightServo.setPosition(LiftConstants.BoxIdle);
+        leftServo.setPosition(LiftConstants.BoxIdle);
+    }
+    public void disableMotors() {
+        leftLift.setPower(0);
+        rightLift.setPower(0);
     }
 }
 

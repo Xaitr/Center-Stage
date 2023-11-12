@@ -160,38 +160,42 @@ public class Driving extends OpMode
             case LIFT_START:
                 // In Idle state, wait until Driver 2 right bumper is pressed
                 if (gamepad2.right_bumper) {
-                    //Extend Lift
-                    lift.setHeight(LiftConstants.liftHigh);
                     liftState = LiftState.LIFT_EXTEND;
                 }
                 break;
             case LIFT_EXTEND:
+                //Extend lift
+                lift.setHeight(LiftConstants.liftHigh);
                 //Check if lift has fully extended
-                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftHigh) < 10) {
-                    //Deploy box
-                    lift.extendBox();
+                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftHigh) < 20) {
+                    //Turn off lift motors
+                    lift.disableMotors();
                     liftState = LiftState.BOX_EXTEND;
                 }
                 break;
             case BOX_EXTEND:
+                //Deploy box
+                lift.extendBox();
                 //Wait for servo to reach position
-                if (rightServo.getPosition() == LiftConstants.rightBoxReady) {
+                if (rightServo.getPosition() == LiftConstants.BoxReady) {
                     liftState = LiftState.LIFT_DUMP;
                 }
                 break;
             case LIFT_DUMP:
                 //Wait for Driver 2 to press x for release
                 if (gamepad2.x) {
-                    //Turn on Outtake Servo
                     liftState = LiftState.BOX_RETRACT;
                     //Reset outtake timer
                     liftTimer.reset();
                 }
                 break;
             case BOX_RETRACT:
+                //Turn on Outtake Servo
+                IOservo.setPower(-1);
                 //Wait for pixels to spin out
                 if (liftTimer.seconds() >= LiftConstants.dumpTime) {
                     //Turn off Outtake Servo
+                    IOservo.setPower(0);
                     //Retract Box
                     lift.retractBox();
                     liftState = LiftState.LIFT_RETRACT;
@@ -199,22 +203,25 @@ public class Driving extends OpMode
                 break;
             case LIFT_RETRACT:
                 // Wait for servo to return to Idle
-                if (rightServo.getPosition() == LiftConstants.rightBoxIdle) {
-                    //Retract Lift
-                    lift.setHeight(LiftConstants.liftRetracted);
+                if (rightServo.getPosition() == LiftConstants.BoxIdle) {
                     liftState = LiftState.LIFT_RETRACTED;
                 }
                 break;
             case LIFT_RETRACTED:
+                //Retract Lift
+                lift.setHeight(LiftConstants.liftRetracted);
                 //Wait for Lift to return to idle
                 if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
                     liftState = LiftState.LIFT_START;
+                    //Turn off motors
+                    lift.disableMotors();
                 }
                 break;
             default:
                 //Should never happen but just in case
                 liftState = LiftState.LIFT_START;
         }
+        telemetry.addData("Left Lift Encoder", leftLift.getCurrentPosition());
     }
 
 
