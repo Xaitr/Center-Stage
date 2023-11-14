@@ -22,16 +22,17 @@ public class OpenCvblue extends OpenCvPipeline {
         NOT_FOUND
     }
     private Location location;
-
+//x increase left to right
+    // y increases up to down
     static final Rect LEFT_ROI = new Rect(
-            new Point(150, 520),
-            new Point(380, 630));
+            new Point(630, 600), //150, 520
+            new Point(860, 850)); //380, 630
     static final Rect Middle_ROI = new Rect(
-            new Point(630, 520),
-            new Point(860, 630));
+            new Point(1160, 480), //630, 520
+            new Point(1380, 730)); //860, 630
     static final Rect RIGHT_ROI = new Rect(
-            new Point(1110,520),
-            new Point(1320,630)
+            new Point(1710,550), //1110, 520
+            new Point(1920,800) //1320, 630
     );
     static double PERCENT_COLOR_THRESHOLD = 0.3;
 

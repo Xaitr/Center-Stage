@@ -18,6 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Autonomous
 public class BlueLeft extends LinearOpMode {
     Outake outake = new Outake();
+    Intake intake = new Intake();
     Driving driving = new Driving ();
     OpenCvCamera camera;
 
@@ -31,7 +32,10 @@ public class BlueLeft extends LinearOpMode {
         OpenCvblue detector = new OpenCvblue (telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(14, 61, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(13, 55, Math.toRadians(180));
+        robot.setPoseEstimate(startPose);
+
+        intake.init(hardwareMap);
 
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -45,13 +49,14 @@ public class BlueLeft extends LinearOpMode {
             @Override
             public void onError(int errorCode) {}
         });
+        /*
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
                 .lineToConstantHeading(new Vector2d(14, 34))
                 .splineToConstantHeading(new Vector2d(34, 34), Math.toRadians(0))
                 .addTemporalMarker(() -> {
-                    outake.setPower(-1);
-                    sleep(1000); // stops program for 1000 miliseconds
-                    outake.setPower(0);
+                    intake.Reject();
+                    sleep(1000); // stops program for 1000 milliseconds
+                    intake.RejectOff();
                 })
                 .waitSeconds(1)
                 //  Spit out pixel
@@ -61,7 +66,15 @@ public class BlueLeft extends LinearOpMode {
                 .strafeTo(new Vector2d (38,34))
                 .splineToConstantHeading(new Vector2d(58, 60), Math.toRadians(0))
                 .build();
-
+*/
+        TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
+                .strafeLeft(24)
+                // spit out pixel here
+                .strafeTo(new Vector2d (48, 37))
+                // put pixel on board
+                .forward(10)
+                .splineToConstantHeading(new Vector2d (56, 58), Math.toRadians(0))
+                .build();
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
             .strafeLeft(24)
                  .addTemporalMarker(() -> {
@@ -108,15 +121,15 @@ public class BlueLeft extends LinearOpMode {
             case RIGHT:
                 telemetry.addData("Right Side","proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(Right);
                 break;
-                //robot.followTrajectorySequence(Right);
 
 
             case MIDDLE:
                 telemetry.addData("Middle","proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(Middle);
                 break;
-                //robot.followTrajectorySequence(Middle);
 
 
 

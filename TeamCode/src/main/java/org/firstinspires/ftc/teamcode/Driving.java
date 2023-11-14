@@ -25,10 +25,12 @@ public class Driving extends OpMode
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotor leftLift = null;
+    private DcMotor winch = null;
 
     private CRServo IOservo = null; // intake and outtake servo
     private Servo rightServo = null;
     private Servo leftServo =null;
+    private Servo winchServo = null;
 
 
     private DcMotor Intake = null;
@@ -44,12 +46,24 @@ public class Driving extends OpMode
         LIFT_RETRACT,
         LIFT_RETRACTED
     }
+    //Enum to represent winch state
+    private enum WinchState {
+        IDLE,
+        HOOK_ON,
+        EXTEND,
+        IDLE_HIGH,
+        HOOK_OFF,
+        RETRACT,
+    }
 
     //Timer for waiting for pixels to spin out
     ElapsedTime liftTimer = new ElapsedTime();
 
+    //Timer for winch to hang
+    ElapsedTime winchTimer = new ElapsedTime();
     //Initial Lift Position
     LiftState liftState = LiftState.LIFT_START;
+    WinchState winchState = WinchState.IDLE;
 
     @Override
     public void init() {
@@ -64,11 +78,13 @@ public class Driving extends OpMode
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
+        winch = hardwareMap.get(DcMotor.class, "winch");
 
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         Intake=hardwareMap.get(DcMotor.class, "intake");
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
         leftServo = hardwareMap.get(Servo.class, "Left_outtake");
+        winchServo = hardwareMap.get(Servo.class, "winch_servo");
 
 
 
@@ -111,41 +127,26 @@ public class Driving extends OpMode
         rightFrontPower = Range.clip(drive - turn + strafe, -1, 1);
         leftBackPower = Range.clip(drive + turn + strafe, -1, 1);
         rightBackPower = Range.clip(drive - turn - strafe, -1, 1);
-
-        if(gamepad1.right_bumper){
+        //Driving Slow Mode
+        if (gamepad1.right_bumper) {
             leftFrontPower /= 2;
             leftBackPower /= 2;
             rightFrontPower /= 2;
             rightBackPower /= 2;
         }
-       if (gamepad2.a) {
-           Intake.setPower(1);
-           IOservo.setPower(1);
-       }
-       else if (gamepad2.b) {
+        //Intake and Reject
+        if (gamepad2.a) {
+            Intake.setPower(1);
+            IOservo.setPower(1);
+        } else if (gamepad2.b) {
             Intake.setPower(-1);
             IOservo.setPower(1);
 
 
-    }
-       else {
-       Intake.setPower(0);
-       IOservo.setPower(0);
-       }
-/*
-       if (gamepad2.x) {
-           outake.setHeight(100);
-//           IOservo.setPower(-1);
-       }
-       if (gamepad2.right_bumper) {
-           RightServo.setPosition(0);
-           LeftServo.setPosition(0);
-       }
-       else if (gamepad2.left_bumper) {
-           RightServo.setPosition(0.25);
-           LeftServo.setPosition(0.25);
-       }
-*/
+        } else {
+            Intake.setPower(0);
+            IOservo.setPower(0);
+        }
 
         leftFrontDrive.setPower(leftFrontPower);
         rightFrontDrive.setPower(rightFrontPower);
@@ -155,9 +156,13 @@ public class Driving extends OpMode
         //Claw Code: Opens with GP2 X and opens less when past vertical position
         // BIGGER CLOSES MORE*********************
 
+        //Winch Code
+        telemetry.addData("WinchServo", winchServo.getPosition());
+
         //Switch Case for Lift gm0.org
         switch (liftState) {
             case LIFT_START:
+                lift.retractBox();
                 // In Idle state, wait until Driver 2 right bumper is pressed
                 if (gamepad2.right_bumper) {
                     liftState = LiftState.LIFT_EXTEND;
@@ -222,6 +227,46 @@ public class Driving extends OpMode
                 liftState = LiftState.LIFT_START;
         }
         telemetry.addData("Left Lift Encoder", leftLift.getCurrentPosition());
+        //Winch Finite State Machine
+
+        switch (winchState) {
+            case IDLE:
+                winchServo.setPosition(0.25);
+                if (gamepad1.a) {
+                    winchServo.setPosition(0.22);
+                    winchState = WinchState.HOOK_ON;
+                    winchTimer.reset();
+                }
+                break;
+            case HOOK_ON:
+                if (winchTimer.seconds() > 0.4) {
+                    winchServo.setPosition(0.55);
+                    winchState = winchState.EXTEND;
+                }
+                break;
+            case EXTEND:
+                lift.setHeight(LiftConstants.liftWinch);
+                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftWinch) < 10) {
+                    lift.disableMotors();
+                    winchState = winchState.IDLE_HIGH;
+                }
+                break;
+            case IDLE_HIGH:
+                if (gamepad1.a) {
+                    winchServo.setPosition(0.25);
+                    lift.setHeight(LiftConstants.liftRetracted);
+                    winchState = winchState.HOOK_OFF;
+                }
+                break;
+            case HOOK_OFF:
+                winch.setPower(-1);
+                winchTimer.reset();
+                break;
+            case RETRACT:
+                if (winchTimer.seconds() >= 5) {
+                    winch.setPower(0);
+                }
+        }
     }
 
 

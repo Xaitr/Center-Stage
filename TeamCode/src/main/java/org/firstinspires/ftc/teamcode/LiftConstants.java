@@ -12,4 +12,7 @@ public class LiftConstants {
 
     //Time it takes for both pixels to spin out
     public static double dumpTime = 1;
+
+    //Lift height for winch
+    public static double liftWinch = 720;
 }
