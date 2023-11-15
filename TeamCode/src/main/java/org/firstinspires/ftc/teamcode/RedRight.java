@@ -122,21 +122,26 @@ public class RedRight extends LinearOpMode {
                 telemetry.addData("Left side", "proceed"); // open cv detects left spike
                 telemetry.update();
                 robot.followTrajectorySequence(Left);
+                robot.followTrajectorySequence(Park);
                 break;
 
 
             case RIGHT:
                 telemetry.addData("Right Side", "proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(Right);
+                robot.followTrajectorySequence(Park);
                 break;
-            //robot.followTrajectorySequence(Right);
 
 
             case MIDDLE:
                 telemetry.addData("Middle", "proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(Middle);
+                robot.followTrajectorySequence(Park);
                 break;
-            //robot.followTrajectorySequence(Middle);
+
+
 
 
             case NOT_FOUND:
