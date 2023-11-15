@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode;
 //Parameters for lift
 public class LiftConstants {
     //Lift heights in ticks
-    public static double liftHigh = 1600;
-    public static double liftRetracted =0;
+    public static int liftHigh = 1600;
+    public static int liftRetracted =0;
 
     //Left and Right servo positions
     public static double BoxIdle = 0;
@@ -14,5 +14,5 @@ public class LiftConstants {
     public static double dumpTime = 1;
 
     //Lift height for winch
-    public static double liftWinch = 720;
+    public static int liftWinch = 720;
 }

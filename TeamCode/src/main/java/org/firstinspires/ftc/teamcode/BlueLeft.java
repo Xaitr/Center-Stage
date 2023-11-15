@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -19,7 +20,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 public class BlueLeft extends LinearOpMode {
     Outake outake = new Outake();
     Intake intake = new Intake();
-    Driving driving = new Driving ();
+    PidControl2 lift =new PidControl2();
     OpenCvCamera camera;
 
     @Override
@@ -32,9 +33,9 @@ public class BlueLeft extends LinearOpMode {
         OpenCvblue detector = new OpenCvblue (telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(13, 55, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(13, 65, Math.toRadians(180));
         robot.setPoseEstimate(startPose);
-
+        Pose2d prePark = new Pose2d(0,0,0);
         intake.init(hardwareMap);
 
 
@@ -63,50 +64,56 @@ public class BlueLeft extends LinearOpMode {
                 .splineTo(new Vector2d(48, 34), Math.toRadians(0))
 
                 // put pixel on board here
-                .strafeTo(new Vector2d (38,34))
-                .splineToConstantHeading(new Vector2d(58, 60), Math.toRadians(0))
+                .strafeRight(25)
+
+
                 .build();
 */
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
-                .strafeLeft(24)
+                .back(6)
+                .splineToConstantHeading(new Vector2d(37,34), Math.toRadians(0))
                 // spit out pixel here
+                .addTemporalMarker(() -> {
+                    intake.Reject();
+                })
+                .waitSeconds(0.05)
+                .addTemporalMarker(() -> {
+                    intake.RejectOff();
+                })
                 .strafeTo(new Vector2d (48, 37))
                 // put pixel on board
-                .forward(10)
-                .splineToConstantHeading(new Vector2d (56, 58), Math.toRadians(0))
                 .build();
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-            .strafeLeft(24)
+                .back(0.5)
+            .splineToConstantHeading(new Vector2d(16,32), Math.toRadians(0))
                  .addTemporalMarker(() -> {
-                     outake.setPower(-1);
-                     sleep(1000); // stops program for 1000 miliseconds
-                     outake.setPower(0);
+                     intake.Reject();
                  })
-                 .waitSeconds(1)
+                .waitSeconds(0.05)
+                .addTemporalMarker(() -> {
+                    intake.RejectOff();
+                })
             // spit out pixel here
-            .strafeTo(new Vector2d (48, 37))
+            .strafeTo(new Vector2d (48, 40))
             // put pixel on board
-            .forward(10)
-            .splineToConstantHeading(new Vector2d (56, 58), Math.toRadians(0))
+
             .build();
-
+        TrajectorySequence Park = robot.trajectorySequenceBuilder(new Pose2d(48, 54, Math.toRadians(180)))
+                .strafeRight(13)
+                .build();
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
-
-            .lineToConstantHeading(new Vector2d(14, 37))
-            .turn( Math.toRadians (90))
+                .back(5)
+            .splineToConstantHeading(new Vector2d(26, 25.5), Math.toRadians(0))
              .addTemporalMarker(() -> {
-            outake.setPower(-1);
-            sleep(1000); // stops program for 1000 miliseconds
-            outake.setPower(0);
-        })
-        // spit out pixel here
-             .splineToLinearHeading(new Pose2d(50, 32, Math.toRadians(180)), Math.toRadians(0))
-             .turn(Math.toRadians(0))
-             .lineToConstantHeading(new Vector2d(50, 34))
+                intake.Reject();
+            })
+            .waitSeconds(0.05)
+            .addTemporalMarker(() -> {
+                intake.RejectOff();
+            })
+             .lineToConstantHeading(new Vector2d(47, 34))
         // put pixel on board
-             .splineToConstantHeading(new Vector2d(56, 60), Math.toRadians(0))
-                                        .build();
-
+                .build();
         waitForStart();
 
 
@@ -115,6 +122,7 @@ public class BlueLeft extends LinearOpMode {
                 telemetry.addData("Left side","proceed"); // open cv detects left spike
                 telemetry.update();
                  robot.followTrajectorySequence(Left);
+                 robot.followTrajectorySequence(Park);
                 break;
 
 
@@ -122,6 +130,7 @@ public class BlueLeft extends LinearOpMode {
                 telemetry.addData("Right Side","proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Right);
+                robot.followTrajectorySequence(Park);
                 break;
 
 
@@ -129,6 +138,7 @@ public class BlueLeft extends LinearOpMode {
                 telemetry.addData("Middle","proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Middle);
+                robot.followTrajectorySequence(Park);
                 break;
 
 

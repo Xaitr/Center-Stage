@@ -11,7 +11,7 @@ public class Intake {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
     public void Reject() {
-        intake.setPower(-1);
+        intake.setPower(-0.35);
     }
     public void RejectOff() {
         intake.setPower(0);

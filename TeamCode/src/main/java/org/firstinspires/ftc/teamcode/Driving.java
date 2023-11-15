@@ -35,6 +35,8 @@ public class Driving extends OpMode
 
     private DcMotor Intake = null;
 
+    private int liftHeight = 0;
+
     PidControl2 lift = new PidControl2();
     // Enum to represent lift state
     private enum LiftState {
@@ -173,14 +175,12 @@ public class Driving extends OpMode
                 lift.setHeight(LiftConstants.liftHigh);
                 //Check if lift has fully extended
                 if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftHigh) < 20) {
-                    //Turn off lift motors
-                    lift.disableMotors();
+                    //Deploy box
+                    liftHeight = LiftConstants.liftHigh;
                     liftState = LiftState.BOX_EXTEND;
                 }
                 break;
             case BOX_EXTEND:
-                //Deploy box
-                lift.extendBox();
                 //Wait for servo to reach position
                 if (rightServo.getPosition() == LiftConstants.BoxReady) {
                     liftState = LiftState.LIFT_DUMP;
@@ -242,10 +242,10 @@ public class Driving extends OpMode
                 if (winchTimer.seconds() > 0.4) {
                     winchServo.setPosition(0.55);
                     winchState = winchState.EXTEND;
+                    liftHeight = LiftConstants.liftWinch;
                 }
                 break;
             case EXTEND:
-                lift.setHeight(LiftConstants.liftWinch);
                 if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftWinch) < 10) {
                     lift.disableMotors();
                     winchState = winchState.IDLE_HIGH;
@@ -254,7 +254,7 @@ public class Driving extends OpMode
             case IDLE_HIGH:
                 if (gamepad1.a) {
                     winchServo.setPosition(0.25);
-                    lift.setHeight(LiftConstants.liftRetracted);
+                    liftHeight = LiftConstants.liftRetracted;
                     winchState = winchState.HOOK_OFF;
                 }
                 break;
@@ -267,6 +267,7 @@ public class Driving extends OpMode
                     winch.setPower(0);
                 }
         }
+        lift.setHeight(liftHeight);
     }
 
 

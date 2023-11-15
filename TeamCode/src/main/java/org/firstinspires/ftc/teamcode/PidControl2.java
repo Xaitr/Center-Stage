@@ -17,6 +17,7 @@ public class PidControl2 {
     double Kp =0.14;
     double Ki =0;
     double Kd = 0.0001;
+    int height = 0;
 
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
