@@ -166,18 +166,24 @@ public class Driving extends OpMode
             case LIFT_START:
                 lift.retractBox();
                 // In Idle state, wait until Driver 2 right bumper is pressed
+                //Extend lift
                 if (gamepad2.right_bumper) {
                     liftState = LiftState.LIFT_EXTEND;
                     liftHeight = LiftConstants.liftHigh;
+                } else if (gamepad2.right_trigger>= 0.9) {
+                    liftState = LiftState.LIFT_EXTEND;
+                    liftHeight = LiftConstants.liftMedium;
+                } else if (gamepad2.left_bumper) {
+                    liftState = LiftState.LIFT_EXTEND;
+                    liftHeight = LiftConstants.liftLow;
                 }
                 break;
             case LIFT_EXTEND:
-                //Extend lift
 
                 //Check if lift has fully extended
-                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftHigh) < 20) {
+                if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 20) {
                     //Deploy box
-
+                    lift.extendBox();
                     liftState = LiftState.BOX_EXTEND;
                 }
                 break;
@@ -246,25 +252,23 @@ public class Driving extends OpMode
                 break;
             case EXTEND:
                 if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftWinch) < 10) {
-                    lift.disableMotors();
                     winchState = winchState.IDLE_HIGH;
                 }
                 break;
             case IDLE_HIGH:
                 if (gamepad1.a) {
-                    winchServo.setPosition(0.25);
+
                     liftHeight = LiftConstants.liftRetracted;
                     winchState = winchState.HOOK_OFF;
                 }
                 break;
             case HOOK_OFF:
-                winch.setPower(-1);
-                winchTimer.reset();
-                break;
-            case RETRACT:
-                if (winchTimer.seconds() >= 5) {
+                if (gamepad1.a)
+                    winch.setPower(-1);
+                else
                     winch.setPower(0);
-                }
+                winchServo.setPosition(0.25);
+                break;
         }
         lift.setHeight(liftHeight);
     }

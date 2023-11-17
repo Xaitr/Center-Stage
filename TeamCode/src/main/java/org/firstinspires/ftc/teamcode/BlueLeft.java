@@ -148,61 +148,6 @@ public class BlueLeft extends LinearOpMode {
                 telemetry.addData("Left side","proceed"); // open cv detects left spike
                 telemetry.update();
                  robot.followTrajectorySequence(Left);
-                 while(liftState != LiftState.LIFT_RETRACTED){
-                     switch (liftState) {
-                         case LIFT_EXTEND:
-                             //Extend lift
-                             lift.setHeight(LiftConstants.liftHigh);
-                             //Check if lift has fully extended
-                             if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftHigh) < 20) {
-                                 //Deploy box
-                                 liftHeight = LiftConstants.liftHigh;
-                                 liftState = LiftState.BOX_EXTEND;
-                             }
-                             break;
-                         case BOX_EXTEND:
-                             //Wait for servo to reach position
-                             if (rightServo.getPosition() == LiftConstants.BoxReady) {
-                                 liftState = LiftState.LIFT_DUMP;
-                             }
-                             break;
-                         case LIFT_DUMP:
-                             //Wait for Driver 2 to press x for release
-                             if (gamepad2.x) {
-                                 liftState = LiftState.BOX_RETRACT;
-                                 //Reset outtake timer
-                                 liftTimer.reset();
-                             }
-                             break;
-                         case BOX_RETRACT:
-                             //Turn on Outtake Servo
-                             IOservo.setPower(-1);
-                             //Wait for pixels to spin out
-                             if (liftTimer.seconds() >= LiftConstants.dumpTime) {
-                                 //Turn off Outtake Servo
-                                 IOservo.setPower(0);
-                                 //Retract Box
-                                 lift.retractBox();
-                                 liftState = LiftState.LIFT_RETRACT;
-                             }
-                             break;
-                         case LIFT_RETRACT:
-                             // Wait for servo to return to Idle
-                             if (rightServo.getPosition() == LiftConstants.BoxIdle) {
-                                 liftState = LiftState.LIFT_RETRACTED;
-                             }
-                             break;
-                         case LIFT_RETRACTED:
-                             //Retract Lift
-                             lift.setHeight(LiftConstants.liftRetracted);
-                             //Wait for Lift to return to idle
-                             if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
-                                 liftState = LiftState.LIFT_DONE;
-                             }
-                             break;
-                     }
-                     lift.setHeight(liftHeight);
-                 }
                  robot.followTrajectorySequence(Park);
                 break;
 
