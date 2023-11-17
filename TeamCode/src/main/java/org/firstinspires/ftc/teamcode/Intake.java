@@ -13,6 +13,9 @@ public class Intake {
     public void Reject() {
         intake.setPower(-0.35);
     }
+    public void RejectStronger() {
+        intake.setPower(-0.44);
+    }
     public void RejectOff() {
         intake.setPower(0);
     }

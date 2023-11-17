@@ -29,7 +29,7 @@ public class RedRight extends LinearOpMode {
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        OpenCvblue detector = new OpenCvblue(telemetry);
+        OpenCv detector = new OpenCv (telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(13, -65, Math.toRadians(180));
@@ -74,9 +74,9 @@ public class RedRight extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(37, -34), Math.toRadians(0))
                 // spit out pixel here
                 .addTemporalMarker(() -> {
-                    intake.Reject();
+                    intake.RejectStronger();
                 })
-                .waitSeconds(0.05)
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
@@ -89,9 +89,9 @@ public class RedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     intake.Reject();
                 })
-                .waitSeconds(0.05)
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
-                    intake.Reject();
+                    intake.RejectOff();
                 })
                 // spit out pixel here
                 .strafeTo(new Vector2d(48, -40))
@@ -99,7 +99,7 @@ public class RedRight extends LinearOpMode {
 
                 .build();
         TrajectorySequence Park = robot.trajectorySequenceBuilder(new Pose2d(48, -54, Math.toRadians(180)))
-                .strafeLeft(13)
+                .strafeLeft(10)
                 .build();
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
                 .back(5)
@@ -107,7 +107,7 @@ public class RedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     intake.Reject();
                 })
-                .waitSeconds(0.05)
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
@@ -128,21 +128,26 @@ public class RedRight extends LinearOpMode {
             case RIGHT:
                 telemetry.addData("Right Side", "proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(Right);
+                robot.followTrajectorySequence(Park);
                 break;
-            //robot.followTrajectorySequence(Right);
+
 
 
             case MIDDLE:
                 telemetry.addData("Middle", "proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(Middle);
+                robot.followTrajectorySequence(Park);
                 break;
-            //robot.followTrajectorySequence(Middle);
+
 
 
             case NOT_FOUND:
                 telemetry.addData("not found", "proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Right);
+                robot.followTrajectorySequence(Park);
         }
         camera.stopStreaming();
     }

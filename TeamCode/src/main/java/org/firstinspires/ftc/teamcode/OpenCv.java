@@ -20,15 +20,15 @@ public class OpenCv extends OpenCvPipeline {
     }
     private Location location;
 
-    static final Rect LEFT_ROI = new Rect(
-            new Point(500, 520),
-            new Point(700, 630));
-    static final Rect Middle_ROI = new Rect(
-            new Point(1030, 520),
-            new Point(1260, 630));
     static final Rect RIGHT_ROI = new Rect(
-            new Point(1510,520),
-            new Point(1720,630)
+            new Point(1290, 600),
+            new Point(1060, 800));
+    static final Rect Middle_ROI = new Rect(
+            new Point(760, 480),
+            new Point(540, 730));
+    static final Rect LEFT_ROI = new Rect(
+            new Point(210,550),
+            new Point(0,800)
     );
     static double PERCENT_COLOR_THRESHOLD = 0.3;
 
@@ -39,7 +39,6 @@ public class OpenCv extends OpenCvPipeline {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
         Scalar lowHSV = new Scalar(140,70,20);
         Scalar highHSV = new Scalar(179,255,255);
-
 
         Core.inRange(mat, lowHSV, highHSV, mat);
 

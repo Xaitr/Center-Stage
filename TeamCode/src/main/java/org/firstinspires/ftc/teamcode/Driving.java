@@ -168,15 +168,16 @@ public class Driving extends OpMode
                 // In Idle state, wait until Driver 2 right bumper is pressed
                 if (gamepad2.right_bumper) {
                     liftState = LiftState.LIFT_EXTEND;
+                    liftHeight = LiftConstants.liftHigh;
                 }
                 break;
             case LIFT_EXTEND:
                 //Extend lift
-                lift.setHeight(LiftConstants.liftHigh);
+
                 //Check if lift has fully extended
                 if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftHigh) < 20) {
                     //Deploy box
-                    liftHeight = LiftConstants.liftHigh;
+
                     liftState = LiftState.BOX_EXTEND;
                 }
                 break;
@@ -210,16 +211,14 @@ public class Driving extends OpMode
                 // Wait for servo to return to Idle
                 if (rightServo.getPosition() == LiftConstants.BoxIdle) {
                     liftState = LiftState.LIFT_RETRACTED;
+                    //Retract Lift
+                    liftHeight = LiftConstants.liftRetracted;
                 }
                 break;
             case LIFT_RETRACTED:
-                //Retract Lift
-                lift.setHeight(LiftConstants.liftRetracted);
                 //Wait for Lift to return to idle
                 if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
                     liftState = LiftState.LIFT_START;
-                    //Turn off motors
-                    lift.disableMotors();
                 }
                 break;
             default:
