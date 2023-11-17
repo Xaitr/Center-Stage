@@ -19,8 +19,8 @@ public class BlueLeft3 {
                                 // spit out pixel here
                                 .strafeTo(new Vector2d (48, 37))
                               // put pixel on board
-                                .forward(10)
-                                .splineToConstantHeading(new Vector2d (56, 58), Math.toRadians(0))
+                                .forward(0.1)
+                                .splineToConstantHeading(new Vector2d (50, 58), Math.toRadians(0))
 
 
 
