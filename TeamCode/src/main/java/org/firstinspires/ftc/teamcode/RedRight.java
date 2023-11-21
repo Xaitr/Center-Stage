@@ -80,6 +80,15 @@ public class RedRight extends LinearOpMode {
             .build();
 
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
+                                .lineToConstantHeading(new Vector2d(14, -36))
+                                .turn(Math.toRadians(-180))
+                                // spit out pixel here
+                                .splineToConstantHeading(new Vector2d(25, -32), Math.toRadians(0))
+                                .splineTo(new Vector2d(46, -32), Math.toRadians(0))
+                                .turn(Math.toRadians(90))
+                                // put pixel on board here
+                                .strafeLeft(25)
+                                .back(15)
                         .build();
 
 

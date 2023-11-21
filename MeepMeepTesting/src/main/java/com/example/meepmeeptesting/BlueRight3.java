@@ -17,15 +17,15 @@ public class BlueRight3 {
                         drive.trajectorySequenceBuilder(new Pose2d(-34, 57, Math.toRadians(90)))
                                 .lineTo(new Vector2d(-34, 30))
                                 .turn(Math.toRadians(90))
+                                // spit out pixel here
                                 .lineToConstantHeading(new Vector2d(-34, 11))
                                 .splineToConstantHeading(new Vector2d(-32, 10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(-16, 10), Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(38, 10), Math.toRadians(0))
-                                .splineToConstantHeading(new Vector2d(50, 34), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(47, 34), Math.toRadians(0))
                                 // put pixel on board here
-                                .splineToConstantHeading(new Vector2d(58, 14), Math.toRadians(0))
-
-
+                                .strafeLeft(23)
+                                .back(12)
                                 .build()
                 );
 

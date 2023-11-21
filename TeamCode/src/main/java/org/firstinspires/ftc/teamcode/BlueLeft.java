@@ -48,18 +48,17 @@ public class BlueLeft extends LinearOpMode {
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
                 .lineToConstantHeading(new Vector2d(14, 34))
                 .splineToConstantHeading(new Vector2d(34, 34), Math.toRadians(0))
-                .addTemporalMarker(() -> {
-                    outake.setPower(-1);
+                      .addTemporalMarker(() -> {
+                     outake.setPower(-1);
                     sleep(1000); // stops program for 1000 miliseconds
                     outake.setPower(0);
                 })
-                .waitSeconds(1)
-                //  Spit out pixel
+                 .waitSeconds(1)
+               // Spit out pixel here
                 .splineTo(new Vector2d(48, 34), Math.toRadians(0))
-
                 // put pixel on board here
-                .strafeTo(new Vector2d (38,34))
-                .splineToConstantHeading(new Vector2d(58, 60), Math.toRadians(0))
+                .strafeRight(25)
+                .back(13)
                 .build();
 
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)

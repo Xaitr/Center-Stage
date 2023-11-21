@@ -14,8 +14,10 @@ public class BlueLeft3 {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(14, 61, Math.toRadians(180)))
-                                .strafeLeft(24)
+                        drive.trajectorySequenceBuilder(new Pose2d(13, 65, Math.toRadians(180)))
+                                .back(1)
+                                .splineToConstantHeading(new Vector2d (16,32), Math.toRadians(0))
+                              //  .strafeLeft(24)
                                 // spit out pixel here
                                 .strafeTo(new Vector2d (48, 37))
                               // put pixel on board

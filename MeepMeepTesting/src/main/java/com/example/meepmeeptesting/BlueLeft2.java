@@ -13,16 +13,17 @@ public class BlueLeft2 {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-    .followTrajectorySequence(drive ->
+     .followTrajectorySequence(drive ->
             drive.trajectorySequenceBuilder(new Pose2d(14, 61, Math.toRadians(180)))
-                    .lineToConstantHeading(new Vector2d(14, 37))
-                    .turn( Math.toRadians (90))
+                    .back(5)
+                    .splineToConstantHeading(new Vector2d (25, 26), Math.toRadians(0))
+                    // .lineToConstantHeading(new Vector2d(14, 37))
                     // spit out pixel here
-                    .splineToLinearHeading(new Pose2d(50, 32, Math.toRadians(180)), Math.toRadians(0))
-                    .turn(Math.toRadians(0))
-                    .lineToConstantHeading(new Vector2d(50, 34))
+                   // .splineToLinearHeading(new Pose2d(50, 32, Math.toRadians(180)), Math.toRadians(0))
+                    .lineToConstantHeading(new Vector2d(47, 34))
+                    . strafeRight(20)
                  // put pixel on board
-                    .splineToConstantHeading(new Vector2d(56, 60), Math.toRadians(0))
+                    // .splineToConstantHeading(new Vector2d(56, 60), Math.toRadians(0))
                                 .build()
                 );
 
