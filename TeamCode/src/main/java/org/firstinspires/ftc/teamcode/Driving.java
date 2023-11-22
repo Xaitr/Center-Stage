@@ -125,10 +125,10 @@ public class Driving extends OpMode
         double drive = -gamepad1.left_stick_y;
         double strafe = gamepad1.left_stick_x;
         double turn = gamepad1.right_stick_x;
-        leftFrontPower = Range.clip(drive + turn - strafe, -1, 1);
-        rightFrontPower = Range.clip(drive - turn + strafe, -1, 1);
-        leftBackPower = Range.clip(drive + turn + strafe, -1, 1);
-        rightBackPower = Range.clip(drive - turn - strafe, -1, 1);
+        leftFrontPower = Range.clip(drive + turn + strafe, -1, 1);
+        rightFrontPower = Range.clip(drive - turn - strafe, -1, 1);
+        leftBackPower = Range.clip(drive + turn - strafe, -1, 1);
+        rightBackPower = Range.clip(drive - turn + strafe, -1, 1);
         //Driving Slow Mode
         if (gamepad1.right_bumper) {
             leftFrontPower /= 2;
@@ -179,7 +179,6 @@ public class Driving extends OpMode
                 }
                 break;
             case LIFT_EXTEND:
-
                 //Check if lift has fully extended
                 if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 20) {
                     //Deploy box
@@ -194,23 +193,39 @@ public class Driving extends OpMode
                 }
                 break;
             case LIFT_DUMP:
+                //Adjustment midroutine in case Driver puts in wrong input
+                if (gamepad2.right_bumper) {
+                    liftHeight = LiftConstants.liftHigh;
+                } else if (gamepad2.right_trigger>= 0.9) {
+                    liftHeight = LiftConstants.liftMedium;
+                } else if (gamepad2.left_bumper) {
+                    liftHeight = LiftConstants.liftLow;
+                }
                 //Wait for Driver 2 to press x for release
                 if (gamepad2.x) {
                     liftState = LiftState.BOX_RETRACT;
                     //Reset outtake timer
-                    liftTimer.reset();
+                    //liftTimer.reset();
                 }
                 break;
             case BOX_RETRACT:
                 //Turn on Outtake Servo
                 IOservo.setPower(-1);
                 //Wait for pixels to spin out
-                if (liftTimer.seconds() >= LiftConstants.dumpTime) {
+               // if (liftTimer.seconds() >= LiftConstants.dumpTime) {
                     //Turn off Outtake Servo
-                    IOservo.setPower(0);
+                   // IOservo.setPower(0);
                     //Retract Box
-                    lift.retractBox();
+                  //  lift.retractBox();
+                   // liftState = LiftState.LIFT_RETRACT;
+              //  }
+                if (gamepad2.x) {
+                    IOservo.setPower(-1);
+                } else
+                {
                     liftState = LiftState.LIFT_RETRACT;
+                    IOservo.setPower(0);
+                    lift.retractBox();
                 }
                 break;
             case LIFT_RETRACT:
@@ -231,7 +246,7 @@ public class Driving extends OpMode
                 //Should never happen but just in case
                 liftState = LiftState.LIFT_START;
         }
-        telemetry.addData("Left Lift Encoder", leftLift.getCurrentPosition());
+        telemetry.addData("liftHeight", liftHeight);
         //Winch Finite State Machine
 
         switch (winchState) {

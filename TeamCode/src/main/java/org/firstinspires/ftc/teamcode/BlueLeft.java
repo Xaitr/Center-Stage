@@ -97,7 +97,7 @@ public class BlueLeft extends LinearOpMode {
 */
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
                 .back(6)
-                .splineToConstantHeading(new Vector2d(37,34), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(39,34), Math.toRadians(0))
                 // spit out pixel here
                 .addTemporalMarker(() -> {
                     intake.Reject();
@@ -106,12 +106,12 @@ public class BlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
-                .strafeTo(new Vector2d (48, 37))
+                .strafeTo(new Vector2d (51, 46))
                 // put pixel on board
                 .build();
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
                 .back(0.5)
-            .splineToConstantHeading(new Vector2d(16,32), Math.toRadians(0))
+            .splineToConstantHeading(new Vector2d(17.5,32), Math.toRadians(0))
                  .addTemporalMarker(() -> {
                      intake.Reject();
                  })
@@ -120,12 +120,13 @@ public class BlueLeft extends LinearOpMode {
                     intake.RejectOff();
                 })
             // spit out pixel here
-            .strafeTo(new Vector2d (48, 40))
+            .strafeTo(new Vector2d (51, 33))
             // put pixel on board
 
             .build();
-        TrajectorySequence Park = robot.trajectorySequenceBuilder(new Pose2d(48, 54, Math.toRadians(180)))
-                .strafeRight(13)
+        TrajectorySequence Park = robot.trajectorySequenceBuilder(new Pose2d(51, 37, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(48,37))
+                .splineToConstantHeading(new Vector2d(56,63), Math.toRadians(0))
                 .build();
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
                 .back(5)
@@ -137,7 +138,7 @@ public class BlueLeft extends LinearOpMode {
             .addTemporalMarker(() -> {
                 intake.RejectOff();
             })
-             .lineToConstantHeading(new Vector2d(47, 34))
+             .lineToConstantHeading(new Vector2d(51, 40))
         // put pixel on board
                 .build();
         waitForStart();
@@ -164,6 +165,7 @@ public class BlueLeft extends LinearOpMode {
                 telemetry.addData("Middle","proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Middle);
+
                 robot.followTrajectorySequence(Park);
                 break;
 
