@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Outake {
     private DcMotorEx lift_left;
     private DcMotorEx lift_right;
-    private DcMotor intake = null;
+    private DcMotor intake;
 
 
     double lastError = 0;

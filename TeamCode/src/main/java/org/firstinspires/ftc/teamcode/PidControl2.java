@@ -14,10 +14,10 @@ public class PidControl2 {
     DcMotorEx rightLift;
 
     double integralSum =0;
-    double Kp =0.14;
+    double Kp =0.05;
     double Ki =0;
-    double Kd = 0.0001;
-
+    double Kd = 0.000008;
+//0.000001
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
     private Servo rightServo = null;
@@ -61,12 +61,16 @@ public class PidControl2 {
         rightLift.setPower(power);
     }
     public void extendBox() {
-        rightServo.setPosition(LiftConstants.rightBoxReady);
-        leftServo.setPosition(LiftConstants.leftBoxReady);
+        rightServo.setPosition(LiftConstants.BoxReady);
+        leftServo.setPosition(LiftConstants.BoxReady);
     }
     public void retractBox() {
-        rightServo.setPosition(LiftConstants.rightBoxIdle);
-        leftServo.setPosition(LiftConstants.leftBoxIdle);
+        rightServo.setPosition(LiftConstants.BoxIdle);
+        leftServo.setPosition(LiftConstants.BoxIdle);
+    }
+    public void disableMotors() {
+        leftLift.setPower(0);
+        rightLift.setPower(0);
     }
 }
 

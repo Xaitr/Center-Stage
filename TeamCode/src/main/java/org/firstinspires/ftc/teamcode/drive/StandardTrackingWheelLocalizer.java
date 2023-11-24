@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.drive;
 
 import androidx.annotation.NonNull;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,8 +41,8 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
-    private List<Integer> lastEncPositions;
-    private List<Integer> lastEncVels;
+    private List<Integer> lastEncPositions = new ArrayList<Integer>();
+    private List<Integer> lastEncVels = new ArrayList<Integer>();
 
     private double leftStart;
     private double rightStart;
@@ -54,12 +56,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         ));
 
 
-
         leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "left_back"));
         rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "intake"));
         frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "left_front"));
-        this.lastEncPositions = lastEncPositions;
-        this.lastEncVels = lastEncVels;
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         leftEncoder.setDirection(Encoder.Direction.REVERSE);
