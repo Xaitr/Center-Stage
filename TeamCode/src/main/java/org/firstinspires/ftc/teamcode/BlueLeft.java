@@ -2,10 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -18,8 +23,26 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Autonomous
 public class BlueLeft extends LinearOpMode {
     Outake outake = new Outake();
-    Driving driving = new Driving ();
+    Intake intake = new Intake();
+    PidControl2 lift =new PidControl2();
     OpenCvCamera camera;
+    // Enum to represent lift state
+    private enum LiftState {
+        LIFT_EXTEND,
+        BOX_EXTEND,
+        LIFT_DUMP,
+        BOX_RETRACT,
+        LIFT_RETRACT,
+        LIFT_RETRACTED,
+        LIFT_DONE
+    }
+    //Timer for waiting for pixels to spin out
+    ElapsedTime liftTimer = new ElapsedTime();
+    LiftState liftState = LiftState.LIFT_EXTEND;
+    private int liftHeight = 0;
+    private CRServo IOservo = null;
+    private DcMotor leftLift = null;
+    private Servo rightServo = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,7 +54,15 @@ public class BlueLeft extends LinearOpMode {
         OpenCvblue detector = new OpenCvblue (telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(14, 61, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(13, 65, Math.toRadians(180));
+        robot.setPoseEstimate(startPose);
+        Pose2d prePark = new Pose2d(0,0,0);
+        intake.init(hardwareMap);
+        leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
+        IOservo = hardwareMap.get(CRServo.class, "IOservo");
+        rightServo = hardwareMap.get(Servo.class, "Right_outtake");
+        lift.init(hardwareMap);
+
 
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -45,55 +76,71 @@ public class BlueLeft extends LinearOpMode {
             @Override
             public void onError(int errorCode) {}
         });
+        /*
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
                 .lineToConstantHeading(new Vector2d(14, 34))
                 .splineToConstantHeading(new Vector2d(34, 34), Math.toRadians(0))
                 .addTemporalMarker(() -> {
-                    outake.setPower(-1);
-                    sleep(1000); // stops program for 1000 miliseconds
-                    outake.setPower(0);
+                    intake.Reject();
+                    sleep(1000); // stops program for 1000 milliseconds
+                    intake.RejectOff();
                 })
                 .waitSeconds(1)
                 //  Spit out pixel
                 .splineTo(new Vector2d(48, 34), Math.toRadians(0))
 
                 // put pixel on board here
-                .strafeTo(new Vector2d (38,34))
-                .splineToConstantHeading(new Vector2d(58, 60), Math.toRadians(0))
+                .strafeRight(25)
+
+
                 .build();
-
+*/
+        TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
+                .back(6)
+                .splineToConstantHeading(new Vector2d(39,34), Math.toRadians(0))
+                // spit out pixel here
+                .addTemporalMarker(() -> {
+                    intake.Reject();
+                })
+                .waitSeconds(0.05)
+                .addTemporalMarker(() -> {
+                    intake.RejectOff();
+                })
+                .strafeTo(new Vector2d (51, 46))
+                // put pixel on board
+                .build();
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-            .strafeLeft(24)
+                .back(0.5)
+            .splineToConstantHeading(new Vector2d(17.5,32), Math.toRadians(0))
                  .addTemporalMarker(() -> {
-                     outake.setPower(-1);
-                     sleep(1000); // stops program for 1000 miliseconds
-                     outake.setPower(0);
+                     intake.Reject();
                  })
-                 .waitSeconds(1)
+                .waitSeconds(0.1)
+                .addTemporalMarker(() -> {
+                    intake.RejectOff();
+                })
             // spit out pixel here
-            .strafeTo(new Vector2d (48, 37))
+            .strafeTo(new Vector2d (51, 33))
             // put pixel on board
-            .forward(10)
-            .splineToConstantHeading(new Vector2d (56, 58), Math.toRadians(0))
+
             .build();
-
+        TrajectorySequence Park = robot.trajectorySequenceBuilder(new Pose2d(51, 37, Math.toRadians(180)))
+                .lineToConstantHeading(new Vector2d(48,37))
+                .splineToConstantHeading(new Vector2d(56,63), Math.toRadians(0))
+                .build();
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
-
-            .lineToConstantHeading(new Vector2d(14, 37))
-            .turn( Math.toRadians (90))
+                .back(5)
+            .splineToConstantHeading(new Vector2d(26, 25.5), Math.toRadians(0))
              .addTemporalMarker(() -> {
-            outake.setPower(-1);
-            sleep(1000); // stops program for 1000 miliseconds
-            outake.setPower(0);
-        })
-        // spit out pixel here
-             .splineToLinearHeading(new Pose2d(50, 32, Math.toRadians(180)), Math.toRadians(0))
-             .turn(Math.toRadians(0))
-             .lineToConstantHeading(new Vector2d(50, 34))
+                intake.Reject();
+            })
+            .waitSeconds(0.05)
+            .addTemporalMarker(() -> {
+                intake.RejectOff();
+            })
+             .lineToConstantHeading(new Vector2d(51, 40))
         // put pixel on board
-             .splineToConstantHeading(new Vector2d(56, 60), Math.toRadians(0))
-                                        .build();
-
+                .build();
         waitForStart();
 
 
@@ -102,21 +149,25 @@ public class BlueLeft extends LinearOpMode {
                 telemetry.addData("Left side","proceed"); // open cv detects left spike
                 telemetry.update();
                  robot.followTrajectorySequence(Left);
+                 robot.followTrajectorySequence(Park);
                 break;
 
 
             case RIGHT:
                 telemetry.addData("Right Side","proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(Right);
+                robot.followTrajectorySequence(Park);
                 break;
-                //robot.followTrajectorySequence(Right);
 
 
             case MIDDLE:
                 telemetry.addData("Middle","proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(Middle);
+
+                robot.followTrajectorySequence(Park);
                 break;
-                //robot.followTrajectorySequence(Middle);
 
 
 

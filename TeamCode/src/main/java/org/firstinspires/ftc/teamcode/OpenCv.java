@@ -37,8 +37,8 @@ public class OpenCv extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(140,70,20);
-        Scalar highHSV = new Scalar(179,255,255);
+        Scalar lowHSV = new Scalar(0,50,50);
+        Scalar highHSV = new Scalar(150,255,255);
 
         Core.inRange(mat, lowHSV, highHSV, mat);
 
