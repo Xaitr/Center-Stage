@@ -34,6 +34,7 @@ public class Driving extends OpMode
 
     private DigitalChannel limitswitch = null;
 
+    private int liftOffset = 0;
     private DcMotor Intake = null;
 
     private int liftHeight = 0;
@@ -293,12 +294,12 @@ public class Driving extends OpMode
             if (limitswitch.getState()){
                 liftHeight = -400;
             } else {
-                liftHeight = leftLift.getCurrentPosition();
-                leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                liftHeight = 0;
+                liftOffset = leftLift.getCurrentPosition();
             }
         }
 
-        lift.setHeight(liftHeight);
+        lift.setHeight(liftHeight + liftOffset);
     }
 
 
