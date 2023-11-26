@@ -31,7 +31,7 @@ public class Driving extends OpMode
     private Servo rightServo = null;
     private Servo leftServo =null;
     private Servo winchServo = null;
-    
+
 
     private DcMotor Intake = null;
 
@@ -150,8 +150,6 @@ public class Driving extends OpMode
             IOservo.setPower(0);
         }
 
-
-
         leftFrontDrive.setPower(leftFrontPower);
         rightFrontDrive.setPower(rightFrontPower);
         leftBackDrive.setPower(leftBackPower);
@@ -202,10 +200,6 @@ public class Driving extends OpMode
                     liftHeight = LiftConstants.liftMedium;
                 } else if (gamepad2.left_bumper) {
                     liftHeight = LiftConstants.liftLow;
-                }
-                else if (gamepad1.left_bumper) {
-                    liftHeight = LiftConstants.liftRetracted;
-                    liftState = LiftState.LIFT_START;
                 }
                 //Wait for Driver 2 to press x for release
                 if (gamepad2.x) {
