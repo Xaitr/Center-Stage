@@ -289,6 +289,15 @@ public class Driving extends OpMode
                 winchServo.setPosition(0.25);
                 break;
         }
+        if (gamepad2.dpad_down){
+            if (limitswitch.getState()){
+                liftHeight = -400;
+            } else {
+                liftHeight = leftLift.getCurrentPosition();
+                leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
+        }
+
         lift.setHeight(liftHeight);
     }
 
