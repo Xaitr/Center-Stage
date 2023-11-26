@@ -41,7 +41,7 @@ public class RedRight extends LinearOpMode {
     private CRServo IOservo = null;
     private DcMotor leftLift = null;
     private Servo rightServo = null;
-    private Servo leftServo =null;
+
 
 
     @Override
@@ -61,7 +61,6 @@ public class RedRight extends LinearOpMode {
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
-        leftServo = hardwareMap.get(Servo.class, "Left_outtake");
         lift.init(hardwareMap);
 
 
@@ -180,14 +179,14 @@ public class RedRight extends LinearOpMode {
                             if (liftTimer.seconds() >= LiftConstants.dumpTime) {
                                 //Turn off Outtake Servo
                                 IOservo.setPower(0);
-
+                                lift.retractBox();
                                 liftState = LiftState.LIFT_RETRACT;
                                 liftTimer.reset();
                             }
                             break;
                         case LIFT_RETRACT:
                             //Retract Box
-                            leftServo.setPosition(LiftConstants.BoxIdle);
+
                             // Wait for servo to return to Idle
                             if (liftTimer.seconds() >= 0.6) {
                                 liftState = LiftState.LIFT_RETRACTED;
@@ -243,14 +242,14 @@ public class RedRight extends LinearOpMode {
                             if (liftTimer.seconds() >= LiftConstants.dumpTime) {
                                 //Turn off Outtake Servo
                                 IOservo.setPower(0);
-
+                                lift.retractBox();
                                 liftState = LiftState.LIFT_RETRACT;
                                 liftTimer.reset();
                             }
                             break;
                         case LIFT_RETRACT:
                             //Retract Box
-                            leftServo.setPosition(LiftConstants.BoxIdle);
+
                             // Wait for servo to return to Idle
                             if (liftTimer.seconds() >= 0.6) {
                                 liftState = LiftState.LIFT_RETRACTED;
@@ -307,14 +306,14 @@ public class RedRight extends LinearOpMode {
                             if (liftTimer.seconds() >= LiftConstants.dumpTime) {
                                 //Turn off Outtake Servo
                                 IOservo.setPower(0);
-
+                                lift.retractBox();
                                 liftState = LiftState.LIFT_RETRACT;
                                 liftTimer.reset();
                             }
                             break;
                         case LIFT_RETRACT:
                             //Retract Box
-                            leftServo.setPosition(LiftConstants.BoxIdle);
+
                             // Wait for servo to return to Idle
                             if (liftTimer.seconds() >= 0.6) {
                                 liftState = LiftState.LIFT_RETRACTED;

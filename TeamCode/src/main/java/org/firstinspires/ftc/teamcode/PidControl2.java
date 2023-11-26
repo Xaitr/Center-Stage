@@ -34,14 +34,16 @@ public class PidControl2 {
         leftLift.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightLift.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-        leftLift.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftLift.setDirection(DcMotorSimple.Direction.FORWARD);
         rightLift.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
         leftServo = hardwareMap.get(Servo.class, "Left_outtake");
+        rightServo.setDirection(Servo.Direction.REVERSE);
 
     }
     public double PIDControl(double reference, double state) {
