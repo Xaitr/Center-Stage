@@ -142,6 +142,9 @@ public class Driving extends OpMode
             rightFrontPower /= 2;
             rightBackPower /= 2;
         }
+        if (gamepad2.left_trigger >= 0.8) {
+            liftState = LiftState.BOX_RETRACT;
+        }
         //Intake and Reject
         if (gamepad2.a) {
             Intake.setPower(1);
