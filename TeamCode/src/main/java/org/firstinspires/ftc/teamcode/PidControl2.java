@@ -16,13 +16,12 @@ public class PidControl2 {
     double integralSum =0;
     double Kp =0.05;
     double Ki =0;
-    double Kd = 0.000008;
+    double Kd = 0.000012;
 //0.000001
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
     private Servo rightServo = null;
     private Servo leftServo =null;
-    LiftConstants constants = new LiftConstants();
 
     public void init(HardwareMap hardwareMap) {
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");

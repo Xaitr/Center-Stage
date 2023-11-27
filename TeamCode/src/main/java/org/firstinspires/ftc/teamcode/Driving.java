@@ -33,6 +33,8 @@ public class Driving extends OpMode
     private Servo winchServo = null;
 
     private DigitalChannel limitswitch = null;
+    private DigitalChannel boxBeam = null;
+    private boolean isOn = false;
 
     private int liftOffset = 0;
     private DcMotor Intake = null;
@@ -90,6 +92,7 @@ public class Driving extends OpMode
         leftServo = hardwareMap.get(Servo.class, "Left_outtake");
         winchServo = hardwareMap.get(Servo.class, "winch_servo");
         limitswitch = hardwareMap.get(DigitalChannel.class, "limitswitch");
+        boxBeam = hardwareMap.get(DigitalChannel.class, "box_beam");
 
 
 
@@ -139,6 +142,9 @@ public class Driving extends OpMode
             rightFrontPower /= 2;
             rightBackPower /= 2;
         }
+        if (gamepad2.left_trigger >= 0.8) {
+            liftState = LiftState.BOX_RETRACT;
+        }
         //Intake and Reject
         if (gamepad2.a) {
             Intake.setPower(1);
@@ -146,7 +152,11 @@ public class Driving extends OpMode
         } else if (gamepad2.b) {
             Intake.setPower(-1);
             IOservo.setPower(1);
-
+            //Break Beam Driver feedback via controller rumble
+            if (!boxBeam.getState()) {
+                gamepad2.rumble(50);
+                gamepad1.rumble(50);
+            }
 
         } else {
             Intake.setPower(0);
@@ -162,9 +172,6 @@ public class Driving extends OpMode
 
         //Claw Code: Opens with GP2 X and opens less when past vertical position
         // BIGGER CLOSES MORE*********************
-
-        //Winch Code
-        telemetry.addData("WinchServo", winchServo.getPosition());
 
         //Switch Case for Lift gm0.org
         switch (liftState) {
@@ -251,9 +258,11 @@ public class Driving extends OpMode
                 //Should never happen but just in case
                 liftState = LiftState.LIFT_START;
         }
+        //Telemetry for liftHeight based on state machine (Not actual position, but what height the program is telling the robot)
         telemetry.addData("liftHeight", liftHeight);
-        //Winch Finite State Machine
+        telemetry.addData("boxBeam", boxBeam.getState());
 
+        //Winch Finite State Machine
         switch (winchState) {
             case IDLE:
                 winchServo.setPosition(0.25);
@@ -293,10 +302,11 @@ public class Driving extends OpMode
         if (gamepad2.dpad_down){
             if (limitswitch.getState()){
                 liftHeight = -400;
-            } else {
-
+                isOn = false;
+            } else if (!isOn){
+                isOn = true;
                 liftHeight = 0;
-                liftOffset = leftLift.getCurrentPosition();
+                liftOffset = leftLift.getCurrentPosition()+25;
             }
         }
 
