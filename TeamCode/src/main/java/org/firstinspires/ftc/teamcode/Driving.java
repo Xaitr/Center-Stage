@@ -185,7 +185,7 @@ public class Driving extends OpMode
                 break;
             case LIFT_EXTEND:
                 //Check if lift has fully extended
-                if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 20) {
+                if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 20) {
                     //Deploy box
                     lift.extendBox();
                     liftState = LiftState.BOX_EXTEND;
@@ -243,7 +243,7 @@ public class Driving extends OpMode
                 break;
             case LIFT_RETRACTED:
                 //Wait for Lift to return to idle
-                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
+                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted - liftOffset) < 10) {
                     liftState = LiftState.LIFT_START;
                 }
                 break;
@@ -271,7 +271,7 @@ public class Driving extends OpMode
                 }
                 break;
             case EXTEND:
-                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftWinch) < 10) {
+                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftWinch - liftOffset) < 10) {
                     winchState = winchState.IDLE_HIGH;
                 }
                 break;
@@ -294,6 +294,7 @@ public class Driving extends OpMode
             if (limitswitch.getState()){
                 liftHeight = -400;
             } else {
+
                 liftHeight = 0;
                 liftOffset = leftLift.getCurrentPosition();
             }
