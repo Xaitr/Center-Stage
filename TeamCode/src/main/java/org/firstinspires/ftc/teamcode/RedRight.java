@@ -149,7 +149,7 @@ public class RedRight extends LinearOpMode {
                 telemetry.addData("Left side", "proceed"); // open cv detects left spike
                 telemetry.update();
                 robot.followTrajectorySequence(Left);
-                while(liftState != LiftState.LIFT_RETRACTED){
+             /*   while(liftState != LiftState.LIFT_RETRACTED){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
@@ -204,6 +204,8 @@ public class RedRight extends LinearOpMode {
                     }
                     lift.setHeight(liftHeight);
                 }
+
+              */
                 robot.followTrajectorySequence(Park);
                 break;
 
@@ -212,7 +214,7 @@ public class RedRight extends LinearOpMode {
                 telemetry.addData("Right Side", "proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Right);
-                while(liftState != LiftState.LIFT_RETRACTED){
+         /*       while(liftState != LiftState.LIFT_RETRACTED){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
@@ -267,6 +269,8 @@ public class RedRight extends LinearOpMode {
                     }
                     lift.setHeight(liftHeight);
                 }
+
+          */
                 robot.followTrajectorySequence(Park);
                 break;
 
@@ -276,7 +280,7 @@ public class RedRight extends LinearOpMode {
                 telemetry.addData("Middle", "proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Middle);
-                while(liftState != LiftState.LIFT_RETRACTED){
+         /*       while(liftState != LiftState.LIFT_RETRACTED){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
@@ -331,6 +335,8 @@ public class RedRight extends LinearOpMode {
                     }
                     lift.setHeight(liftHeight);
                 }
+
+          */
                 robot.followTrajectorySequence(Park);
                 break;
 

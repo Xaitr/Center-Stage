@@ -98,16 +98,16 @@ public class BlueLeft extends LinearOpMode {
 */
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
                 .back(6)
-                .splineToConstantHeading(new Vector2d(39,34), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(36,33), Math.toRadians(0))
                 // spit out pixel here
                 .addTemporalMarker(() -> {
                     intake.Reject();
                 })
-                .waitSeconds(0.05)
+                .waitSeconds(0.1)
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
-                .strafeTo(new Vector2d (53, 46))
+                .strafeTo(new Vector2d (54, 46))
                 // put pixel on board
                 .build();
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
@@ -121,7 +121,7 @@ public class BlueLeft extends LinearOpMode {
                     intake.RejectOff();
                 })
             // spit out pixel here
-            .strafeTo(new Vector2d (53, 33))
+            .strafeTo(new Vector2d (54, 33))
             // put pixel on board
 
             .build();
@@ -131,7 +131,7 @@ public class BlueLeft extends LinearOpMode {
                 .build();
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
                 .back(5)
-            .splineToConstantHeading(new Vector2d(26, 25.5), Math.toRadians(0))
+            .splineToConstantHeading(new Vector2d(28, 21.5), Math.toRadians(0))
              .addTemporalMarker(() -> {
                 intake.Reject();
             })
@@ -139,7 +139,7 @@ public class BlueLeft extends LinearOpMode {
             .addTemporalMarker(() -> {
                 intake.RejectOff();
             })
-             .lineToConstantHeading(new Vector2d(53, 40))
+             .lineToConstantHeading(new Vector2d(54, 40))
         // put pixel on board
                 .build();
         waitForStart();
@@ -150,187 +150,196 @@ public class BlueLeft extends LinearOpMode {
                 telemetry.addData("Left side","proceed"); // open cv detects left spike
                 telemetry.update();
                  robot.followTrajectorySequence(Left);
-                while(liftState != BlueLeft.LiftState.LIFT_RETRACTED){
-                    switch (liftState) {
-                        case LIFT_EXTEND:
-                            //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
-                            //Check if lift has fully extended
-                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
-                                //Deploy box
-                                liftState = BlueLeft.LiftState.BOX_EXTEND;
-                                lift.extendBox();
-                            }
-                            break;
-                        case BOX_EXTEND:
-                            //Wait for servo to reach position
-                            if (rightServo.getPosition() == LiftConstants.BoxReady) {
-                                liftState = BlueLeft.LiftState.LIFT_DUMP;
-                            }
-                            break;
-                        case LIFT_DUMP:
-                            liftState = BlueLeft.LiftState.BOX_RETRACT;
-                            //Turn on Outtake Servo
-                            IOservo.setPower(-1);
-                            //Reset outtake timer
-                            liftTimer.reset();
-                            break;
-                        case BOX_RETRACT:
-                            //Wait for pixels to spin out
-                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
-                                //Turn off Outtake Servo
-                                IOservo.setPower(0);
-                                lift.retractBox();
-                                liftState = LiftState.LIFT_RETRACT;
-                                liftTimer.reset();
-                            }
-                            break;
-                        case LIFT_RETRACT:
-                            //Retract Box
-                            // Wait for servo to return to Idle
-                            if (liftTimer.seconds() >= 0.6) {
-                                liftState = LiftState.LIFT_RETRACTED;
-                                liftHeight = LiftConstants.liftRetracted;
-                            }
-                            break;
-                        case LIFT_RETRACTED:
-                            //Retract Lift
-
-                            //Wait for Lift to return to idle
-                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
-                                liftState = LiftState.LIFT_DONE;
-                            }
-                            break;
-                    }
+/*               while(liftState != BlueLeft.LiftState.LIFT_RETRACTED){
+//                    switch (liftState) {
+//                        case LIFT_EXTEND:
+//                            //Extend lift
+//                            liftHeight = LiftConstants.liftAuto;
+//                            //Check if lift has fully extended
+//                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
+//                                //Deploy box
+//                                liftState = BlueLeft.LiftState.BOX_EXTEND;
+//                                lift.extendBox();
+//                            }
+//                            break;
+//                        case BOX_EXTEND:
+//                            //Wait for servo to reach position
+//                            if (rightServo.getPosition() == LiftConstants.BoxReady) {
+//                                liftState = BlueLeft.LiftState.LIFT_DUMP;
+//                            }
+//                            break;
+//                        case LIFT_DUMP:
+//                            liftState = BlueLeft.LiftState.BOX_RETRACT;
+//                            //Turn on Outtake Servo
+//                            IOservo.setPower(-1);
+//                            //Reset outtake timer
+//                            liftTimer.reset();
+//                            break;
+//                        case BOX_RETRACT:
+//                            //Wait for pixels to spin out
+//                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
+//                                //Turn off Outtake Servo
+//                                IOservo.setPower(0);
+//                                lift.retractBox();
+//                                liftState = LiftState.LIFT_RETRACT;
+//                                liftTimer.reset();
+//                            }
+//                            break;
+//                        case LIFT_RETRACT:
+//                            //Retract Box
+//                            // Wait for servo to return to Idle
+//                            if (liftTimer.seconds() >= 0.6) {
+//                                liftState = LiftState.LIFT_RETRACTED;
+//                                liftHeight = LiftConstants.liftRetracted;
+//                            }
+//                            break;
+//                        case LIFT_RETRACTED:
+//                            //Retract Lift
+//
+//                            //Wait for Lift to return to idle
+//                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
+//                                liftState = LiftState.LIFT_DONE;
+//                            }
+//                            break;
+//                    }
+                    telemetry.addData("lift Height", liftHeight);
+                    telemetry.addData("Encoder Position", leftLift.getCurrentPosition());
+                    telemetry.addData("power", lift.PIDControl(leftLift.getCurrentPosition(),liftHeight));
                     lift.setHeight(liftHeight);
                 }
+
+ */
                  robot.followTrajectorySequence(Park);
                 break;
+
+
 
 
             case RIGHT:
                 telemetry.addData("Right Side","proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Right);
-                while(liftState != BlueLeft.LiftState.LIFT_RETRACTED){
-                    switch (liftState) {
-                        case LIFT_EXTEND:
-                            //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
-                            //Check if lift has fully extended
-                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
-                                //Deploy box
-                                liftState = BlueLeft.LiftState.BOX_EXTEND;
-                                lift.extendBox();
-                            }
-                            break;
-                        case BOX_EXTEND:
-                            //Wait for servo to reach position
-                            if (rightServo.getPosition() == LiftConstants.BoxReady) {
-                                liftState = BlueLeft.LiftState.LIFT_DUMP;
-                            }
-                            break;
-                        case LIFT_DUMP:
-                            liftState = BlueLeft.LiftState.BOX_RETRACT;
-                            //Turn on Outtake Servo
-                            IOservo.setPower(-1);
-                            //Reset outtake timer
-                            liftTimer.reset();
-                            break;
-                        case BOX_RETRACT:
-                            //Wait for pixels to spin out
-                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
-                                //Turn off Outtake Servo
-                                IOservo.setPower(0);
-                                lift.retractBox();
-                                liftState = BlueLeft.LiftState.LIFT_RETRACT;
-                                liftTimer.reset();
-                            }
-                            break;
-                        case LIFT_RETRACT:
-                            //Retract Box
+/*                while(liftState != BlueLeft.LiftState.LIFT_RETRACTED){
+//                    switch (liftState) {
+//                        case LIFT_EXTEND:
+//                            //Extend lift
+//                            liftHeight = LiftConstants.liftAuto;
+//                            //Check if lift has fully extended
+//                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
+//                                //Deploy box
+//                                liftState = BlueLeft.LiftState.BOX_EXTEND;
+//                                lift.extendBox();
+//                            }
+//                            break;
+//                        case BOX_EXTEND:
+//                            //Wait for servo to reach position
+//                            if (rightServo.getPosition() == LiftConstants.BoxReady) {
+//                                liftState = BlueLeft.LiftState.LIFT_DUMP;
+//                            }
+//                            break;
+//                        case LIFT_DUMP:
+//                            liftState = BlueLeft.LiftState.BOX_RETRACT;
+//                            //Turn on Outtake Servo
+//                            IOservo.setPower(-1);
+//                            //Reset outtake timer
+//                            liftTimer.reset();
+//                            break;
+//                        case BOX_RETRACT:
+//                            //Wait for pixels to spin out
+//                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
+//                                //Turn off Outtake Servo
+//                                IOservo.setPower(0);
+//                                lift.retractBox();
+//                                liftState = BlueLeft.LiftState.LIFT_RETRACT;
+//                                liftTimer.reset();
+//                            }
+//                            break;
+//                        case LIFT_RETRACT:
+//                            //Retract Box
+//
+//                            // Wait for servo to return to Idle
+//                            if (liftTimer.seconds() >= 0.6) {
+//                                liftState = BlueLeft.LiftState.LIFT_RETRACTED;
+//                                liftHeight = LiftConstants.liftRetracted;
+//                            }
+//                            break;
+//                        case LIFT_RETRACTED:
+//                            //Retract Lift
+//
+//                            //Wait for Lift to return to idle
+//                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
+//                                liftState = BlueLeft.LiftState.LIFT_DONE;
+//                            }
+//                            break;
+//                    }
+//                    lift.setHeight(liftHeight);
+//                }
 
-                            // Wait for servo to return to Idle
-                            if (liftTimer.seconds() >= 0.6) {
-                                liftState = BlueLeft.LiftState.LIFT_RETRACTED;
-                                liftHeight = LiftConstants.liftRetracted;
-                            }
-                            break;
-                        case LIFT_RETRACTED:
-                            //Retract Lift
-
-                            //Wait for Lift to return to idle
-                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
-                                liftState = BlueLeft.LiftState.LIFT_DONE;
-                            }
-                            break;
-                    }
-                    lift.setHeight(liftHeight);
-                }
+ */
                 robot.followTrajectorySequence(Park);
-                break;
+        break;
 
 
             case MIDDLE:
                 telemetry.addData("Middle","proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Middle);
-                while(liftState != BlueLeft.LiftState.LIFT_RETRACTED){
-                    switch (liftState) {
-                        case LIFT_EXTEND:
-                            //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
-                            //Check if lift has fully extended
-                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
-                                //Deploy box
-                                liftState = BlueLeft.LiftState.BOX_EXTEND;
-                                lift.extendBox();
-                            }
-                            break;
-                        case BOX_EXTEND:
-                            //Wait for servo to reach position
-                            if (rightServo.getPosition() == LiftConstants.BoxReady) {
-                                liftState = BlueLeft.LiftState.LIFT_DUMP;
-                            }
-                            break;
-                        case LIFT_DUMP:
-                            liftState = BlueLeft.LiftState.BOX_RETRACT;
-                            //Turn on Outtake Servo
-                            IOservo.setPower(-1);
-                            //Reset outtake timer
-                            liftTimer.reset();
-                            break;
-                        case BOX_RETRACT:
-                            //Wait for pixels to spin out
-                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
-                                //Turn off Outtake Servo
-                                IOservo.setPower(0);
-                                lift.retractBox();
-                                liftState = BlueLeft.LiftState.LIFT_RETRACT;
-                                liftTimer.reset();
-                            }
-                            break;
-                        case LIFT_RETRACT:
-                            //Retract Box
-
-                            // Wait for servo to return to Idle
-                            if (liftTimer.seconds() >= 0.6) {
-                                liftState = BlueLeft.LiftState.LIFT_RETRACTED;
-                                liftHeight = LiftConstants.liftRetracted;
-                            }
-                            break;
-                        case LIFT_RETRACTED:
-                            //Retract Lift
-
-                            //Wait for Lift to return to idle
-                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
-                                liftState = BlueLeft.LiftState.LIFT_DONE;
-                            }
-                            break;
-                    }
-                    lift.setHeight(liftHeight);
-                }
-                robot.followTrajectorySequence(Park);
+//                while(liftState != BlueLeft.LiftState.LIFT_RETRACTED){
+//                    switch (liftState) {
+//                        case LIFT_EXTEND:
+//                            //Extend lift
+//                            liftHeight = LiftConstants.liftAuto;
+//                            //Check if lift has fully extended
+//                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
+//                                //Deploy box
+//                                liftState = BlueLeft.LiftState.BOX_EXTEND;
+//                                lift.extendBox();
+//                            }
+//                            break;
+//                        case BOX_EXTEND:
+//                            //Wait for servo to reach position
+//                            if (rightServo.getPosition() == LiftConstants.BoxReady) {
+//                                liftState = BlueLeft.LiftState.LIFT_DUMP;
+//                            }
+//                            break;
+//                        case LIFT_DUMP:
+//                            liftState = BlueLeft.LiftState.BOX_RETRACT;
+//                            //Turn on Outtake Servo
+//                            IOservo.setPower(-1);
+//                            //Reset outtake timer
+//                            liftTimer.reset();
+//                            break;
+//                        case BOX_RETRACT:
+//                            //Wait for pixels to spin out
+//                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
+//                                //Turn off Outtake Servo
+//                                IOservo.setPower(0);
+//                                lift.retractBox();
+//                                liftState = BlueLeft.LiftState.LIFT_RETRACT;
+//                                liftTimer.reset();
+//                            }
+//                            break;
+//                        case LIFT_RETRACT:
+//                            //Retract Box
+//
+//                            // Wait for servo to return to Idle
+//                            if (liftTimer.seconds() >= 0.6) {
+//                                liftState = BlueLeft.LiftState.LIFT_RETRACTED;
+//                                liftHeight = LiftConstants.liftRetracted;
+//                            }
+//                            break;
+//                        case LIFT_RETRACTED:
+//                            //Retract Lift
+//
+//                            //Wait for Lift to return to idle
+//                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
+//                                liftState = BlueLeft.LiftState.LIFT_DONE;
+//                            }
+//                            break;
+//                    }
+//                    lift.setHeight(liftHeight);
+//                }
+               robot.followTrajectorySequence(Park);
                 break;
 
 

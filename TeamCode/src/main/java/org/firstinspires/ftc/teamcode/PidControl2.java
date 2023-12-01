@@ -60,7 +60,9 @@ public class PidControl2 {
         double power = PIDControl(height, leftLift.getCurrentPosition());
         leftLift.setPower(power);
         rightLift.setPower(power);
+
     }
+
     public void extendBox() {
         rightServo.setPosition(LiftConstants.BoxReady);
         leftServo.setPosition(LiftConstants.BoxReady);
