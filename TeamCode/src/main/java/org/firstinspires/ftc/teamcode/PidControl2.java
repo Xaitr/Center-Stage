@@ -14,9 +14,9 @@ public class PidControl2 {
     DcMotorEx rightLift;
 
     double integralSum =0;
-    double Kp =0.05;
+    double Kp =0.045;
     double Ki =0;
-    double Kd = 0.000012;
+    double Kd = 0.0000038;
 //0.000001
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
