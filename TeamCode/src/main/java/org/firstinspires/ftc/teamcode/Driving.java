@@ -29,7 +29,6 @@ public class Driving extends OpMode
 
     private CRServo IOservo = null; // intake and outtake servo
     private Servo rightServo = null;
-    private Servo leftServo =null;
     private Servo winchServo = null;
 
     private DigitalChannel limitswitch = null;
@@ -40,6 +39,8 @@ public class Driving extends OpMode
     private DcMotor Intake = null;
 
     private int liftHeight = 0;
+    //Drop Mode: 1 for single drop, 2 for double
+    private boolean dropSeries = false;
 
     PidControl2 lift = new PidControl2();
     // Enum to represent lift state
@@ -89,7 +90,6 @@ public class Driving extends OpMode
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         Intake=hardwareMap.get(DcMotor.class, "intake");
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
-        leftServo = hardwareMap.get(Servo.class, "Left_outtake");
         winchServo = hardwareMap.get(Servo.class, "winch_servo");
         limitswitch = hardwareMap.get(DigitalChannel.class, "limitswitch");
         boxBeam = hardwareMap.get(DigitalChannel.class, "box_beam");
@@ -142,7 +142,7 @@ public class Driving extends OpMode
             rightFrontPower /= 2;
             rightBackPower /= 2;
         }
-        if (gamepad2.left_trigger >= 0.8) {
+        if (gamepad2.left_stick_button) {
             liftState = LiftState.BOX_RETRACT;
         }
         //Intake and Reject
@@ -215,30 +215,40 @@ public class Driving extends OpMode
                 }
                 //Wait for Driver 2 to press x for release
                 if (gamepad2.x) {
+                    //Turn on Outtake Servo
+                    IOservo.setPower(-1);
                     liftState = LiftState.BOX_RETRACT;
-                    //Reset outtake timer
-                    //liftTimer.reset();
                 }
+                //Wait for first pixel to drop before moving to next state
+      /*          if (boxBeam.getState()) {
+                    IOservo.setPower(0);
+                    liftState = LiftState.BOX_RETRACT;
+                }*/
                 break;
             case BOX_RETRACT:
-                //Turn on Outtake Servo
-                IOservo.setPower(-1);
-                //Wait for pixels to spin out
-               // if (liftTimer.seconds() >= LiftConstants.dumpTime) {
-                    //Turn off Outtake Servo
-                   // IOservo.setPower(0);
-                    //Retract Box
-                  //  lift.retractBox();
-                   // liftState = LiftState.LIFT_RETRACT;
-              //  }
-                if (gamepad2.x) {
+                //Wait until x is pressed again
+ /*               if(gamepad2.x) {
                     IOservo.setPower(-1);
-                } else
-                {
-                    liftState = LiftState.LIFT_RETRACT;
+                    dropSeries = true;
+                }
+                //If x is released, then stop IOservo, retract box, and go to next state
+                if (dropSeries && !gamepad2.x) {
                     IOservo.setPower(0);
                     lift.retractBox();
-                }
+                    //Reset dropSeries for next time
+                    dropSeries = false;
+                    liftState = LiftState.LIFT_RETRACT;
+                }*/
+
+                    if (gamepad2.x) {
+                        IOservo.setPower(-1);
+                    } else
+                        IOservo.setPower(0);
+                    if (gamepad2.left_trigger >= 0.8) {
+                        IOservo.setPower(0);
+                        lift.retractBox();
+                        liftState = LiftState.LIFT_RETRACT;
+                    }
                 break;
             case LIFT_RETRACT:
                 // Wait for servo to return to Idle
@@ -275,20 +285,20 @@ public class Driving extends OpMode
             case HOOK_ON:
                 if (winchTimer.seconds() > 0.4) {
                     winchServo.setPosition(0.55);
-                    winchState = winchState.EXTEND;
+                    winchState = WinchState.EXTEND;
                     liftHeight = LiftConstants.liftWinch;
                 }
                 break;
             case EXTEND:
                 if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftWinch - liftOffset) < 10) {
-                    winchState = winchState.IDLE_HIGH;
+                    winchState = WinchState.IDLE_HIGH;
                 }
                 break;
             case IDLE_HIGH:
                 if (gamepad1.a) {
 
                     liftHeight = LiftConstants.liftRetracted;
-                    winchState = winchState.HOOK_OFF;
+                    winchState = WinchState.HOOK_OFF;
                 }
                 break;
             case HOOK_OFF:
@@ -299,6 +309,9 @@ public class Driving extends OpMode
                 winchServo.setPosition(0.25);
                 break;
         }
+
+        //Rezeroing the slides using limit switch
+        //Adds an offset value to the liftHeight based on the left motors difference
         if (gamepad2.dpad_down){
             if (limitswitch.getState()){
                 liftHeight = -400;
@@ -306,10 +319,12 @@ public class Driving extends OpMode
             } else if (!isOn){
                 isOn = true;
                 liftHeight = 0;
+                //Adding 25 to relieve the stress that comes from slamming the box down lol
                 liftOffset = leftLift.getCurrentPosition()+25;
             }
         }
 
+        //Actually setting the lift height; kept out of the finite state machine so that the PID continues to update
         lift.setHeight(liftHeight + liftOffset);
     }
 

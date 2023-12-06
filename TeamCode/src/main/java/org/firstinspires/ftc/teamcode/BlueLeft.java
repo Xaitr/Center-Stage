@@ -98,16 +98,16 @@ public class BlueLeft extends LinearOpMode {
 */
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
                 .back(6)
-                .splineToConstantHeading(new Vector2d(39,34), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(36,33), Math.toRadians(0))
                 // spit out pixel here
                 .addTemporalMarker(() -> {
                     intake.Reject();
                 })
-                .waitSeconds(0.05)
+                .waitSeconds(0.1)
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
-                .strafeTo(new Vector2d (53, 46))
+                .strafeTo(new Vector2d (54, 46))
                 // put pixel on board
                 .build();
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
@@ -121,7 +121,7 @@ public class BlueLeft extends LinearOpMode {
                     intake.RejectOff();
                 })
             // spit out pixel here
-            .strafeTo(new Vector2d (53, 33))
+            .strafeTo(new Vector2d (54, 33))
             // put pixel on board
 
             .build();
@@ -131,7 +131,7 @@ public class BlueLeft extends LinearOpMode {
                 .build();
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
                 .back(5)
-            .splineToConstantHeading(new Vector2d(26, 25.5), Math.toRadians(0))
+            .splineToConstantHeading(new Vector2d(28, 21.5), Math.toRadians(0))
              .addTemporalMarker(() -> {
                 intake.Reject();
             })
@@ -139,7 +139,7 @@ public class BlueLeft extends LinearOpMode {
             .addTemporalMarker(() -> {
                 intake.RejectOff();
             })
-             .lineToConstantHeading(new Vector2d(53, 40))
+             .lineToConstantHeading(new Vector2d(54, 40))
         // put pixel on board
                 .build();
         waitForStart();
@@ -150,7 +150,7 @@ public class BlueLeft extends LinearOpMode {
                 telemetry.addData("Left side","proceed"); // open cv detects left spike
                 telemetry.update();
                  robot.followTrajectorySequence(Left);
-                while(liftState != BlueLeft.LiftState.LIFT_RETRACTED){
+               while(liftState != BlueLeft.LiftState.LIFT_RETRACTED){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
@@ -203,10 +203,10 @@ public class BlueLeft extends LinearOpMode {
                             break;
                     }
                     lift.setHeight(liftHeight);
-                }
-                 robot.followTrajectorySequence(Park);
-                break;
-
+               }
+               lift.disableMotors();
+               robot.followTrajectorySequence(Park);
+               break;
 
             case RIGHT:
                 telemetry.addData("Right Side","proceed");
@@ -267,8 +267,9 @@ public class BlueLeft extends LinearOpMode {
                     }
                     lift.setHeight(liftHeight);
                 }
+                lift.disableMotors();
                 robot.followTrajectorySequence(Park);
-                break;
+        break;
 
 
             case MIDDLE:
@@ -330,7 +331,8 @@ public class BlueLeft extends LinearOpMode {
                     }
                     lift.setHeight(liftHeight);
                 }
-                robot.followTrajectorySequence(Park);
+                lift.disableMotors();
+               robot.followTrajectorySequence(Park);
                 break;
 
 
