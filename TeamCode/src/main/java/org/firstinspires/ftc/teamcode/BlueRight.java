@@ -21,6 +21,7 @@ public class BlueRight extends LinearOpMode {
     Outake outake = new Outake();
     Driving driving = new Driving();
     OpenCvCamera camera;
+    Intake intake = new Intake();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -32,8 +33,9 @@ public class BlueRight extends LinearOpMode {
         OpenCvblue detector = new OpenCvblue(telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(-34, 57, Math.toRadians(90));
-
+        Pose2d startPose = new Pose2d(-37, 65, Math.toRadians(180));
+        robot.setPoseEstimate(startPose);
+        intake.init(hardwareMap);
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -66,44 +68,32 @@ public class BlueRight extends LinearOpMode {
 
 
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-34, 30))
-                .turn(Math.toRadians(90))
+                .strafeTo(new Vector2d(-35, 33))
                 .addTemporalMarker(() -> {
-                    outake.setPower(-1);
-                    sleep(1000); // stops program for 1000 miliseconds
-                    outake.setPower(0);
+                    intake.Reject();
+
                 })
-                .waitSeconds(1)
+                .waitSeconds(0.1)
+                .addTemporalMarker(() -> {
+                    intake.RejectOff();
+                })
                 // spit out pixel here
-                .lineToConstantHeading(new Vector2d(-34, 11))
-                .splineToConstantHeading(new Vector2d(-32, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-16, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(38, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(47, 34), Math.toRadians(0))
+                .lineTo(new Vector2d(-34,18))
+                .splineToConstantHeading(new Vector2d(-20, 5), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(24, 15), Math.toRadians(0))
+                .strafeTo(new Vector2d(50,36))
                 // put pixel on board here
-                .strafeLeft(23)
-                .back(12)
+                .lineTo(new Vector2d(50, 20))
+                .splineToConstantHeading(new Vector2d(53, 10), Math.toRadians(0))
                 .build();
 
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-33, 10))
+                .strafeTo(new Vector2d(-34, 25))
                 .addTemporalMarker(() -> {
                     outake.setPower(-1);
                     sleep(1000); // stops program for 1000 miliseconds
                     outake.setPower(0);
                 })
-                .waitSeconds(1)
-                // spit out pixel here
-                .turn(Math.toRadians (90))
-                .lineToConstantHeading(new Vector2d(-33, 11))
-                .splineToConstantHeading(new Vector2d(-32, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-16, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(38, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(48, 34), Math.toRadians(0))
-                // place pixel on board here
-                .strafeLeft(23)
-                .back(12)
-
                 .build();
 
         waitForStart();
@@ -120,8 +110,8 @@ public class BlueRight extends LinearOpMode {
             case RIGHT:
                 telemetry.addData("Right Side", "proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(Right);
                 break;
-            //robot.followTrajectorySequence(Right);
 
 
             case MIDDLE:
