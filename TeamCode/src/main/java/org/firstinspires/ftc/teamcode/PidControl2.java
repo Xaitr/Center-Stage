@@ -14,10 +14,11 @@ public class PidControl2 {
     DcMotorEx rightLift;
 
     double integralSum =0;
-    double Kp =0.045;
+    double Kp =0.04;
     double Ki =0;
-    double Kd = 0.0000038;
-//0.000001
+    double Kd = 0.0000036;
+    double Kg = 0.08;
+//0.0000038
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
     private Servo rightServo = null;
@@ -53,7 +54,7 @@ public class PidControl2 {
 
         timer.reset();
 
-        double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
+        double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki) + Kg;
         return output;
     }
     public void setHeight(double height) {
@@ -70,6 +71,10 @@ public class PidControl2 {
     public void retractBox() {
         rightServo.setPosition(LiftConstants.BoxIdle);
         leftServo.setPosition(LiftConstants.BoxIdle);
+    }
+    public void hangBox() {
+        rightServo.setPosition(LiftConstants.hang);
+        leftServo.setPosition(LiftConstants.hang);
     }
     public void disableMotors() {
         leftLift.setPower(0);

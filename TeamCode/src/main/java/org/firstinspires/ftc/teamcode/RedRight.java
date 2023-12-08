@@ -106,7 +106,7 @@ public class RedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
-                .strafeTo(new Vector2d(51, -48))
+                .strafeTo(new Vector2d(54, -42))
                 // place pixel on board
                 .build();
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
@@ -120,7 +120,7 @@ public class RedRight extends LinearOpMode {
                     intake.RejectOff();
                 })
                 // spit out pixel here
-                .strafeTo(new Vector2d(51, -33))
+                .strafeTo(new Vector2d(54, -33))
                 // put pixel on board
 
                 .build();
@@ -130,7 +130,7 @@ public class RedRight extends LinearOpMode {
                 .build();
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
                 .back(5)
-                .splineToConstantHeading(new Vector2d(26, -25.5), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(29, -25.5), Math.toRadians(0))
                 .addTemporalMarker(() -> {
                     intake.Reject();
                 })
@@ -138,7 +138,7 @@ public class RedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
-                .lineToConstantHeading(new Vector2d(51, -40))
+                .lineToConstantHeading(new Vector2d(54, -38))
         // put pixel on board
                  .build();
         waitForStart();
@@ -149,7 +149,7 @@ public class RedRight extends LinearOpMode {
                 telemetry.addData("Left side", "proceed"); // open cv detects left spike
                 telemetry.update();
                 robot.followTrajectorySequence(Left);
-             /*   while(liftState != LiftState.LIFT_RETRACTED){
+                while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
@@ -205,7 +205,7 @@ public class RedRight extends LinearOpMode {
                     lift.setHeight(liftHeight);
                 }
 
-              */
+                lift.disableMotors();
                 robot.followTrajectorySequence(Park);
                 break;
 
@@ -214,7 +214,7 @@ public class RedRight extends LinearOpMode {
                 telemetry.addData("Right Side", "proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Right);
-         /*       while(liftState != LiftState.LIFT_RETRACTED){
+                while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
@@ -270,7 +270,7 @@ public class RedRight extends LinearOpMode {
                     lift.setHeight(liftHeight);
                 }
 
-          */
+                lift.disableMotors();
                 robot.followTrajectorySequence(Park);
                 break;
 
@@ -280,7 +280,7 @@ public class RedRight extends LinearOpMode {
                 telemetry.addData("Middle", "proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(Middle);
-         /*       while(liftState != LiftState.LIFT_RETRACTED){
+                while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
@@ -336,7 +336,7 @@ public class RedRight extends LinearOpMode {
                     lift.setHeight(liftHeight);
                 }
 
-          */
+                lift.disableMotors();
                 robot.followTrajectorySequence(Park);
                 break;
 
