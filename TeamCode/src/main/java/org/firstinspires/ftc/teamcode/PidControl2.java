@@ -13,15 +13,15 @@ public class PidControl2 {
     DcMotorEx leftLift;
     DcMotorEx rightLift;
 
-    double integralSum =0;
-    double Kp =0.045;
-    double Ki =0;
+    double integralSum = 0;
+    double Kp = 0.045;
+    double Ki = 0;
     double Kd = 0.0000038;
-//0.000001
+    //0.000001
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
     private Servo rightServo = null;
-    private Servo leftServo =null;
+    private Servo leftServo = null;
 
     public void init(HardwareMap hardwareMap) {
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
@@ -45,6 +45,7 @@ public class PidControl2 {
         rightServo.setDirection(Servo.Direction.REVERSE);
 
     }
+
     public double PIDControl(double reference, double state) {
         double error = reference - state;
         integralSum = error * timer.seconds();
@@ -56,6 +57,7 @@ public class PidControl2 {
         double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
         return output;
     }
+
     public void setHeight(double height) {
         double power = PIDControl(height, leftLift.getCurrentPosition());
         leftLift.setPower(power);
@@ -66,6 +68,12 @@ public class PidControl2 {
     public void extendBox() {
         rightServo.setPosition(LiftConstants.BoxReady);
         leftServo.setPosition(LiftConstants.BoxReady);
+    }
+
+
+    public void AutoBoxReady () {
+      rightServo.setPosition(LiftConstants.AutoBoxReady);
+      leftServo.setPosition(LiftConstants.AutoBoxReady);
     }
     public void retractBox() {
         rightServo.setPosition(LiftConstants.BoxIdle);

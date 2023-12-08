@@ -11,6 +11,7 @@ public class LiftConstants {
     //Left and Right servo positions
     public static double BoxIdle = 0;
     public static double BoxReady = 0.35;
+    public static double AutoBoxReady = 0.4;
 
     //Time it takes for both pixels to spin out
     public static double dumpTime = 1.5;
