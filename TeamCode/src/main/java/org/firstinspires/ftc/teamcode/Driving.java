@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.LiftConstants.liftHang;
+import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
+
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -39,8 +42,6 @@ public class Driving extends OpMode
     private DcMotor Intake = null;
 
     private int liftHeight = 0;
-    //Drop Mode: 1 for single drop, 2 for double
-    private boolean dropSeries = false;
 
     PidControl2 lift = new PidControl2();
     // Enum to represent lift state
@@ -49,6 +50,14 @@ public class Driving extends OpMode
         LIFT_EXTEND,
         BOX_EXTEND,
         LIFT_DUMP,
+        BOX_RETRACT,
+        LIFT_RETRACT,
+        LIFT_RETRACTED
+    }
+    private enum HangState {
+        LIFT_START,
+        LIFT_EXTEND,
+        BOX_EXTEND,
         BOX_RETRACT,
         LIFT_RETRACT,
         LIFT_RETRACTED
@@ -71,6 +80,7 @@ public class Driving extends OpMode
     //Initial Lift Position
     LiftState liftState = LiftState.LIFT_START;
     WinchState winchState = WinchState.IDLE;
+    HangState hangState = HangState.LIFT_START;
 
     @Override
     public void init() {
@@ -116,6 +126,8 @@ public class Driving extends OpMode
         Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         telemetry.addData("status", "Initialized");
+        //Box servo moving in init
+        lift.retractBox();
     }
 
 
@@ -176,7 +188,6 @@ public class Driving extends OpMode
         //Switch Case for Lift gm0.org
         switch (liftState) {
             case LIFT_START:
-                lift.retractBox();
                 // In Idle state, wait until Driver 2 right bumper is pressed
                 //Extend lift
                 if (gamepad2.right_bumper) {
@@ -219,27 +230,8 @@ public class Driving extends OpMode
                     IOservo.setPower(-1);
                     liftState = LiftState.BOX_RETRACT;
                 }
-                //Wait for first pixel to drop before moving to next state
-      /*          if (boxBeam.getState()) {
-                    IOservo.setPower(0);
-                    liftState = LiftState.BOX_RETRACT;
-                }*/
                 break;
             case BOX_RETRACT:
-                //Wait until x is pressed again
- /*               if(gamepad2.x) {
-                    IOservo.setPower(-1);
-                    dropSeries = true;
-                }
-                //If x is released, then stop IOservo, retract box, and go to next state
-                if (dropSeries && !gamepad2.x) {
-                    IOservo.setPower(0);
-                    lift.retractBox();
-                    //Reset dropSeries for next time
-                    dropSeries = false;
-                    liftState = LiftState.LIFT_RETRACT;
-                }*/
-
                     if (gamepad2.x) {
                         IOservo.setPower(-1);
                     } else
@@ -255,12 +247,12 @@ public class Driving extends OpMode
                 if (rightServo.getPosition() == LiftConstants.BoxIdle) {
                     liftState = LiftState.LIFT_RETRACTED;
                     //Retract Lift
-                    liftHeight = LiftConstants.liftRetracted;
+                    liftHeight = liftRetracted;
                 }
                 break;
             case LIFT_RETRACTED:
                 //Wait for Lift to return to idle
-                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted - liftOffset) < 10) {
+                if (Math.abs(leftLift.getCurrentPosition() - liftRetracted - liftOffset) < 10) {
                     liftState = LiftState.LIFT_START;
                 }
                 break;
@@ -284,7 +276,7 @@ public class Driving extends OpMode
                 break;
             case HOOK_ON:
                 if (winchTimer.seconds() > 0.4) {
-                    winchServo.setPosition(0.55);
+                    winchServo.setPosition(0.62);
                     winchState = WinchState.EXTEND;
                     liftHeight = LiftConstants.liftWinch;
                 }
@@ -296,8 +288,7 @@ public class Driving extends OpMode
                 break;
             case IDLE_HIGH:
                 if (gamepad1.a) {
-
-                    liftHeight = LiftConstants.liftRetracted;
+                    liftHeight = liftRetracted;
                     winchState = WinchState.HOOK_OFF;
                 }
                 break;
@@ -306,8 +297,38 @@ public class Driving extends OpMode
                     winch.setPower(-1);
                 else
                     winch.setPower(0);
-                winchServo.setPosition(0.25);
                 break;
+        }
+        //For hanging with slides
+        switch (hangState) {
+            case LIFT_START:
+                //Driver 2 Dpad starts sequence
+                if (gamepad2.dpad_up) {
+                    hangState = HangState.LIFT_EXTEND;
+                    //Extend lift
+                    liftHeight = LiftConstants.liftMedium;
+                }
+                break;
+            case LIFT_EXTEND:
+                //Check if lift has fully extended
+                if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 20) {
+                    //Angle box out of the way
+                    lift.hangBox();
+                    hangState = HangState.LIFT_RETRACT;
+                }
+                break;
+            case LIFT_RETRACT:
+                // Wait for dpad_up to retract lift and hang
+                //Goes straight back to start in case it gets stuck and can't retract all the way
+                if (gamepad2.dpad_up) {
+                    hangState = HangState.LIFT_START;
+                    //Retract Lift
+                    liftHeight = liftHang;
+                }
+                break;
+            default:
+                //Should never happen but just in case
+                liftState = LiftState.LIFT_START;
         }
 
         //Rezeroing the slides using limit switch
@@ -316,7 +337,7 @@ public class Driving extends OpMode
             if (limitswitch.getState()){
                 liftHeight = -400;
                 isOn = false;
-            } else if (!isOn){
+            } else if (!isOn && !limitswitch.getState()){
                 isOn = true;
                 liftHeight = 0;
                 //Adding 25 to relieve the stress that comes from slamming the box down lol
