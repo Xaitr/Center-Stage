@@ -159,7 +159,7 @@ public class BlueLeft extends LinearOpMode {
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
                                 liftState = BlueLeft.LiftState.BOX_EXTEND;
-                                lift.extendBox();
+                                lift.AutoBoxReady();
                             }
                             break;
                         case BOX_EXTEND:

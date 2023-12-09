@@ -14,18 +14,13 @@ public class BlueRightAutonomousTest {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-34, 60, Math.toRadians(180)))
-                                .splineToConstantHeading(new Vector2d(-37, 30), Math.toRadians(0))
+                        drive.trajectorySequenceBuilder(new Pose2d(-34, -60, Math.toRadians(180)))
+                                .splineTo(new Vector2d(-34, -33), Math.toRadians(90))
                                 .waitSeconds(1)
                                 // spit out pixel here
-                                .lineTo(new Vector2d(-34,18))
-                                .splineToConstantHeading(new Vector2d(-20, 5), Math.toRadians(0))
-                                .splineToConstantHeading(new Vector2d(24, 15), Math.toRadians(0))
-                                .strafeTo(new Vector2d(50,36))
-                                .waitSeconds(1)
-                                //place pixel on backboard
-                                .lineTo(new Vector2d(50, 20))
-                                .splineToConstantHeading(new Vector2d(60, 10), Math.toRadians(0))
+                                .strafeTo(new Vector2d(-34,-10))
+                                .lineTo(new Vector2d(40, -15))
+                                .splineToConstantHeading(new Vector2d(60, -10), Math.toRadians(0))
                                 .build()
                 );
 
