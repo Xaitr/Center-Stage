@@ -48,27 +48,23 @@ public class BlueRight extends LinearOpMode {
             }
         });
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-40, 30))
-                .turn(Math.toRadians(-90))
+                .splineTo(new Vector2d(-34, 33), Math.toRadians(0))
                 .addTemporalMarker(() -> {
                     outake.setPower(-1);
                     sleep(1000); // stops program for 1000 miliseconds
                     outake.setPower(0);
                 })
                 .waitSeconds(1)
-                // spit out pixel code above
-                .lineTo(new Vector2d(-33, 11))
-                .splineToSplineHeading(new Pose2d(-32, 10, Math.toRadians(180)), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(-16, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(38, 10), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(50, 34), Math.toRadians(0))
-                // put pixel on board here
-                .splineToConstantHeading(new Vector2d(58, 14), Math.toRadians(0))
+                // spit out pixel here
+                .strafeTo(new Vector2d(-34,10))
+                .lineTo(new Vector2d(40, 15))
+                .splineToConstantHeading(new Vector2d(60, 10), Math.toRadians(0))
                 .build();
 
 
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(-35, 33))
+                .splineToConstantHeading(new Vector2d(-37, 30), Math.toRadians(0))
+                .waitSeconds(1)
                 .addTemporalMarker(() -> {
                     intake.Reject();
 
@@ -78,22 +74,24 @@ public class BlueRight extends LinearOpMode {
                     intake.RejectOff();
                 })
                 // spit out pixel here
-                .lineTo(new Vector2d(-34,18))
                 .splineToConstantHeading(new Vector2d(-20, 5), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(24, 15), Math.toRadians(0))
-                .strafeTo(new Vector2d(50,36))
-                // put pixel on board here
-                .lineTo(new Vector2d(50, 20))
-                .splineToConstantHeading(new Vector2d(53, 10), Math.toRadians(0))
+                .lineTo(new Vector2d(40, 20))
+                .splineToConstantHeading(new Vector2d(60, 10), Math.toRadians(0))
                 .build();
 
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(-34, 25))
+                .splineToConstantHeading(new Vector2d(-27, 22), Math.toRadians(0))
                 .addTemporalMarker(() -> {
                     outake.setPower(-1);
                     sleep(1000); // stops program for 1000 miliseconds
                     outake.setPower(0);
                 })
+                .waitSeconds(1)
+                // spit out pixel here
+                .lineTo(new Vector2d(-34,18))
+                .splineToConstantHeading(new Vector2d(-20, 5), Math.toRadians(0))
+                .lineTo(new Vector2d(40, 20))
+                .splineToConstantHeading(new Vector2d(60, 10), Math.toRadians(0))
                 .build();
 
         waitForStart();
