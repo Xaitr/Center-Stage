@@ -97,6 +97,7 @@ public class BlueLeft extends LinearOpMode {
                 .build();
 */
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
+                .strafeLeft(1)
                 .back(6)
                 .splineToConstantHeading(new Vector2d(36,33), Math.toRadians(0))
                 // spit out pixel here
@@ -111,6 +112,7 @@ public class BlueLeft extends LinearOpMode {
                 // put pixel on board
                 .build();
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
+                .strafeLeft(1)
                 .back(0.5)
             .splineToConstantHeading(new Vector2d(15.5,32), Math.toRadians(0))
                  .addTemporalMarker(() -> {
@@ -121,7 +123,7 @@ public class BlueLeft extends LinearOpMode {
                     intake.RejectOff();
                 })
             // spit out pixel here
-            .strafeTo(new Vector2d (54, 33))
+            .strafeTo(new Vector2d (54, 28))
             // put pixel on board
 
             .build();
@@ -130,6 +132,7 @@ public class BlueLeft extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(56,63), Math.toRadians(0))
                 .build();
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
+                .strafeLeft(1)
                 .back(5)
             .splineToConstantHeading(new Vector2d(28, 24.5), Math.toRadians(0))
              .addTemporalMarker(() -> {
@@ -139,7 +142,7 @@ public class BlueLeft extends LinearOpMode {
             .addTemporalMarker(() -> {
                 intake.RejectOff();
             })
-             .lineToConstantHeading(new Vector2d(54, 40))
+             .lineToConstantHeading(new Vector2d(53.5, 38))
         // put pixel on board
                 .build();
         waitForStart();
@@ -159,12 +162,12 @@ public class BlueLeft extends LinearOpMode {
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
                                 liftState = BlueLeft.LiftState.BOX_EXTEND;
-                                lift.extendBox();
+                                lift.AutoBoxReady();
                             }
                             break;
                         case BOX_EXTEND:
                             //Wait for servo to reach position
-                            if (rightServo.getPosition() == LiftConstants.BoxReady) {
+                            if (rightServo.getPosition() == LiftConstants.AutoBoxReady) {
                                 liftState = BlueLeft.LiftState.LIFT_DUMP;
                             }
                             break;
@@ -221,12 +224,12 @@ public class BlueLeft extends LinearOpMode {
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
                                 liftState = BlueLeft.LiftState.BOX_EXTEND;
-                                lift.extendBox();
+                                lift.AutoBoxReady();
                             }
                             break;
                         case BOX_EXTEND:
                             //Wait for servo to reach position
-                            if (rightServo.getPosition() == LiftConstants.BoxReady) {
+                            if (rightServo.getPosition() == LiftConstants.AutoBoxReady) {
                                 liftState = BlueLeft.LiftState.LIFT_DUMP;
                             }
                             break;

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftHang;
+import static org.firstinspires.ftc.teamcode.LiftConstants.liftLow;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
@@ -71,7 +72,8 @@ public class Driving extends OpMode
         HOOK_OFF,
         RETRACT,
     }
-
+    //Presets for fine adjustment in lift
+    int heightAdjust = 0;
     //Timer for waiting for pixels to spin out
     ElapsedTime liftTimer = new ElapsedTime();
 
@@ -81,7 +83,6 @@ public class Driving extends OpMode
     LiftState liftState = LiftState.LIFT_START;
     WinchState winchState = WinchState.IDLE;
     HangState hangState = HangState.LIFT_START;
-
     @Override
     public void init() {
 
@@ -224,14 +225,32 @@ public class Driving extends OpMode
                 } else if (gamepad2.left_bumper) {
                     liftHeight = LiftConstants.liftLow;
                 }
-                //Wait for Driver 2 to press x for release
+
+                //Further adjustment from presets
+//                if(-gamepad2.left_stick_y >= 0.5 && heightAdjust == 0) {
+//                    liftHeight += 200;
+//                    heightAdjust = 1;
+//                }
+//                if(-gamepad2.left_stick_y <= 0.5 && heightAdjust == 1) {
+//                    liftHeight -= 200;
+//                    heightAdjust = 0;
+//                }
+
                 if (gamepad2.x) {
                     //Turn on Outtake Servo
                     IOservo.setPower(-1);
+                    heightAdjust = 1;
                     liftState = LiftState.BOX_RETRACT;
                 }
                 break;
             case BOX_RETRACT:
+                if (gamepad2.right_bumper) {
+                    liftHeight = LiftConstants.liftHigh;
+                } else if (gamepad2.right_trigger>= 0.9) {
+                    liftHeight = LiftConstants.liftMedium;
+                } else if (gamepad2.left_bumper) {
+                    liftHeight = LiftConstants.liftLow;
+                }
                     if (gamepad2.x) {
                         IOservo.setPower(-1);
                     } else
@@ -306,7 +325,7 @@ public class Driving extends OpMode
                 if (gamepad2.dpad_up) {
                     hangState = HangState.LIFT_EXTEND;
                     //Extend lift
-                    liftHeight = LiftConstants.liftMedium;
+                    liftHeight = LiftConstants.liftHang2;
                 }
                 break;
             case LIFT_EXTEND:
@@ -314,16 +333,17 @@ public class Driving extends OpMode
                 if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 20) {
                     //Angle box out of the way
                     lift.hangBox();
-                    hangState = HangState.LIFT_RETRACT;
+                    if (gamepad2.dpad_up)
+                        hangState = HangState.LIFT_RETRACT;
                 }
                 break;
             case LIFT_RETRACT:
                 // Wait for dpad_up to retract lift and hang
                 //Goes straight back to start in case it gets stuck and can't retract all the way
-                if (gamepad2.dpad_up) {
+                liftHeight = liftHang;
+                if (!gamepad2.dpad_up) {
                     hangState = HangState.LIFT_START;
                     //Retract Lift
-                    liftHeight = liftHang;
                 }
                 break;
             default:

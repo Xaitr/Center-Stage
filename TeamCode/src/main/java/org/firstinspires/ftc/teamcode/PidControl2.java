@@ -72,6 +72,10 @@ public class PidControl2 {
         rightServo.setPosition(LiftConstants.BoxIdle);
         leftServo.setPosition(LiftConstants.BoxIdle);
     }
+    public void AutoBoxReady() {
+        rightServo.setPosition(LiftConstants.AutoBoxReady);
+        leftServo.setPosition(LiftConstants.AutoBoxReady);
+    }
     public void hangBox() {
         rightServo.setPosition(LiftConstants.hang);
         leftServo.setPosition(LiftConstants.hang);
