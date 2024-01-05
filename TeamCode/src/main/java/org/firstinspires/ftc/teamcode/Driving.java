@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -35,6 +36,8 @@ public class Driving extends OpMode
     private Servo rightServo = null;
     private Servo winchServo = null;
 
+    private DistanceSensor distance = null;
+
     private DigitalChannel limitswitch = null;
     private DigitalChannel boxBeam = null;
     private boolean isOn = false;
@@ -42,6 +45,9 @@ public class Driving extends OpMode
     private int liftOffset = 0;
     private DcMotor Intake = null;
 
+    private double previousEstimate;
+    private double currentEstimate;
+    private double a;
     private int liftHeight = 0;
 
     PidControl2 lift = new PidControl2();
@@ -104,6 +110,7 @@ public class Driving extends OpMode
         winchServo = hardwareMap.get(Servo.class, "winch_servo");
         limitswitch = hardwareMap.get(DigitalChannel.class, "limitswitch");
         boxBeam = hardwareMap.get(DigitalChannel.class, "box_beam");
+       distance = hardwareMap.get(DistanceSensor.class, "Distance");
 
 
 
@@ -178,10 +185,6 @@ public class Driving extends OpMode
 
         telemetry.addData("state",limitswitch.getState());
 
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
 
         //Claw Code: Opens with GP2 X and opens less when past vertical position
         // BIGGER CLOSES MORE*********************
@@ -367,6 +370,28 @@ public class Driving extends OpMode
 
         //Actually setting the lift height; kept out of the finite state machine so that the PID continues to update
         lift.setHeight(liftHeight + liftOffset);
+
+
+        double value = distance.getDistance(DistanceUnit.INCH);
+        if(distance.getDistance(DistanceUnit.INCH) < 5) {
+            leftFrontDrive.setPower(0);
+            rightFrontDrive.setPower(0);
+            leftBackDrive.setPower(0);
+            rightBackDrive.setPower(0);
+        }
+        else {
+            leftFrontDrive.setPower(leftFrontPower);
+            rightFrontDrive.setPower(rightFrontPower);
+            leftBackDrive.setPower(leftBackPower);
+            rightBackDrive.setPower(rightBackPower);
+        }
+       telemetry.addData("Distance: ", currentEstimate);
+        a = 0.8; // a can be anything from 0 < a < 1
+        previousEstimate = 0;
+        currentEstimate = 0;
+        currentEstimate = (a * previousEstimate) + (1-a) * value;
+        previousEstimate = currentEstimate;
+
     }
 
 

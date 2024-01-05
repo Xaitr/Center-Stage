@@ -20,7 +20,7 @@ public class LiftConstants {
 
     //Time it takes for both pixels to spin out
 
-    public static double AutoBoxReady = 0.4;
+//    public static double AutoBoxReady = 0.4;
     public static double dumpTime = 1.5;
     public static double singleDump = 0.4;
 
