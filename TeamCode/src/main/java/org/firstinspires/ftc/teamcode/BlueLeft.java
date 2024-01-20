@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.OpenCvblue.Location.MIDDLE;
+import static org.firstinspires.ftc.teamcode.OpenCvblue.Location.RIGHT;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -7,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.vision.VisionPortal;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,6 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.vision.VisionPortal;
 import org.openftc.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -23,10 +28,14 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Autonomous
 public class BlueLeft extends LinearOpMode {
+
+    private WebcamName webcam1, webcam2;
     Outake outake = new Outake();
     Intake intake = new Intake();
     PidControl2 lift =new PidControl2();
     OpenCvCamera camera;
+
+    AprilTag aprilTag = new AprilTag();
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -47,7 +56,7 @@ public class BlueLeft extends LinearOpMode {
     int three = 3;
 
     AprilTagDetection tagOfInterest = null;
-
+    private VisionPortal visionPortal;
 
     // Enum to represent lift state
     private enum LiftState {
@@ -66,6 +75,10 @@ public class BlueLeft extends LinearOpMode {
     private CRServo IOservo = null;
     private DcMotor leftLift = null;
     private Servo rightServo = null;
+    public void doCameraSwitching() {
+        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING) {
+            visionPortal.setActiveCamera(webcam2);
+        }}
 
 
     @Override
@@ -77,6 +90,7 @@ public class BlueLeft extends LinearOpMode {
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
         OpenCvblue detector = new OpenCvblue (telemetry);
         camera.setPipeline(detector);
+        aprilTag.initAprilTag();
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(13, 65, Math.toRadians(180));
         robot.setPoseEstimate(startPose);
@@ -135,6 +149,7 @@ public class BlueLeft extends LinearOpMode {
                 .strafeTo(new Vector2d (52, 44))
                 // put pixel on board
                 .build();
+
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
                 .strafeLeft(1)
                 .back(0.5)
@@ -169,10 +184,14 @@ public class BlueLeft extends LinearOpMode {
              .lineToConstantHeading(new Vector2d(53.5, 38))
         // put pixel on board
                 .build();
+
         waitForStart();
 
 
-        switch (detector.getLocation()) {
+
+
+
+            switch (detector.getLocation()) {
             case LEFT:
                 telemetry.addData("Left side","proceed"); // open cv detects left spike
                 telemetry.update();
@@ -232,6 +251,7 @@ public class BlueLeft extends LinearOpMode {
                     lift.setHeight(liftHeight);
                }
                lift.disableMotors();
+               doCameraSwitching();
                robot.followTrajectorySequence(Park);
                break;
 
@@ -296,7 +316,7 @@ public class BlueLeft extends LinearOpMode {
                 }
                 lift.disableMotors();
                 robot.followTrajectorySequence(Park);
-        break;
+                break;
 
 
             case MIDDLE:
@@ -370,5 +390,7 @@ public class BlueLeft extends LinearOpMode {
                 robot.followTrajectorySequence(Left);
         }
         camera.stopStreaming();
-    }
+
+
+        }
 }

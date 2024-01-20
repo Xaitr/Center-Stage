@@ -373,7 +373,7 @@ public class Driving extends OpMode
 
 
         double value = distance.getDistance(DistanceUnit.INCH);
-        if(distance.getDistance(DistanceUnit.INCH) < 5) {
+        if(currentEstimate < 3) {
             leftFrontDrive.setPower(0);
             rightFrontDrive.setPower(0);
             leftBackDrive.setPower(0);
