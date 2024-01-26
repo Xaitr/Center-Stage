@@ -90,8 +90,8 @@ public class CameraTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 2");
+        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
@@ -129,6 +129,7 @@ public class CameraTest extends LinearOpMode {
                 sleep(10000);
                 camera.stopStreaming();
                 doCameraSwitching();
+                sleep(2000);
                 visionPortal.resumeStreaming();
                 sleep(10000);
                 break;
@@ -137,6 +138,7 @@ public class CameraTest extends LinearOpMode {
                 sleep(10000);
                 camera.stopStreaming();
                 doCameraSwitching();
+                sleep(2000);
                 visionPortal.resumeStreaming();
                 sleep(10000);
                 break;
@@ -145,6 +147,7 @@ public class CameraTest extends LinearOpMode {
                 sleep(10000);
                 camera.stopStreaming();
                 doCameraSwitching();
+                sleep(2000);
                 visionPortal.resumeStreaming();
                 sleep(10000);
                 break;
@@ -153,6 +156,7 @@ public class CameraTest extends LinearOpMode {
                 sleep(10000);
                 camera.stopStreaming();
                 doCameraSwitching();
+                sleep(2000);
                 visionPortal.resumeStreaming();
                 sleep(10000);
                 break;
