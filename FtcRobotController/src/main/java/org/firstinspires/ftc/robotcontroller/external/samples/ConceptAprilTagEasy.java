@@ -87,8 +87,8 @@ public class ConceptAprilTagEasy extends LinearOpMode {
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        OpenCvblue detector = new OpenCvblue (telemetry);
-        camera.setPipeline(detector);
+       // OpenCvblue detector = new OpenCvblue (telemetry);
+     //   camera.setPipeline(detector);
         initAprilTag();
 
         // Wait for the DS start button to be touched.
