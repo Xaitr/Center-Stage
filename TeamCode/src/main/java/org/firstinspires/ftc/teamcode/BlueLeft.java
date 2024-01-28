@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuild
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 
 @Autonomous
 public class BlueLeft extends LinearOpMode {
@@ -36,6 +37,7 @@ public class BlueLeft extends LinearOpMode {
     OpenCvCamera camera;
 
     AprilTag aprilTag = new AprilTag();
+    private VisionPortal visionPortal;
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -56,7 +58,7 @@ public class BlueLeft extends LinearOpMode {
     int three = 3;
 
     AprilTagDetection tagOfInterest = null;
-    private VisionPortal visionPortal;
+
 
     // Enum to represent lift state
     private enum LiftState {
@@ -83,11 +85,12 @@ public class BlueLeft extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        WebcamName webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
+        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
-        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+        OpenCvSwitchableWebcam camera = OpenCvCameraFactory.getInstance().createSwitchableWebcam(cameraMonitorViewId, webcam1, webcam2);
         OpenCvblue detector = new OpenCvblue (telemetry);
         camera.setPipeline(detector);
         aprilTag.initAprilTag();
@@ -186,7 +189,7 @@ public class BlueLeft extends LinearOpMode {
                 .build();
 
         waitForStart();
-
+        camera.setActiveCamera(webcam1);
 
 
 
