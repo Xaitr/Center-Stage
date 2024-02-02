@@ -15,15 +15,31 @@ public class BlueLeft3 {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(13, 65, Math.toRadians(180)))
-                                .back(1)
-                                .splineToConstantHeading(new Vector2d (16,32), Math.toRadians(0))
+                              //  .back(1)
+                               // .splineToConstantHeading(new Vector2d (16,32), Math.toRadians(0))
                               //  .strafeLeft(24)
                                 // spit out pixel here
-                                .strafeTo(new Vector2d (48, 37))
+                             //   .strafeTo(new Vector2d (48, 37))
                               // put pixel on board
-                                .forward(0.1)
-                                .splineToConstantHeading(new Vector2d (50, 58), Math.toRadians(0))
-
+                              //  .forward(0.1)
+                              //  .splineToConstantHeading(new Vector2d (50, 58), Math.toRadians(0))
+                                .strafeTo(new Vector2d(50,32))
+                                .turn(0)
+                                // place pixel on backboard
+                                .lineTo(new Vector2d(10, 32))
+                                .turn(0)
+                                //place pixel on line
+                                .lineToConstantHeading (new Vector2d(15, 32))
+                                .splineToConstantHeading(new Vector2d(10,10), Math.toRadians(0))
+                                .lineTo(new Vector2d (-56, 10))
+                                //grab pixel of stack
+                                .strafeTo(new Vector2d(16,10))
+                                .strafeTo(new Vector2d(38, 10))
+                                .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
+                                .turn(0)
+                                //place pixel on backboard
+                                .splineToConstantHeading(new Vector2d(56,60), Math.toRadians(0))
+                                //park
 
 
 
