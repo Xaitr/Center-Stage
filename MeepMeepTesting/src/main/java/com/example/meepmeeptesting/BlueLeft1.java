@@ -16,9 +16,9 @@ public class BlueLeft1 {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(14, 61, Math.toRadians(180)))
                                 .back(8)
-                                .splineToConstantHeading(new Vector2d (34,34), Math.toRadians(0))
-                             //   .lineToConstantHeading(new Vector2d(14, 34))
-                           //    .splineToConstantHeading(new Vector2d(34, 34), Math.toRadians(0))
+                                //.splineToConstantHeading(new Vector2d (34,34), Math.toRadians(0))
+                              // .lineToConstantHeading(new Vector2d(14, 34))
+                             .splineToConstantHeading(new Vector2d(34, 34), Math.toRadians(0))
 //                                // Spit out pixel here
                                 .splineTo(new Vector2d(48, 34), Math.toRadians(0))
                                 // put pixel on board here
