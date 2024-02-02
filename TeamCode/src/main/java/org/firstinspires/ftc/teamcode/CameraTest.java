@@ -26,11 +26,15 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuild
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 
 @Autonomous
 public class CameraTest extends LinearOpMode {
 
+
     private WebcamName webcam1, webcam2;
+
+    // private OpenCvCamera.AsyncCameraOpenListener
     private AprilTagProcessor aprilTag;
     Outake outake = new Outake();
     Intake intake = new Intake();
@@ -90,12 +94,12 @@ public class CameraTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 2");
-        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 1");
+        WebcamName webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
+        webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
         int cameraMonitorViewId = hardwareMap.appContext
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
-        OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+       OpenCvSwitchableWebcam camera = OpenCvCameraFactory.getInstance().createSwitchableWebcam(cameraMonitorViewId, webcam1, webcam2);
         OpenCvblue detector = new OpenCvblue(telemetry);
         camera.setPipeline(detector);
 
@@ -123,41 +127,34 @@ public class CameraTest extends LinearOpMode {
 
 
         waitForStart();
+        camera.setActiveCamera(webcam1);
 
         switch (detector.getLocation()) {
             case NOT_FOUND:
                 sleep(10000);
-                camera.stopStreaming();
-                doCameraSwitching();
+                camera.setActiveCamera(webcam2);
                 sleep(2000);
-                visionPortal.resumeStreaming();
                 sleep(10000);
                 break;
 
             case RIGHT:
                 sleep(10000);
-                camera.stopStreaming();
-                doCameraSwitching();
+                camera.setActiveCamera(webcam2);
                 sleep(2000);
-                visionPortal.resumeStreaming();
                 sleep(10000);
                 break;
 
             case LEFT:
                 sleep(10000);
-                camera.stopStreaming();
-                doCameraSwitching();
+                camera.setActiveCamera(webcam2);
                 sleep(2000);
-                visionPortal.resumeStreaming();
                 sleep(10000);
                 break;
 
             case MIDDLE:
                 sleep(10000);
-                camera.stopStreaming();
-                doCameraSwitching();
+                camera.setActiveCamera(webcam2);
                 sleep(2000);
-                visionPortal.resumeStreaming();
                 sleep(10000);
                 break;
         }

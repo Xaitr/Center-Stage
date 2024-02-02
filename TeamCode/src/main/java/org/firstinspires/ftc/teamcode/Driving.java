@@ -34,6 +34,8 @@ public class Driving extends OpMode
 
     private CRServo IOservo = null; // intake and outtake servo
     private Servo rightServo = null;
+
+    private Servo  DIservo = null;
     private Servo winchServo = null;
 
     private DistanceSensor distance = null;
@@ -111,6 +113,7 @@ public class Driving extends OpMode
         limitswitch = hardwareMap.get(DigitalChannel.class, "limitswitch");
         boxBeam = hardwareMap.get(DigitalChannel.class, "box_beam");
        distance = hardwareMap.get(DistanceSensor.class, "Distance");
+       DIservo = hardwareMap.get(Servo.class, "DIservo");
 
 
 
@@ -126,6 +129,7 @@ public class Driving extends OpMode
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
         Intake.setDirection(DcMotorSimple.Direction.REVERSE);
         rightServo.setDirection(Servo.Direction.REVERSE);
+        DIservo.setDirection(Servo.Direction.FORWARD);
 
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -181,6 +185,12 @@ public class Driving extends OpMode
         } else {
             Intake.setPower(0);
             IOservo.setPower(0);
+        }
+
+        if (gamepad2.left_stick_y>0.3) {
+            DIservo.setPosition(0.5);
+        } else  {
+            DIservo.setPosition(0);
         }
 
         telemetry.addData("state",limitswitch.getState());
