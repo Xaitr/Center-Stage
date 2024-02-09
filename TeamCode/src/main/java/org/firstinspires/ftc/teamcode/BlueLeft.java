@@ -254,7 +254,7 @@ public class BlueLeft extends LinearOpMode {
                     lift.setHeight(liftHeight);
                }
                lift.disableMotors();
-               doCameraSwitching();
+
                robot.followTrajectorySequence(Park);
                break;
 

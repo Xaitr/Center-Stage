@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.OpenCvblue.Location.MIDDLE;
 import static org.firstinspires.ftc.teamcode.OpenCvblue.Location.RIGHT;
 
+import android.graphics.Canvas;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -10,6 +12,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.vision.VisionPortal;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,6 +25,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.opencv.core.Mat;
 import org.openftc.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -28,12 +33,15 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Autonomous
 public class CameraTest extends LinearOpMode {
 
 
     private WebcamName webcam1, webcam2;
-
+AprilTagPipeline pipeline = new AprilTagPipeline();
     // private OpenCvCamera.AsyncCameraOpenListener
     private AprilTagProcessor aprilTag;
     Outake outake = new Outake();
@@ -82,14 +90,14 @@ public class CameraTest extends LinearOpMode {
     private DcMotor leftLift = null;
     private Servo rightServo = null;
 
-    public void doCameraSwitching() {
+ //   public void doCameraSwitching() {
 
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(webcam2)
-                .addProcessor(aprilTag)
-                .build();
-
-    }
+//        visionPortal = new VisionPortal.Builder()
+//                .setCamera(webcam2)
+//                .addProcessor(aprilTag)
+//                .build();
+//
+//    }
 
 
     @Override
@@ -101,7 +109,9 @@ public class CameraTest extends LinearOpMode {
                         "id", hardwareMap.appContext.getPackageName());
        OpenCvSwitchableWebcam camera = OpenCvCameraFactory.getInstance().createSwitchableWebcam(cameraMonitorViewId, webcam1, webcam2);
         OpenCvblue detector = new OpenCvblue(telemetry);
+        OpenCv detector2 = new OpenCv(telemetry);
         camera.setPipeline(detector);
+
 
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
         Pose2d startPose = new Pose2d(13, 65, Math.toRadians(180));
@@ -128,11 +138,15 @@ public class CameraTest extends LinearOpMode {
 
         waitForStart();
         camera.setActiveCamera(webcam1);
+        List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
 
         switch (detector.getLocation()) {
             case NOT_FOUND:
                 sleep(10000);
                 camera.setActiveCamera(webcam2);
+                pipeline.initAprilTag(webcam2);
+
+                telemetry.addData("# AprilTags Detected", currentDetections.size());
                 sleep(2000);
                 sleep(10000);
                 break;
@@ -140,6 +154,9 @@ public class CameraTest extends LinearOpMode {
             case RIGHT:
                 sleep(10000);
                 camera.setActiveCamera(webcam2);
+                pipeline.initAprilTag(webcam2);
+
+                telemetry.addData("# AprilTags Detected", currentDetections.size());
                 sleep(2000);
                 sleep(10000);
                 break;
@@ -147,6 +164,9 @@ public class CameraTest extends LinearOpMode {
             case LEFT:
                 sleep(10000);
                 camera.setActiveCamera(webcam2);
+                pipeline.initAprilTag(webcam2);
+
+                telemetry.addData("# AprilTags Detected", currentDetections.size());
                 sleep(2000);
                 sleep(10000);
                 break;
@@ -154,6 +174,9 @@ public class CameraTest extends LinearOpMode {
             case MIDDLE:
                 sleep(10000);
                 camera.setActiveCamera(webcam2);
+                pipeline.initAprilTag(webcam2);
+
+                telemetry.addData("# AprilTags Detected", currentDetections.size());
                 sleep(2000);
                 sleep(10000);
                 break;
