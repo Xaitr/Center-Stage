@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.vision.VisionPortal;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -41,7 +42,7 @@ public class CameraTest extends LinearOpMode {
 
 
     private WebcamName webcam1, webcam2;
-AprilTagPipeline pipeline = new AprilTagPipeline();
+    AprilTagPipeline pipeline = new AprilTagPipeline();
     // private OpenCvCamera.AsyncCameraOpenListener
     private AprilTagProcessor aprilTag;
     Outake outake = new Outake();
@@ -109,8 +110,9 @@ AprilTagPipeline pipeline = new AprilTagPipeline();
                         "id", hardwareMap.appContext.getPackageName());
        OpenCvSwitchableWebcam camera = OpenCvCameraFactory.getInstance().createSwitchableWebcam(cameraMonitorViewId, webcam1, webcam2);
         OpenCvblue detector = new OpenCvblue(telemetry);
-        OpenCv detector2 = new OpenCv(telemetry);
+       //  OpenCv detector2 = new OpenCv(telemetry);
         camera.setPipeline(detector);
+        pipeline.telemetry = telemetry;
 
 
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
@@ -138,48 +140,75 @@ AprilTagPipeline pipeline = new AprilTagPipeline();
 
         waitForStart();
         camera.setActiveCamera(webcam1);
-        List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
+      //  List<org.firstinspires.ftc.vision.apriltag.AprilTagDetection> currentDetections = aprilTag.getDetections();
 
         switch (detector.getLocation()) {
             case NOT_FOUND:
                 sleep(10000);
                 camera.setActiveCamera(webcam2);
-                pipeline.initAprilTag(webcam2);
 
-                telemetry.addData("# AprilTags Detected", currentDetections.size());
-                sleep(2000);
-                sleep(10000);
+                // camera.setPipeline(detector2);
+                pipeline.initAprilTag2(webcam2);
+
+
+             //   sleep(2000);
+              //  sleep(10000);
                 break;
 
             case RIGHT:
                 sleep(10000);
                 camera.setActiveCamera(webcam2);
-                pipeline.initAprilTag(webcam2);
 
-                telemetry.addData("# AprilTags Detected", currentDetections.size());
-                sleep(2000);
-                sleep(10000);
+                // camera.setPipeline(detector2);
+                pipeline.initAprilTag2(webcam2);
+
+
+               // sleep(2000);
+            //    sleep(10000);
                 break;
 
             case LEFT:
                 sleep(10000);
                 camera.setActiveCamera(webcam2);
-                pipeline.initAprilTag(webcam2);
 
-                telemetry.addData("# AprilTags Detected", currentDetections.size());
-                sleep(2000);
-                sleep(10000);
+               // camera.setPipeline(detector2);
+                pipeline.initAprilTag2(webcam2);
+
+
+               // sleep(2000);
+               // sleep(10000);
                 break;
 
             case MIDDLE:
                 sleep(10000);
                 camera.setActiveCamera(webcam2);
-                pipeline.initAprilTag(webcam2);
 
-                telemetry.addData("# AprilTags Detected", currentDetections.size());
-                sleep(2000);
-                sleep(10000);
+                //camera.setPipeline(detector2);
+                pipeline.initAprilTag2(webcam2);
+
+
+              //  sleep(2000);
+              //  sleep(10000);
                 break;
+        }
+        // TODO (Jacob / Ben): Turn off pipeline???
+        camera.setPipeline(null);
+        while (opModeIsActive()) {
+
+           pipeline.telemetryAprilTag();
+
+            // Push telemetry to the Driver Station.
+            telemetry.update();
+
+            // Save CPU resources; can resume streaming when needed.
+            if (gamepad1.dpad_down) {
+                visionPortal.stopStreaming();
+            } else if (gamepad1.dpad_up) {
+                visionPortal.resumeStreaming();
+            }
+
+            // Share the CPU.
+            sleep(20);
         }
     }
 }

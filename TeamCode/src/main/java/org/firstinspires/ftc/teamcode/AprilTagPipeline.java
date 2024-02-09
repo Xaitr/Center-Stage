@@ -115,12 +115,24 @@ class AprilTagPipeline  {
         visionPortal = builder.build();
 
         // Disable or re-enable the aprilTag processor at any time.
-        //visionPortal.setProcessorEnabled(aprilTag, true);\
+        visionPortal.setProcessorEnabled(aprilTag, true);
 
 
 
     }   // end method initAprilTag()
 
+    public void initAprilTag2(WebcamName webcamName) {
+
+        // Create the AprilTag processor the easy way.
+        aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+
+        // Create the vision portal the easy way.
+
+        visionPortal = VisionPortal.easyCreateWithDefaults(
+                webcamName, aprilTag);
+
+
+    }   // end method initAprilTag()
 
     public void telemetryAprilTag() {
 

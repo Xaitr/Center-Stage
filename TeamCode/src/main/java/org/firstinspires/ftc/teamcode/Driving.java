@@ -52,6 +52,8 @@ public class Driving extends OpMode
     private double a;
     private int liftHeight = 0;
 
+    private double DIservoposition  = 0;
+
     PidControl2 lift = new PidControl2();
     // Enum to represent lift state
     private enum LiftState {
@@ -91,6 +93,8 @@ public class Driving extends OpMode
     LiftState liftState = LiftState.LIFT_START;
     WinchState winchState = WinchState.IDLE;
     HangState hangState = HangState.LIFT_START;
+
+    boolean leftStickButtonDown = false;
     @Override
     public void init() {
 
@@ -141,7 +145,12 @@ public class Driving extends OpMode
         //Box servo moving in init
         lift.retractBox();
     }
-
+//  private void incrementDiservo(double CurrentPoistion) {
+//     if (currentPosition == postion1) {
+//         return position2
+//  } else if (currentPoistion == position2) {
+//         return positon 3
+//     }
 
     //Set variables//
     @Override
@@ -166,7 +175,7 @@ public class Driving extends OpMode
             rightFrontPower /= 2;
             rightBackPower /= 2;
         }
-        if (gamepad2.left_stick_button) {
+        if (gamepad2.dpad_left) {
             liftState = LiftState.BOX_RETRACT;
         }
         //Intake and Reject
@@ -187,11 +196,15 @@ public class Driving extends OpMode
             IOservo.setPower(0);
         }
 
-        if (gamepad2.left_stick_y>0.3) {
-            DIservo.setPosition(0.5);
-        } else  {
-            DIservo.setPosition(0);
-        }
+       // if (gamepad2.left_stick_button) {
+       //  leftStickButtonDown = true;
+     //   } else {
+           // if (leftStickButtonDown) {
+          // currentDiservoPosition = incrementDiservo(currentDiservoPosition);
+           //     DIservo.setPosition(CurrentDiservoPositon);
+            //    leftStickButtonDown = false;
+        //    }
+      //  }
 
         telemetry.addData("state",limitswitch.getState());
 
