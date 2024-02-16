@@ -14,19 +14,26 @@ public class RedLeft1 {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-34, -61, Math.toRadians(270)))
-                                .lineToConstantHeading(new Vector2d(-34, -35))
-                                .turn(Math.toRadians(90))
-                                // spit out pixel here
-                                .lineToConstantHeading(new Vector2d(-34, -11))
-                                .splineToConstantHeading(new Vector2d(-33, -10), Math.toRadians(0))
-                                .splineToConstantHeading(new Vector2d(-16, -10), Math.toRadians(0))
-                              .splineToConstantHeading(new Vector2d(38, -10), Math.toRadians(0))
-                               .splineToConstantHeading(new Vector2d(46, -37), Math.toRadians(0))
-                                .turn(Math.toRadians (180))
-                                //place pixel on board here
-                                .strafeRight(25)
-                                .back(13)
+                        drive.trajectorySequenceBuilder(new Pose2d(-34, -61, Math.toRadians(180)))
+                                .lineTo(new Vector2d(-36, -30))
+                                .turn(0)
+                                //place pixel on line
+                                .lineTo(new Vector2d(-34,-18))
+                                .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
+                                .lineTo(new Vector2d(30,-8))
+                                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
+                                .turn (0)
+                                //place pixel on backboard
+                                .splineToConstantHeading(new Vector2d(30,-8), Math.toRadians(180))
+                                .lineTo(new Vector2d(-14,-8))
+                                .lineTo(new Vector2d(-55,-8))
+                                //pick up two white pixels off stack
+                                .lineTo(new Vector2d(-14,-8))
+                                .lineTo(new Vector2d(30,-8))
+                                .splineToConstantHeading(new Vector2d(50,-32),Math.toRadians(0))
+                                .turn(0)
+                                //place pixels on backboard
+                                .splineToConstantHeading(new Vector2d(56,-8), Math.toRadians(0))
                                 .build()
                 );
 
