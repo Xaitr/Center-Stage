@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.LiftConstants.StackMuncher2;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftHang;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftLow;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
@@ -130,12 +131,21 @@ public class Driving extends OpMode
         //Box servo moving in init
         lift.retractBox();
     }
-//  private void incrementDiservo(double CurrentPoistion) {
-//     if (currentPosition == postion1) {
-//         return position2
-//  } else if (currentPoistion == position2) {
-//         return positon 3
-//     }
+
+    private double incrementDiservo(double currentPosition) {
+        if (currentPosition == LiftConstants.StackMuncher1) {
+            return LiftConstants.StackMuncher2;
+        } else if (currentPosition == LiftConstants.StackMuncher2) {
+            return LiftConstants.StackMuncher3;
+        } else if (currentPosition == LiftConstants.StackMuncher3) {
+            return LiftConstants.StackMuncher4;
+        } else if (currentPosition == LiftConstants.StackMuncher4) {
+            return LiftConstants.StackMuncher5;
+        } else  {
+            return LiftConstants.StackMuncher1;
+        }
+    }
+
 
     //Set variables//
     @Override
@@ -186,17 +196,18 @@ public class Driving extends OpMode
             IOservo.setPower(0);
         }
 
-       // if (gamepad2.left_stick_button) {
-       //  leftStickButtonDown = true;
-     //   } else {
-           // if (leftStickButtonDown) {
-          // currentDiservoPosition = incrementDiservo(currentDiservoPosition);
-           //     DIservo.setPosition(CurrentDiservoPositon);
-            //    leftStickButtonDown = false;
-        //    }
-      //  }
+             if (gamepad2.left_stick_button) {
+              leftStickButtonDown = true;
+               } else {
+             if (leftStickButtonDown) {
+                 DIservoposition = incrementDiservo(DIservoposition);
+                 DIservo.setPosition(DIservoposition);
+                leftStickButtonDown = false;
+                }
+              }
 
-        telemetry.addData("state",limitswitch.getState());
+
+             telemetry.addData("state",limitswitch.getState());
 
 
         //Claw Code: Opens with GP2 X and opens less when past vertical position

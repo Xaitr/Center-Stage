@@ -16,6 +16,15 @@ public class LiftConstants {
     public static double BoxReady = 0.4;
     public static double hang = 0.8;
 
+    public static double StackMuncher1 = 0.7;
+
+    public static double StackMuncher2 = 0.75;
+
+    public static double StackMuncher3 = 0.8;
+
+   public static double StackMuncher4 = 0.85;
+
+   public static double StackMuncher5 = 0.9;
     public static double AutoBoxReady = 0.4;
 
     //Time it takes for both pixels to spin out
