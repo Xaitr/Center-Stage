@@ -30,15 +30,14 @@ public class Driving extends OpMode
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotor leftLift = null;
-    private DcMotor winch = null;
 
     private CRServo IOservo = null; // intake and outtake servo
     private Servo rightServo = null;
 
     private Servo  DIservo = null;
-    private Servo winchServo = null;
-
-    private DistanceSensor distance = null;
+    private Servo preDropRight = null;
+    private Servo preDropLeft = null;
+    private Servo drone = null;
 
     private DigitalChannel limitswitch = null;
     private DigitalChannel boxBeam = null;
@@ -47,9 +46,6 @@ public class Driving extends OpMode
     private int liftOffset = 0;
     private DcMotor Intake = null;
 
-    private double previousEstimate;
-    private double currentEstimate;
-    private double a;
     private int liftHeight = 0;
 
     private double DIservoposition  = 0;
@@ -73,25 +69,14 @@ public class Driving extends OpMode
         LIFT_RETRACT,
         LIFT_RETRACTED
     }
-    //Enum to represent winch state
-    private enum WinchState {
-        IDLE,
-        HOOK_ON,
-        EXTEND,
-        IDLE_HIGH,
-        HOOK_OFF,
-        RETRACT,
-    }
+
     //Presets for fine adjustment in lift
     int heightAdjust = 0;
     //Timer for waiting for pixels to spin out
     ElapsedTime liftTimer = new ElapsedTime();
 
-    //Timer for winch to hang
-    ElapsedTime winchTimer = new ElapsedTime();
     //Initial Lift Position
     LiftState liftState = LiftState.LIFT_START;
-    WinchState winchState = WinchState.IDLE;
     HangState hangState = HangState.LIFT_START;
 
     boolean leftStickButtonDown = false;
@@ -108,16 +93,16 @@ public class Driving extends OpMode
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
-        winch = hardwareMap.get(DcMotor.class, "winch");
 
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         Intake=hardwareMap.get(DcMotor.class, "intake");
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
-        winchServo = hardwareMap.get(Servo.class, "winch_servo");
         limitswitch = hardwareMap.get(DigitalChannel.class, "limitswitch");
         boxBeam = hardwareMap.get(DigitalChannel.class, "box_beam");
-       distance = hardwareMap.get(DistanceSensor.class, "Distance");
        DIservo = hardwareMap.get(Servo.class, "DIservo");
+       preDropRight = hardwareMap.get(Servo.class, "preDropRight");
+       preDropLeft = hardwareMap.get(Servo.class, "preDropLeft");
+       drone = hardwareMap.get(Servo.class, "drone");
 
 
 
@@ -175,6 +160,11 @@ public class Driving extends OpMode
             rightFrontPower /= 2;
             rightBackPower /= 2;
         }
+        leftFrontDrive.setPower(leftFrontPower);
+        rightFrontDrive.setPower(rightFrontPower);
+        leftBackDrive.setPower(leftBackPower);
+        rightBackDrive.setPower(rightBackPower);
+
         if (gamepad2.dpad_left) {
             liftState = LiftState.BOX_RETRACT;
         }
@@ -309,41 +299,6 @@ public class Driving extends OpMode
         telemetry.addData("liftHeight", liftHeight);
         telemetry.addData("boxBeam", boxBeam.getState());
 
-        //Winch Finite State Machine
-        switch (winchState) {
-            case IDLE:
-                winchServo.setPosition(0.25);
-                if (gamepad1.a) {
-                    winchServo.setPosition(0.22);
-                    winchState = WinchState.HOOK_ON;
-                    winchTimer.reset();
-                }
-                break;
-            case HOOK_ON:
-                if (winchTimer.seconds() > 0.4) {
-                    winchServo.setPosition(0.62);
-                    winchState = WinchState.EXTEND;
-                    liftHeight = LiftConstants.liftWinch;
-                }
-                break;
-            case EXTEND:
-                if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftWinch - liftOffset) < 10) {
-                    winchState = WinchState.IDLE_HIGH;
-                }
-                break;
-            case IDLE_HIGH:
-                if (gamepad1.a) {
-                    liftHeight = liftRetracted;
-                    winchState = WinchState.HOOK_OFF;
-                }
-                break;
-            case HOOK_OFF:
-                if (gamepad1.a)
-                    winch.setPower(-1);
-                else
-                    winch.setPower(0);
-                break;
-        }
         //For hanging with slides
         switch (hangState) {
             case LIFT_START:
@@ -393,28 +348,6 @@ public class Driving extends OpMode
 
         //Actually setting the lift height; kept out of the finite state machine so that the PID continues to update
         lift.setHeight(liftHeight + liftOffset);
-
-
-        double value = distance.getDistance(DistanceUnit.INCH);
-        if(currentEstimate < 3) {
-            leftFrontDrive.setPower(0);
-            rightFrontDrive.setPower(0);
-            leftBackDrive.setPower(0);
-            rightBackDrive.setPower(0);
-        }
-        else {
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
-        }
-       telemetry.addData("Distance: ", currentEstimate);
-        a = 0.8; // a can be anything from 0 < a < 1
-        previousEstimate = 0;
-        currentEstimate = 0;
-        currentEstimate = (a * previousEstimate) + (1-a) * value;
-        previousEstimate = currentEstimate;
-
     }
 
 
