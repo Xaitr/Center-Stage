@@ -50,6 +50,8 @@ public class Driving extends OpMode
     private DigitalChannel boxBeam = null;
     private boolean isOn = false;
 
+    private boolean boxDrop = false;
+
     private int liftOffset = 0;
     private DcMotor Intake = null;
 
@@ -151,7 +153,7 @@ public class Driving extends OpMode
         telemetry.addData("status", "Initialized");
         //Box servo moving in init
         lift.retractBox();
-    drone.setPosition(LiftConstants.StackMuncherReturn);
+    DIservo.setPosition(LiftConstants.StackMuncherReturn);
     }
 
 
@@ -212,16 +214,19 @@ public class Driving extends OpMode
         if (gamepad2.a) {
             Intake.setPower(1);
             IOservo.setPower(1);
+            boxDrop = false;
         } else if (gamepad2.b) {
             Intake.setPower(-1);
             IOservo.setPower(1);
             //Break Beam Driver feedback via controller rumble
+            boxDrop = false;
 
-
-        } else {
+        } else if (!boxDrop) {
             Intake.setPower(0);
             IOservo.setPower(0);
+
         }
+        telemetry.addData("boxDrop", boxDrop);
 
         if (!boxBeam.getState()) {
             Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
@@ -276,7 +281,7 @@ public class Driving extends OpMode
                 break;
             case LIFT_EXTEND:
                 //Check if lift has fully extended
-                if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 20) {
+                if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 25) {
                     //Deploy box
                     lift.extendBox();
                     liftState = LiftState.BOX_EXTEND;
@@ -309,12 +314,16 @@ public class Driving extends OpMode
 //                    heightAdjust = 0;
 //                }
 
-                if (gamepad2.x) {
+                if (gamepad2.x && !boxDrop) {
                     //Turn on Outtake Servo
-                    IOservo.setPower(-1);
-                    heightAdjust = 1;
+                    IOservo.setPower(-10);
+                    boxDrop = true;
+                   // heightAdjust = 1;
                     liftState = LiftState.BOX_RETRACT;
+                } else  {
+                    boxDrop = false;
                 }
+
                 break;
             case BOX_RETRACT:
                 if (gamepad2.right_bumper) {

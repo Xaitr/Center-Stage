@@ -14,7 +14,7 @@ public class PidControl2 {
     DcMotorEx rightLift;
 
     double integralSum =0;
-    double Kp =0.0055; // 0.045
+    double Kp =0.0058; // 0.045
     double Ki =0;
     double Kd = 0.000001; // 0.0000038
 

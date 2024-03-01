@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 //Parameters for lift
 public class LiftConstants {
     //Lift heights in ticks
-    public static int liftHigh = 1850;
+    public static int liftHigh = 1900;
     public static int liftMedium = 1450;
     public static int liftLow = 1000;
     //1100, 1700, 2200 MAX
