@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.LiftConstants.StackMuncher2;
+import static org.firstinspires.ftc.teamcode.LiftConstants.droneLift;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftHang;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftLow;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
@@ -20,6 +21,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.CRServo;
+
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -41,6 +43,8 @@ public class Driving extends OpMode
     private Servo preDropLeft = null;
     private Servo drone = null;
 
+    private RevBlinkinLedDriver Blinky = null;
+
 
     private DigitalChannel limitswitch = null;
     private DigitalChannel boxBeam = null;
@@ -50,6 +54,8 @@ public class Driving extends OpMode
     private DcMotor Intake = null;
 
     private int liftHeight = 0;
+
+
 
     private double DIservoposition  = 0;
 //funny little comment
@@ -72,6 +78,18 @@ public class Driving extends OpMode
         LIFT_RETRACT,
         LIFT_RETRACTED
     }
+
+    private enum  dronestate {
+
+        LIFT_START,
+        LIFT_EXTEND,
+        DRONE_LAUNCH,
+        LIFT_RETRACT,
+
+
+    }
+    ElapsedTime droneTimer = new ElapsedTime();
+    dronestate droneState = dronestate.LIFT_START;
 
     //Presets for fine adjustment in lift
     int heightAdjust = 0;
@@ -106,6 +124,7 @@ public class Driving extends OpMode
        preDropRight = hardwareMap.get(Servo.class, "preDropRight");
        preDropLeft = hardwareMap.get(Servo.class, "preDropLeft");
        drone = hardwareMap.get(Servo.class, "drone");
+       Blinky = hardwareMap.get(RevBlinkinLedDriver.class, "Blinky");
 
 
 
@@ -132,10 +151,16 @@ public class Driving extends OpMode
         telemetry.addData("status", "Initialized");
         //Box servo moving in init
         lift.retractBox();
+    drone.setPosition(LiftConstants.StackMuncherReturn);
     }
 
+
+
+
     private double incrementDiservo(double currentPosition) {
-        if (currentPosition == LiftConstants.StackMuncher1) {
+        if (currentPosition == LiftConstants.StackMuncherReturn) {
+            return LiftConstants.StackMuncher1;
+        } else if (currentPosition == LiftConstants.StackMuncher1) {
             return LiftConstants.StackMuncher2;
         } else if (currentPosition == LiftConstants.StackMuncher2) {
             return LiftConstants.StackMuncher3;
@@ -144,9 +169,12 @@ public class Driving extends OpMode
         } else if (currentPosition == LiftConstants.StackMuncher4) {
             return LiftConstants.StackMuncher5;
         } else  {
-            return LiftConstants.StackMuncher1;
+            return LiftConstants.StackMuncherReturn;
         }
     }
+
+
+
 
 
     //Set variables//
@@ -188,17 +216,20 @@ public class Driving extends OpMode
             Intake.setPower(-1);
             IOservo.setPower(1);
             //Break Beam Driver feedback via controller rumble
-            if (!boxBeam.getState()) {
-                gamepad2.rumble(50);
-                gamepad1.rumble(50);
-            }
+
 
         } else {
             Intake.setPower(0);
             IOservo.setPower(0);
         }
 
-             if (gamepad2.left_stick_button) {
+        if (!boxBeam.getState()) {
+            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
+        }
+        else {
+            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+        }
+        if (gamepad2.left_stick_button) {
               leftStickButtonDown = true;
                } else {
              if (leftStickButtonDown) {
@@ -207,6 +238,12 @@ public class Driving extends OpMode
                 leftStickButtonDown = false;
                 }
               }
+
+             if (gamepad2.left_stick_y<-0.6) {
+                 DIservo.setPosition(LiftConstants.StackMuncherReturn);
+                 DIservoposition = LiftConstants.StackMuncherReturn;
+             }
+
 
 
              telemetry.addData("state",limitswitch.getState());
@@ -260,6 +297,7 @@ public class Driving extends OpMode
                 } else if (gamepad2.left_bumper) {
                     liftHeight = LiftConstants.liftLow;
                 }
+
 
                 //Further adjustment from presets
 //                if(-gamepad2.left_stick_y >= 0.5 && heightAdjust == 0) {
@@ -352,36 +390,49 @@ public class Driving extends OpMode
         }
 
         // drone launch
-        switch (hangState) {
+        switch (droneState) {
             case LIFT_START:
                 //Driver 2 Dpad starts sequence
-                if (gamepad1.dpad_up) {
-                    hangState = HangState.LIFT_EXTEND;
+                if (gamepad1.dpad_right) {
+                    droneState = droneState.LIFT_EXTEND;
                     //Extend lift
-                    liftHeight = LiftConstants.liftHang2;
+                    liftHeight = LiftConstants.droneLift;
                 }
                 break;
             case LIFT_EXTEND:
                 //Check if lift has fully extended
                 if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 20) {
                     //Angle box out of the way
-                    lift.hangBox();
-                    if (gamepad1.dpad_up)
-                        hangState = HangState.LIFT_RETRACT;
+                    lift.droneBox();
+                    if (gamepad1.dpad_left) {
+                        droneState = droneState.DRONE_LAUNCH;
+                        drone.setPosition(0.6);
+                        droneTimer.reset();
+                    }
                 }
                 break;
-            case LIFT_RETRACT:
+            case DRONE_LAUNCH:
+                if  (droneTimer.seconds() > 0.5) {
+                    droneState = droneState.LIFT_RETRACT;
+                lift.retractBox();
+                droneTimer.reset();
+                // this launches the drone and has a timer so the box does not hit the drone
+                }
+                break;
+                case LIFT_RETRACT:
                 // Wait for dpad_up to retract lift and hang
                 //Goes straight back to start in case it gets stuck and can't retract all the way
-                liftHeight = liftHang;
-                if (!gamepad2.dpad_up) {
-                    hangState = HangState.LIFT_START;
+
+                if (droneTimer.seconds() > 0.3) {
+                    droneState = droneState.LIFT_START;
                     //Retract Lift
+                    liftHeight = liftRetracted;
+
                 }
                 break;
             default:
                 //Should never happen but just in case
-                liftState = LiftState.LIFT_START;
+                droneState = droneState.LIFT_START;
         }
 
 
