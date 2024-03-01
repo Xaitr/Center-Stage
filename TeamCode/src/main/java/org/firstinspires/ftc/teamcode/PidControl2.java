@@ -14,9 +14,10 @@ public class PidControl2 {
     DcMotorEx rightLift;
 
     double integralSum =0;
-    double Kp =0.005; // 0.045
+    double Kp =0.0055; // 0.045
     double Ki =0;
     double Kd = 0.000001; // 0.0000038
+
 //0.000001
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
@@ -82,6 +83,13 @@ public class PidControl2 {
         leftLift.setPower(0);
         rightLift.setPower(0);
     }
+public void droneBox () {
+        rightServo.setPosition(LiftConstants.droneAngle);
+        leftServo.setPosition(LiftConstants.droneAngle);
 }
+
+}
+
+
 
 

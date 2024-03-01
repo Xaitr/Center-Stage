@@ -16,6 +16,8 @@ public class LiftConstants {
     public static double BoxReady = 0.4;
     public static double hang = 0.8;
 
+    public static double droneAngle = 0.6;
+
     public static double StackMuncher1 = 0.7;
 
     public static double StackMuncher2 = 0.75;

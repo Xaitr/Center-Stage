@@ -35,10 +35,12 @@ public class Driving extends OpMode
     private CRServo IOservo = null; // intake and outtake servo
     private Servo rightServo = null;
 
+
     private Servo  DIservo = null;
     private Servo preDropRight = null;
     private Servo preDropLeft = null;
     private Servo drone = null;
+
 
     private DigitalChannel limitswitch = null;
     private DigitalChannel boxBeam = null;
@@ -213,6 +215,12 @@ public class Driving extends OpMode
         //Claw Code: Opens with GP2 X and opens less when past vertical position
         // BIGGER CLOSES MORE*********************
 
+
+        if (gamepad1.left_bumper) {
+            drone.setPosition(0.6);
+        }
+
+
         //Switch Case for Lift gm0.org
         switch (liftState) {
             case LIFT_START:
@@ -343,6 +351,40 @@ public class Driving extends OpMode
                 liftState = LiftState.LIFT_START;
         }
 
+        // drone launch
+        switch (hangState) {
+            case LIFT_START:
+                //Driver 2 Dpad starts sequence
+                if (gamepad1.dpad_up) {
+                    hangState = HangState.LIFT_EXTEND;
+                    //Extend lift
+                    liftHeight = LiftConstants.liftHang2;
+                }
+                break;
+            case LIFT_EXTEND:
+                //Check if lift has fully extended
+                if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 20) {
+                    //Angle box out of the way
+                    lift.hangBox();
+                    if (gamepad1.dpad_up)
+                        hangState = HangState.LIFT_RETRACT;
+                }
+                break;
+            case LIFT_RETRACT:
+                // Wait for dpad_up to retract lift and hang
+                //Goes straight back to start in case it gets stuck and can't retract all the way
+                liftHeight = liftHang;
+                if (!gamepad2.dpad_up) {
+                    hangState = HangState.LIFT_START;
+                    //Retract Lift
+                }
+                break;
+            default:
+                //Should never happen but just in case
+                liftState = LiftState.LIFT_START;
+        }
+
+
         //Rezeroing the slides using limit switch
         //Adds an offset value to the liftHeight based on the left motors difference
         if (gamepad2.dpad_down){
@@ -360,6 +402,8 @@ public class Driving extends OpMode
         //Actually setting the lift height; kept out of the finite state machine so that the PID continues to update
         lift.setHeight(liftHeight + liftOffset);
     }
+
+
 
 
     @Override
