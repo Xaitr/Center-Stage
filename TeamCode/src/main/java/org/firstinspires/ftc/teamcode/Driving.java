@@ -52,6 +52,8 @@ public class Driving extends OpMode
 
     private boolean boxDrop = false;
 
+    private boolean liftIncrease = false;
+
     private int liftOffset = 0;
     private DcMotor Intake = null;
 
@@ -161,6 +163,7 @@ public class Driving extends OpMode
 
     private double incrementDiservo(double currentPosition) {
         if (currentPosition == LiftConstants.StackMuncherReturn) {
+
             return LiftConstants.StackMuncher1;
         } else if (currentPosition == LiftConstants.StackMuncher1) {
             return LiftConstants.StackMuncher2;
@@ -251,6 +254,8 @@ public class Driving extends OpMode
 
 
 
+
+
              telemetry.addData("state",limitswitch.getState());
 
 
@@ -271,7 +276,7 @@ public class Driving extends OpMode
                 if (gamepad2.right_bumper) {
                     liftState = LiftState.LIFT_EXTEND;
                     liftHeight = LiftConstants.liftHigh;
-                } else if (gamepad2.right_trigger>= 0.9) {
+                } else if (gamepad2.right_trigger >= 0.9) {
                     liftState = LiftState.LIFT_EXTEND;
                     liftHeight = LiftConstants.liftMedium;
                 } else if (gamepad2.left_bumper) {
@@ -294,15 +299,27 @@ public class Driving extends OpMode
                 }
                 break;
             case LIFT_DUMP:
-                //Adjustment midroutine in case Driver puts in wrong input
+                //Adjustment mid match in case Driver puts in wrong input
                 if (gamepad2.right_bumper) {
                     liftHeight = LiftConstants.liftHigh;
-                } else if (gamepad2.right_trigger>= 0.9) {
+                } else if (gamepad2.right_trigger >= 0.9) {
                     liftHeight = LiftConstants.liftMedium;
                 } else if (gamepad2.left_bumper) {
                     liftHeight = LiftConstants.liftLow;
                 }
+                if (gamepad2.right_stick_y < -0.6 && !liftIncrease) { // lift goes up
+                    liftHeight += 200;
+                    liftIncrease = true;
+                } else if (gamepad2.right_stick_y > -0.6 ) {
+                    liftIncrease = false;
+                }
 
+                if (gamepad2.right_stick_y > 0.6 && !liftIncrease) {
+                    liftHeight -= 200;
+                    liftIncrease = true;
+                } else if (gamepad2.right_stick_y < 0.6) {
+                    liftIncrease = false;
+                }
 
                 //Further adjustment from presets
 //                if(-gamepad2.left_stick_y >= 0.5 && heightAdjust == 0) {
@@ -314,7 +331,7 @@ public class Driving extends OpMode
 //                    heightAdjust = 0;
 //                }
 
-                if (gamepad2.x && !boxDrop) {
+                if (gamepad2.right_stick_button && !boxDrop) {
                     //Turn on Outtake Servo
                     IOservo.setPower(-10);
                     boxDrop = true;
