@@ -163,17 +163,21 @@ public class Driving extends OpMode
 
     private double incrementDiservo(double currentPosition) {
         if (currentPosition == LiftConstants.StackMuncherReturn) {
-
+            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             return LiftConstants.StackMuncher1;
         } else if (currentPosition == LiftConstants.StackMuncher1) {
+            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             return LiftConstants.StackMuncher2;
         } else if (currentPosition == LiftConstants.StackMuncher2) {
+            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             return LiftConstants.StackMuncher3;
         } else if (currentPosition == LiftConstants.StackMuncher3) {
+            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             return LiftConstants.StackMuncher4;
         } else if (currentPosition == LiftConstants.StackMuncher4) {
+            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             return LiftConstants.StackMuncher5;
-        } else  {
+        } else {
             return LiftConstants.StackMuncherReturn;
         }
     }
