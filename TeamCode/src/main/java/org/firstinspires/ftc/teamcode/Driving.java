@@ -54,6 +54,8 @@ public class Driving extends OpMode
 
     private boolean liftIncrease = false;
 
+    private boolean liftDecrease = false;
+
     private int liftOffset = 0;
     private DcMotor Intake = null;
 
@@ -318,7 +320,7 @@ public class Driving extends OpMode
                     liftIncrease = false;
                 }
 
-                if (gamepad2.right_stick_y > 0.6 && !liftIncrease) {
+                if (gamepad2.right_stick_y > 0.6 && !liftDecrease) {
                     liftHeight -= 200;
                     liftIncrease = true;
                 } else if (gamepad2.right_stick_y < 0.6) {
