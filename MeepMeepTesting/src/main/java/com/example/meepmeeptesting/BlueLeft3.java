@@ -29,12 +29,11 @@ public class BlueLeft3 {
                                 .lineTo(new Vector2d(10, 32))
                                 .turn(0)
                                 //place pixel on line
-                                .lineToConstantHeading (new Vector2d(15, 32))
-                                .splineToConstantHeading(new Vector2d(10,10), Math.toRadians(0))
-                                .lineTo(new Vector2d (-56, 10))
+                                .lineTo(new Vector2d(33,8))
+                                .lineTo(new Vector2d (-56, 8))
                                 //grab pixel of stack
-                                .strafeTo(new Vector2d(16,10))
-                                .strafeTo(new Vector2d(38, 10))
+                                .strafeTo(new Vector2d(16,8))
+                                .strafeTo(new Vector2d(38, 8))
                                 .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
                                 .turn(0)
                                 //place pixel on backboard

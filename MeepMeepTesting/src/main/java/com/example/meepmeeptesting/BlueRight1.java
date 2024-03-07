@@ -25,7 +25,6 @@ public class BlueRight1 {
                                 // put pixel on board here
                                 //.splineToConstantHeading(new Vector2d(58, 14), Math.toRadians(0))
                                 .lineTo(new Vector2d(-36, 30))
-                                .turn(0)
                                 //place pixel on line
                                 .lineTo(new Vector2d(-34,18))
                                 .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
@@ -39,7 +38,7 @@ public class BlueRight1 {
                                 //pick up two white pixels off stack
                                 .lineTo(new Vector2d(-14,8))
                                 .lineTo(new Vector2d(30,8))
-                                .splineToConstantHeading(new Vector2d(50,32),Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(50,34),Math.toRadians(0))
                                 .turn(0)
                                 //place pixels on backboard
                                 .splineToConstantHeading(new Vector2d(56,8), Math.toRadians(0))

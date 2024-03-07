@@ -75,6 +75,7 @@ public class RedLeft extends LinearOpMode {
                 .waitSeconds(1)
                 // spit out pixel here
                 .lineTo(new Vector2d(-34,-18))
+                .turn(Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
                 .lineTo(new Vector2d(30,-8))
                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))

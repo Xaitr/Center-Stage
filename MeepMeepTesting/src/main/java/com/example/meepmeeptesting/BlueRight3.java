@@ -31,12 +31,13 @@ public class BlueRight3 {
                                 .lineToLinearHeading(new Pose2d(-36,30))
                                 //place pixel on line
                                 .lineTo(new Vector2d(-34,18))
+                                .turn(Math.toRadians(180))
                                 .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
                                 .lineTo(new Vector2d(30,8))
                                 .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
                                 .turn (0)
                                 //place pixel on backboard
-                                .strafeTo(new Vector2d(30,8))
+                                .splineToConstantHeading(new Vector2d(30,8), Math.toRadians(180))
                                 .lineTo(new Vector2d(-14,8))
                                 .lineTo(new Vector2d(-55,8))
                                 //pick up two white pixels off stack
@@ -45,8 +46,8 @@ public class BlueRight3 {
                                 .splineToConstantHeading(new Vector2d(50,32),Math.toRadians(0))
                                 .turn(0)
                                 //place pixels on backboard
-                                .lineTo(new Vector2d(47,32))
                                 .splineToConstantHeading(new Vector2d(56,8), Math.toRadians(0))
+                                .build()
 
 
                                // .splineTo(new Vector2d(-33, 30), Math.toRadians(0))
@@ -72,7 +73,7 @@ public class BlueRight3 {
                                 //.turn(0)
                                 //place pixels on backboard
                                 //.splineToConstantHeading(new Vector2d(56,8), Math.toRadians(0))
-                                .build()
+                                //.build()
 
                                 //.lineTo(new Vector2d(-34,18))
                                 //.splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))

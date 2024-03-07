@@ -27,14 +27,14 @@ public class BlueRight2 {
                                 //.strafeLeft(23)
                                 //.back(12)
                                 //.lineTo(new Vector2d(-30, 20))
-                                .lineTo(new Vector2d(-30, 25))
-                                .turn(0)
+                                .lineToConstantHeading(new Vector2d(-44,47))
+                                .lineToLinearHeading(new Pose2d(-36, 15, Math.toRadians(90)))
                                 //place pixel on line
-                                .lineTo(new Vector2d(-34,18))
-                                .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
-                                .lineTo(new Vector2d(30,8))
+                                .lineTo(new Vector2d(-40,13))
+                                .turn(Math.toRadians(90))
+                               // .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
+                                .lineTo(new Vector2d(30,13))
                                 .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
-                                .turn (0)
                                 //place pixel on backboard
                                 .splineToConstantHeading(new Vector2d(30,8), Math.toRadians(180))
                                 .lineTo(new Vector2d(-14,8))
@@ -43,7 +43,6 @@ public class BlueRight2 {
                                 .lineTo(new Vector2d(-14,8))
                                 .lineTo(new Vector2d(30,8))
                                 .splineToConstantHeading(new Vector2d(50,32),Math.toRadians(0))
-                                .turn(0)
                                 //place pixels on backboard
                                 .splineToConstantHeading(new Vector2d(56,8), Math.toRadians(0))
                                 .build()

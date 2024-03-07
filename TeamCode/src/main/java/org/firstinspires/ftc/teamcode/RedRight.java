@@ -97,10 +97,10 @@ public class RedRight extends LinearOpMode {
             .build();
  */
         TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-                .strafeRight(1)
-                .back(6)
-                .splineToConstantHeading(new Vector2d(37, -32), Math.toRadians(0))
-                // spit out pixel here
+                .strafeTo(new Vector2d(50,-32))
+                //place pixel on backboard
+                .lineTo(new Vector2d(33, -32))
+                //place pixel on line
                 .addTemporalMarker(() -> {
                     intake.Reject();
                 })
@@ -108,13 +108,21 @@ public class RedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
-                .strafeTo(new Vector2d(54, -44))
-                // place pixel on board
+                .lineTo(new Vector2d(33, -8))
+                .lineTo(new Vector2d (-56, -8))
+                // pick up white pixels off stack
+                .strafeTo(new Vector2d(38, -8))
+                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
+                //place pixel on backboard
+                .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
+                //park
                 .build();
+
         TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
-                .strafeRight(1)
-                .back(0.5)
-                .splineToConstantHeading(new Vector2d(16, -32), Math.toRadians(0))
+                .strafeTo(new Vector2d(50,-32))
+                // place pixel on backboard
+                .lineTo(new Vector2d(10, -32))
+                //place pixel on line
                 .addTemporalMarker(() -> {
                     intake.Reject();
                 })
@@ -122,9 +130,17 @@ public class RedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
-                // spit out pixel here
-                .strafeTo(new Vector2d(54, -30.5))
-                // put pixel on board
+                .lineToConstantHeading (new Vector2d(15, -32))
+                .splineToConstantHeading(new Vector2d(10,-10), Math.toRadians(90))
+                .lineTo(new Vector2d (-56, -10))
+                //grab pixel of stack
+                .strafeTo(new Vector2d(16,-10))
+                .strafeTo(new Vector2d(38, -10))
+                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
+                //place pixel on backboard
+                .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
+                //park
+
 
                 .build();
         TrajectorySequence Park = robot.trajectorySequenceBuilder(new Pose2d(51, -37, Math.toRadians(180)))
@@ -132,9 +148,11 @@ public class RedRight extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(56,-68), Math.toRadians(0))
                 .build();
         TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
-                .strafeRight(1)
-                .back(5)
-                .splineToConstantHeading(new Vector2d(29, -25.5), Math.toRadians(0))
+                .strafeTo(new Vector2d(50,-32))
+                // place pixel on backboard
+                .strafeRight(10)
+                .lineTo(new Vector2d(15, -22))
+                //place pixel on line
                 .addTemporalMarker(() -> {
                     intake.Reject();
                 })
@@ -142,8 +160,15 @@ public class RedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     intake.RejectOff();
                 })
-                .lineToConstantHeading(new Vector2d(54, -38))
-        // put pixel on board
+                .splineToConstantHeading(new Vector2d(16, -10), Math.toRadians(0))
+                .lineTo(new Vector2d (-56, -10))
+                //grab pixels off stack
+                .strafeTo(new Vector2d(16,-10))
+                .strafeTo(new Vector2d(38, -10))
+                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
+                //place pixel on backboard
+                .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
+                //park
                  .build();
         waitForStart();
 
