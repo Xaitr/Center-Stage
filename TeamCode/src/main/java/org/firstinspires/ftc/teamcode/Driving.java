@@ -58,7 +58,6 @@ public class Driving extends OpMode
 
     private int liftOffset = 0;
     private DcMotor Intake = null;
-
     private int liftHeight = 0;
 
 
@@ -241,10 +240,11 @@ public class Driving extends OpMode
             Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
         }
         else {
-            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
         }
         if (gamepad2.left_stick_button) {
               leftStickButtonDown = true;
+              Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
                } else {
              if (leftStickButtonDown) {
                  DIservoposition = incrementDiservo(DIservoposition);
@@ -292,7 +292,7 @@ public class Driving extends OpMode
                 break;
             case LIFT_EXTEND:
                 //Check if lift has fully extended
-                if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 25) {
+                if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 20) {
                     //Deploy box
                     lift.extendBox();
                     liftState = LiftState.BOX_EXTEND;
@@ -314,60 +314,39 @@ public class Driving extends OpMode
                     liftHeight = LiftConstants.liftLow;
                 }
                 if (gamepad2.right_stick_y < -0.6 && !liftIncrease) { // lift goes up
-                    liftHeight += 200;
+                    liftHeight += 225;
                     liftIncrease = true;
                 } else if (gamepad2.right_stick_y > -0.6 ) {
                     liftIncrease = false;
                 }
 
                 if (gamepad2.right_stick_y > 0.6 && !liftDecrease) {
-                    liftHeight -= 200;
-                    liftIncrease = true;
+                    liftHeight -= 225;
+                    liftDecrease = true;
                 } else if (gamepad2.right_stick_y < 0.6) {
-                    liftIncrease = false;
+                    liftDecrease = false;
                 }
 
-                //Further adjustment from presets
-//                if(-gamepad2.left_stick_y >= 0.5 && heightAdjust == 0) {
-//                    liftHeight += 200;
-//                    heightAdjust = 1;
-//                }
-//                if(-gamepad2.left_stick_y <= 0.5 && heightAdjust == 1) {
-//                    liftHeight -= 200;
-//                    heightAdjust = 0;
-//                }
-
-                if (gamepad2.right_stick_button && !boxDrop) {
+                //Servo Drop: Changes boxDrop variable too stop intake code
+                if (gamepad2.right_stick_button) {
                     //Turn on Outtake Servo
-                    IOservo.setPower(-10);
+                    IOservo.setPower(-1);
                     boxDrop = true;
                    // heightAdjust = 1;
-                    liftState = LiftState.BOX_RETRACT;
-                } else  {
+                } else{
                     boxDrop = false;
+                    IOservo.setPower(0);
                 }
 
-                break;
-            case BOX_RETRACT:
-                if (gamepad2.right_bumper) {
-                    liftHeight = LiftConstants.liftHigh;
-                } else if (gamepad2.right_trigger>= 0.9) {
-                    liftHeight = LiftConstants.liftMedium;
-                } else if (gamepad2.left_bumper) {
-                    liftHeight = LiftConstants.liftLow;
+                if (gamepad2.left_trigger >= 0.8) {
+                    IOservo.setPower(0);
+                    lift.retractBox();
+                    liftState = LiftState.LIFT_RETRACT;
                 }
-                    if (gamepad2.x) {
-                        IOservo.setPower(-1);
-                    } else
-                        IOservo.setPower(0);
-                    if (gamepad2.left_trigger >= 0.8) {
-                        IOservo.setPower(0);
-                        lift.retractBox();
-                        liftState = LiftState.LIFT_RETRACT;
-                    }
                 break;
             case LIFT_RETRACT:
                 // Wait for servo to return to Idle
+                lift.retractBox();
                 if (rightServo.getPosition() == LiftConstants.BoxIdle) {
                     liftState = LiftState.LIFT_RETRACTED;
                     //Retract Lift
@@ -467,6 +446,9 @@ public class Driving extends OpMode
                 droneState = droneState.LIFT_START;
         }
 
+        //SAFETY
+        if (gamepad2.y)
+            liftState = LiftState.LIFT_START;
 
         //Rezeroing the slides using limit switch
         //Adds an offset value to the liftHeight based on the left motors difference
