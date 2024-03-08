@@ -78,11 +78,17 @@ public class BlueRight extends LinearOpMode {
         });
         //TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
         TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-36, 30))
+                .lineTo(new Vector2d(-40, 50))
+                .lineTo(new Vector2d(-40,38))
+                .turn(Math.toRadians(135))
+                .forward(3)
                 .build();
                 // spit out pixel on line
         TrajectorySequence BackBoardLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
-                .lineTo(new Vector2d(-34,18))
+                .back(6)
+                .turn(Math.toRadians(225))
+                .strafeTo(new Vector2d (-40, 10))
+                .lineTo(new Vector2d(-35,10))
                 .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
                 .lineTo(new Vector2d(30,8))
                 .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
@@ -97,17 +103,23 @@ public class BlueRight extends LinearOpMode {
 
        // TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
         TrajectorySequence PreDropRight = robot.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-36, 30))
+                .lineTo(new Vector2d(-40, 50))
+                .lineToLinearHeading(new Pose2d(-36, 38, Math.toRadians(90)))
+                .lineTo(new Vector2d(-36,17))
+                .strafeLeft(7)
                 // spit out pixel here
                 .build();
         TrajectorySequence BackBoardRight = robot.trajectorySequenceBuilder(PreDropRight.end())
-                .lineTo(new Vector2d(-34,18))
+                .back(5)
+                .turn(Math.toRadians(90))
+                .lineTo(new Vector2d(-34,10))
                 .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
-                .lineTo(new Vector2d(30,8))
-                .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
+                .lineTo(new Vector2d(30, 8))
+                .splineToConstantHeading(new Vector2d(50,28), Math.toRadians(0))
+                //place pixel on backboard
                 .build();
         TrajectorySequence ParkRight = robot.trajectorySequenceBuilder(BackBoardRight.end())
-                .splineToConstantHeading(new Vector2d(56,8), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(50,8), Math.toRadians(0))
                 .build();
 
 
@@ -210,8 +222,69 @@ public class BlueRight extends LinearOpMode {
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
                 robot.followTrajectorySequence(BackBoardRight);
+                while(liftState != LiftState.LIFT_DONE){
+                    switch (liftState) {
+                        case LIFT_EXTEND:
+                            //Extend lift
+                            liftHeight = LiftConstants.liftAuto;
+                            //Check if lift has fully extended
+                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
+                                //Deploy box
+                                liftState = LiftState.BOX_EXTEND;
+                                lift.AutoBoxReady();
+                            }
+                            break;
+                        case BOX_EXTEND:
+                            //Wait for servo to reach position
+                            if (rightServo.getPosition() == LiftConstants.AutoBoxReady) {
+                                liftState = LiftState.LIFT_DUMP;
+                            }
+                            break;
+                        case LIFT_DUMP:
+                            liftState = LiftState.BOX_RETRACT;
+                            //Turn on Outtake Servo
+                            IOservo.setPower(-1);
+                            //Reset outtake timer
+                            liftTimer.reset();
+                            break;
+                        case BOX_RETRACT:
+                            //Wait for pixels to spin out
+                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
+                                //Turn off Outtake Servo
+                                IOservo.setPower(0);
+                                lift.retractBox();
+                                liftState = LiftState.LIFT_RETRACT;
+                                liftTimer.reset();
+                            }
+                            break;
+                        case LIFT_RETRACT:
+                            //Retract Box
+                            // Wait for servo to return to Idle
+                            if (liftTimer.seconds() >= 0.6) {
+                                liftState = LiftState.LIFT_RETRACTED;
+                                liftHeight = LiftConstants.liftRetracted;
+                            }
+                            break;
+                        case LIFT_RETRACTED:
+                            //Retract Lift
+
+                            //Wait for Lift to return to idle
+                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
+                                liftState = LiftState.LIFT_DONE;
+                            }
+                            break;
+                    }
+                    lift.setHeight(liftHeight);
+                }
+                lift.disableMotors();
+
+
+                preDropLeft.setPosition(0.85);
+                sleep(1000);
+
                 robot.followTrajectorySequence(ParkRight);
                 break;
+
 
 
             case MIDDLE:

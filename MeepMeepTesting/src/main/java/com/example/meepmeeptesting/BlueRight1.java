@@ -24,11 +24,16 @@ public class BlueRight1 {
                                 //.splineToConstantHeading(new Vector2d(50, 34), Math.toRadians(0))
                                 // put pixel on board here
                                 //.splineToConstantHeading(new Vector2d(58, 14), Math.toRadians(0))
-                                .lineTo(new Vector2d(-36, 30))
+                                .lineTo(new Vector2d(-38, 50))
+                                .lineToLinearHeading(new Pose2d(-36, 38, Math.toRadians(90)))
+                                .lineTo(new Vector2d(-36,15))
+                                .strafeLeft(7)
+                                .back(3)
+                                .turn(Math.toRadians(90))
                                 //place pixel on line
-                                .lineTo(new Vector2d(-34,18))
+                                .lineTo(new Vector2d(-34,10))
                                 .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
-                                .lineTo(new Vector2d(30,8))
+                                .lineTo(new Vector2d(30, 8))
                                 .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
                                 .turn (0)
                                 //place pixel on backboard

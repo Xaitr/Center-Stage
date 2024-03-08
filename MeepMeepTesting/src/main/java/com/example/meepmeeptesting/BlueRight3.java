@@ -6,6 +6,8 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
+import java.util.Vector;
+
 public class BlueRight3 {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
@@ -28,10 +30,15 @@ public class BlueRight3 {
                                 //.back(12)
 
                                // .lineTo(new Vector2d(-36, 30))
-                                .lineToLinearHeading(new Pose2d(-36,30))
+                                .lineTo(new Vector2d(-40, 50))
+                                .lineTo(new Vector2d(-40,38))
+                                .turn(Math.toRadians(135))
+                                .forward(3)
                                 //place pixel on line
-                                .lineTo(new Vector2d(-34,18))
-                                .turn(Math.toRadians(180))
+                                .back(6)
+                                .turn(Math.toRadians(225))
+                                .strafeTo(new Vector2d (-40, 10))
+                                .lineTo(new Vector2d(-35,10))
                                 .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
                                 .lineTo(new Vector2d(30,8))
                                 .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
