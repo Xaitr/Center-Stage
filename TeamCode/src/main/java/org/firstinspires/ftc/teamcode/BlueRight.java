@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
@@ -126,15 +127,20 @@ public class BlueRight extends LinearOpMode {
 
        //TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-44,47))
+                .lineToConstantHeading(new Vector2d(-48,47))
+                .strafeLeft(30)
                 .lineToLinearHeading(new Pose2d(-36, 15, Math.toRadians(75)))
                 //spit out pixel here
                 .build();
          TrajectorySequence BackBoardMid = robot.trajectorySequenceBuilder(PreDropMid.end())
                  .lineTo(new Vector2d(-36,13))
                  .turn(Math.toRadians(105))
-                 .lineTo(new Vector2d(30,13))
-                 .splineToConstantHeading(new Vector2d(49.5,32), Math.toRadians(0))
+                 .lineTo(new Vector2d(20,13),
+                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                 .splineToConstantHeading(new Vector2d(50.5,35), Math.toRadians(0),
+                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 //place pixel on backboard
                  .build();
                  TrajectorySequence ParkMid = robot.trajectorySequenceBuilder(BackBoardMid.end())
@@ -160,7 +166,7 @@ public class BlueRight extends LinearOpMode {
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
+                            liftHeight = 1250;
                             //Check if lift has fully extended
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box

@@ -25,6 +25,7 @@ public class RedRight extends LinearOpMode {
     Outake outake = new Outake();
     Intake intake = new Intake();
     PidControl2 lift = new PidControl2();
+    private Servo preDropRight = null;
     OpenCvCamera camera;
     private enum LiftState {
         LIFT_EXTEND,
@@ -45,6 +46,8 @@ public class RedRight extends LinearOpMode {
 
 
 
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
@@ -55,13 +58,14 @@ public class RedRight extends LinearOpMode {
         OpenCv detector = new OpenCv (telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(13, -65, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(13, 65, Math.toRadians(180));
         robot.setPoseEstimate(startPose);
         Pose2d prePark = new Pose2d(0, 0, 0);
         intake.init(hardwareMap);
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
+        preDropRight  = hardwareMap.get(Servo.class,  "preDropRight");
         lift.init(hardwareMap);
 
 
@@ -77,99 +81,94 @@ public class RedRight extends LinearOpMode {
             public void onError(int errorCode) {
             }
         });
-        /*
-        TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-            .lineToConstantHeading(new Vector2d(14, -34))
-            .splineToConstantHeading(new Vector2d(34, -34), Math.toRadians(0))
-            .addTemporalMarker(() -> {
-                    intake.sReject();
-                    sleep(1000); // stops program for 1000 milliseconds
-                    intake.RejectOff();
-                })
-                .waitSeconds(1)
-                // spit out pixel
-            .splineTo(new Vector2d(48, -34), Math.toRadians(0))
-
-            // put pixel on board here
-            .strafeLeft(25)
 
 
-            .build();
- */
-        TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(50,-32))
-                //place pixel on backboard
+        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
+                .strafeTo(new Vector2d(52,-42))
+                .build();
+        //put pixel on backboard
+        TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
                 .lineTo(new Vector2d(33, -32))
-                //place pixel on line
-                .addTemporalMarker(() -> {
-                    intake.Reject();
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    intake.RejectOff();
-                })
+                .build();
+        //put pixel on left line
+
+        TrajectorySequence GeneralpositionLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
                 .lineTo(new Vector2d(33, -8))
+                .build();
+        //move to general position before white pixels from left line
+
+        TrajectorySequence WhiteStackPathLeft = robot.trajectorySequenceBuilder(GeneralpositionLeft.end())
                 .lineTo(new Vector2d (-56, -8))
-                // pick up white pixels off stack
+                .build();
+        //intake pixel off white stack
+
+        TrajectorySequence StacktoBackBoardLeft = robot.trajectorySequenceBuilder(WhiteStackPathLeft.end())
                 .strafeTo(new Vector2d(38, -8))
                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
-                //place pixel on backboard
-                .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
-                //park
                 .build();
+        // put white pixels on backboardboard
+        TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(StacktoBackBoardLeft.end())
+                .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
+                .build();
+        //park
 
-        TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(50,-32))
-                // place pixel on backboard
-                .lineTo(new Vector2d(10, -32))
-                //place pixel on line
-                .addTemporalMarker(() -> {
-                    intake.Reject();
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    intake.RejectOff();
-                })
-                .lineToConstantHeading (new Vector2d(15, -32))
-                .splineToConstantHeading(new Vector2d(10,-10), Math.toRadians(90))
-                .lineTo(new Vector2d (-56, -10))
-                //grab pixel of stack
-                .strafeTo(new Vector2d(16,-10))
-                .strafeTo(new Vector2d(38, -10))
+
+        //TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
+        TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
+                .strafeTo(new Vector2d(52,-30))
+                //place pixel on backboard
+                .build();
+        TrajectorySequence PreDropRight = robot.trajectorySequenceBuilder(BackBoardDropRight.end())
+                .lineTo(new Vector2d(10, -35))
+                .build();
+        //place pixel on line
+        TrajectorySequence GeneralpositionRight = robot.trajectorySequenceBuilder(PreDropRight.end())
+                .lineTo(new Vector2d(33, -8))
+                .build();
+        //move to general position before white pixels from left line
+        TrajectorySequence WhiteStackPathRight = robot.trajectorySequenceBuilder(GeneralpositionRight.end())
+                .lineTo(new Vector2d (-56, -8))
+                .build();
+        //intake pixel off white stack
+        TrajectorySequence StacktoBackBoardRight = robot.trajectorySequenceBuilder(WhiteStackPathRight.end())
+                .strafeTo(new Vector2d(38, -8))
                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
-                //place pixel on backboard
-                .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
-                //park
-
-
                 .build();
-        TrajectorySequence Park = robot.trajectorySequenceBuilder(new Pose2d(51, -37, Math.toRadians(180)))
-                .lineToConstantHeading(new Vector2d(48,-37))
-                .splineToConstantHeading(new Vector2d(56,-68), Math.toRadians(0))
+        // put white pixels on backboardboard
+        TrajectorySequence ParkRight = robot.trajectorySequenceBuilder(StacktoBackBoardRight.end())
+                .splineToConstantHeading(new Vector2d(46,-60), Math.toRadians(0))
                 .build();
-        TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(50,-32))
-                // place pixel on backboard
-                .strafeRight(10)
-                .lineTo(new Vector2d(15, -22))
-                //place pixel on line
-                .addTemporalMarker(() -> {
-                    intake.Reject();
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    intake.RejectOff();
-                })
-                .splineToConstantHeading(new Vector2d(16, -10), Math.toRadians(0))
-                .lineTo(new Vector2d (-56, -10))
-                //grab pixels off stack
-                .strafeTo(new Vector2d(16,-10))
-                .strafeTo(new Vector2d(38, -10))
+        //park
+
+        //TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
+        TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(startPose)
+                .strafeTo(new Vector2d(52,-36))
+                .build();
+        //place pixel on backboard
+        TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
+                .lineTo(new Vector2d(20, -32))
+                .build();
+        //place pixel on line
+        TrajectorySequence GeneralpositionMid = robot.trajectorySequenceBuilder(PreDropMid.end())
+                .lineTo(new Vector2d(33, -8))
+                .build();
+        //move to general position before white pixels from left line
+
+        TrajectorySequence WhiteStackPathMid = robot.trajectorySequenceBuilder(GeneralpositionMid.end())
+                .lineTo(new Vector2d (-56, -8))
+                .build();
+        //intake pixel off white stack
+
+        TrajectorySequence StacktoBackBoardMid = robot.trajectorySequenceBuilder(WhiteStackPathMid.end())
+                .strafeTo(new Vector2d(38, -8))
                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
-                //place pixel on backboard
+                .build();
+        // put white pixels on backboardboard
+        TrajectorySequence ParkMid = robot.trajectorySequenceBuilder(StacktoBackBoardMid.end())
                 .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
-                //park
-                 .build();
+                .build();
+        //park
+
         waitForStart();
 
 
@@ -177,7 +176,7 @@ public class RedRight extends LinearOpMode {
             case LEFT:
                 telemetry.addData("Left side", "proceed"); // open cv detects left spike
                 telemetry.update();
-                robot.followTrajectorySequence(Left);
+                robot.followTrajectorySequence(BackBoardDropLeft);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
@@ -235,14 +234,17 @@ public class RedRight extends LinearOpMode {
                 }
 
                 lift.disableMotors();
-                robot.followTrajectorySequence(Park);
+                robot.followTrajectorySequence(PreDropLeft);
+                preDropRight.setPosition(0.85);
+                sleep(1000);
+                robot.followTrajectorySequence(ParkLeft);
                 break;
 
 
             case RIGHT:
                 telemetry.addData("Right Side", "proceed");
                 telemetry.update();
-                robot.followTrajectorySequence(Right);
+                robot.followTrajectorySequence(BackBoardDropRight);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
@@ -300,7 +302,10 @@ public class RedRight extends LinearOpMode {
                 }
 
                 lift.disableMotors();
-                robot.followTrajectorySequence(Park);
+                robot.followTrajectorySequence(PreDropRight);
+                preDropRight.setPosition(0.85);
+                sleep(1000);
+                robot.followTrajectorySequence(ParkLeft);
                 break;
 
 
@@ -308,7 +313,7 @@ public class RedRight extends LinearOpMode {
             case MIDDLE:
                 telemetry.addData("Middle", "proceed");
                 telemetry.update();
-                robot.followTrajectorySequence(Middle);
+                robot.followTrajectorySequence(BackBoardDropMid);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
@@ -366,7 +371,9 @@ public class RedRight extends LinearOpMode {
                 }
 
                 lift.disableMotors();
-                robot.followTrajectorySequence(Park);
+                preDropRight.setPosition(0.85);
+                sleep(1000);
+                robot.followTrajectorySequence(ParkLeft);
                 break;
 
 
@@ -374,8 +381,8 @@ public class RedRight extends LinearOpMode {
             case NOT_FOUND:
                 telemetry.addData("not found", "proceed");
                 telemetry.update();
-                robot.followTrajectorySequence(Right);
-                robot.followTrajectorySequence(Park);
+                robot.followTrajectorySequence(BackBoardDropRight);
+                robot.followTrajectorySequence(ParkLeft);
         }
         camera.stopStreaming();
     }
