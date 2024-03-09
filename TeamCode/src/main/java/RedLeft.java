@@ -65,7 +65,7 @@ public class RedLeft extends LinearOpMode {
         OpenCv detector = new OpenCv (telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(-37, -65, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(-35.5, -65, Math.toRadians(180));
         robot.setPoseEstimate(startPose);
         Pose2d prePark = new Pose2d(0, 0, 0);
         intake.init(hardwareMap);
@@ -91,7 +91,7 @@ public class RedLeft extends LinearOpMode {
                 .lineTo(new Vector2d(-40, -50))
                 .lineToLinearHeading(new Pose2d(-36, -38, Math.toRadians(-90)))
                 .lineTo(new Vector2d(-36,-17))
-                .strafeRight(7)
+                .strafeRight(6)
                 // spit out pixel here
                 .build();
         TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
@@ -100,11 +100,11 @@ public class RedLeft extends LinearOpMode {
                 .lineTo(new Vector2d(-34,-10))
                 .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
                 .lineTo(new Vector2d(30, -8))
-                .splineToConstantHeading(new Vector2d(50,-28), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(50,-33), Math.toRadians(0))
                 //place pixel on backboard
                 .build();
         TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
-                .splineToConstantHeading(new Vector2d(50,-8), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(50,-11), Math.toRadians(0))
                 .build();
 
 
@@ -136,7 +136,7 @@ public class RedLeft extends LinearOpMode {
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(startPose)
                 .lineToConstantHeading(new Vector2d(-48,-47))
                 .strafeRight(30)
-                .lineToLinearHeading(new Pose2d(-36, -15, Math.toRadians(75)))
+                .lineToLinearHeading(new Pose2d(-36, -15, Math.toRadians(- 75)))
                 //spit out pixel here
                 .build();
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(PreDropMid.end())
@@ -145,13 +145,13 @@ public class RedLeft extends LinearOpMode {
                 .lineTo(new Vector2d(20,-13),
                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .splineToConstantHeading(new Vector2d(50.5,-35), Math.toRadians(0),
+                .splineToConstantHeading(new Vector2d(50.5,-38), Math.toRadians(0),
                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 //place pixel on backboard
                 .build();
         TrajectorySequence ParkMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
-                .splineToConstantHeading(new Vector2d(48,-8), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(48,-10), Math.toRadians(0))
                 //park
                 .build();
 
@@ -164,11 +164,15 @@ public class RedLeft extends LinearOpMode {
                 telemetry.addData("Left side", "proceed"); // open cv detects left spike
                 telemetry.update();
                 robot.followTrajectorySequence(PreDropLeft);
+                preDropRight.setPosition(0.65);
+                sleep(1000);
+                preDropRight.setPosition(0.75);
+                robot.followTrajectorySequence(BackBoardDropLeft);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
+                            liftHeight = LiftConstants.liftLow;
                             //Check if lift has fully extended
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
@@ -222,10 +226,6 @@ public class RedLeft extends LinearOpMode {
 
                 lift.disableMotors();
 
-                robot.followTrajectorySequence(BackBoardDropLeft);
-                preDropRight.setPosition(0.65);
-                sleep(1000);
-                preDropRight.setPosition(0.75);
                 robot.followTrajectorySequence(ParkLeft);
                 break;
 
@@ -234,11 +234,15 @@ public class RedLeft extends LinearOpMode {
                 telemetry.addData("Right Side", "proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(PreDropRight);
+                preDropRight.setPosition(0.65);
+                sleep(1000);
+                preDropRight.setPosition(0.75);
+                robot.followTrajectorySequence(BackBoardDropRight);
                 while(liftState != RedLeft.LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
+                            liftHeight = LiftConstants.liftLow;
                             //Check if lift has fully extended
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
@@ -292,10 +296,6 @@ public class RedLeft extends LinearOpMode {
 
                 lift.disableMotors();
 
-                robot.followTrajectorySequence(BackBoardDropRight);
-                preDropRight.setPosition(0.65);
-                sleep(1000);
-                preDropRight.setPosition(0.75);
                 robot.followTrajectorySequence(ParkRight);
                 break;
 
@@ -305,11 +305,15 @@ public class RedLeft extends LinearOpMode {
                 telemetry.addData("Middle", "proceed");
                 telemetry.update();
                 robot.followTrajectorySequence(PreDropMid);
+                preDropRight.setPosition(0.65);
+                sleep(1000);
+                preDropRight.setPosition(0.75);
+                robot.followTrajectorySequence(BackBoardDropMid);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
+                            liftHeight = LiftConstants.liftLow;
                             //Check if lift has fully extended
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
@@ -362,10 +366,7 @@ public class RedLeft extends LinearOpMode {
                 }
 
                 lift.disableMotors();
-                robot.followTrajectorySequence(BackBoardDropMid);
-                preDropRight.setPosition(0.65);
-                sleep(1000);
-                preDropRight.setPosition(0.75);
+
                 robot.followTrajectorySequence(ParkMid);
                 break;
 

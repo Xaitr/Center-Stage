@@ -41,5 +41,5 @@ public class LiftConstants {
 
     //Lift height for winch
     public static int liftWinch = 720;
-    public static int liftAuto = 860;
+    public static int liftAuto = 830;
 }

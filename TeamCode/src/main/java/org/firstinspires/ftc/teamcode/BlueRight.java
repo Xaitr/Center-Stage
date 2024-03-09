@@ -80,23 +80,28 @@ public class BlueRight extends LinearOpMode {
         //TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
         TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(-40, 50))
-                .lineTo(new Vector2d(-40,38))
+                .lineTo(new Vector2d(-40,40))
                 .turn(Math.toRadians(135))
-                .forward(3)
+                .forward(4)
                 .build();
                 // spit out pixel on line
         TrajectorySequence BackBoardLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
                 .back(6)
-                .turn(Math.toRadians(225))
+                .turn(Math.toRadians(-135))
                 .strafeTo(new Vector2d (-40, 10))
                 .lineTo(new Vector2d(-35,10))
                 .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
-                .lineTo(new Vector2d(30,8))
-                .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
+                .lineTo(new Vector2d(30,8),
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .splineToConstantHeading(new Vector2d(50,35), Math.toRadians(0),
+        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+        //place pixel on backboard
                 .build();
                 //place pixel on backboard
         TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(BackBoardLeft.end())
-                .splineToConstantHeading(new Vector2d(56,8), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(50,8), Math.toRadians(0))
                 .build();
 
 
@@ -157,16 +162,15 @@ public class BlueRight extends LinearOpMode {
                 telemetry.addData("Left side", "proceed"); // open cv detects left spike
                 telemetry.update();
                 robot.followTrajectorySequence(PreDropLeft);
-
-
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
+                preDropLeft.setPosition(0.75);
                 robot.followTrajectorySequence(BackBoardLeft);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
-                            liftHeight = 1250;
+                            liftHeight = LiftConstants.liftLow;
                             //Check if lift has fully extended
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
@@ -227,12 +231,13 @@ public class BlueRight extends LinearOpMode {
                 robot.followTrajectorySequence(PreDropRight);
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
+                preDropLeft.setPosition(0.75);
                 robot.followTrajectorySequence(BackBoardRight);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
+                            liftHeight = LiftConstants.liftLow;
                             //Check if lift has fully extended
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
@@ -285,9 +290,6 @@ public class BlueRight extends LinearOpMode {
                 lift.disableMotors();
 
 
-                preDropLeft.setPosition(0.85);
-                sleep(1000);
-
                 robot.followTrajectorySequence(ParkRight);
                 break;
 
@@ -299,12 +301,13 @@ public class BlueRight extends LinearOpMode {
                 robot.followTrajectorySequence(PreDropMid);
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
+                preDropLeft.setPosition(0.75);
                 robot.followTrajectorySequence(BackBoardMid);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
+                            liftHeight = LiftConstants.liftLow;
                             //Check if lift has fully extended
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
