@@ -58,7 +58,7 @@ public class RedRight extends LinearOpMode {
         OpenCv detector = new OpenCv (telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(13, 65, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(13, -65, Math.toRadians(180));
         robot.setPoseEstimate(startPose);
         Pose2d prePark = new Pose2d(0, 0, 0);
         intake.init(hardwareMap);
@@ -82,71 +82,72 @@ public class RedRight extends LinearOpMode {
             }
         });
 
+        //TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
 
-        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,-42))
+        TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
+                .strafeTo(new Vector2d(53,-44))
                 .build();
         //put pixel on backboard
-        TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
-                .lineTo(new Vector2d(33, -32))
+        TrajectorySequence PreDropRight = robot.trajectorySequenceBuilder(BackBoardDropRight.end())
+                .lineTo(new Vector2d(33, -33))
                 .build();
         //put pixel on left line
 
-        TrajectorySequence GeneralpositionLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
-                .lineTo(new Vector2d(33, -8))
-                .build();
-        //move to general position before white pixels from left line
-
-        TrajectorySequence WhiteStackPathLeft = robot.trajectorySequenceBuilder(GeneralpositionLeft.end())
-                .lineTo(new Vector2d (-56, -8))
-                .build();
-        //intake pixel off white stack
-
-        TrajectorySequence StacktoBackBoardLeft = robot.trajectorySequenceBuilder(WhiteStackPathLeft.end())
-                .strafeTo(new Vector2d(38, -8))
-                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
-                .build();
-        // put white pixels on backboardboard
-        TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(StacktoBackBoardLeft.end())
-                .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
-                .build();
-        //park
-
-
-        //TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-        TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,-30))
-                //place pixel on backboard
-                .build();
-        TrajectorySequence PreDropRight = robot.trajectorySequenceBuilder(BackBoardDropRight.end())
-                .lineTo(new Vector2d(10, -35))
-                .build();
-        //place pixel on line
         TrajectorySequence GeneralpositionRight = robot.trajectorySequenceBuilder(PreDropRight.end())
                 .lineTo(new Vector2d(33, -8))
                 .build();
         //move to general position before white pixels from left line
+
         TrajectorySequence WhiteStackPathRight = robot.trajectorySequenceBuilder(GeneralpositionRight.end())
                 .lineTo(new Vector2d (-56, -8))
                 .build();
         //intake pixel off white stack
+
         TrajectorySequence StacktoBackBoardRight = robot.trajectorySequenceBuilder(WhiteStackPathRight.end())
                 .strafeTo(new Vector2d(38, -8))
                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
                 .build();
         // put white pixels on backboardboard
         TrajectorySequence ParkRight = robot.trajectorySequenceBuilder(StacktoBackBoardRight.end())
+                .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
+                .build();
+        //park
+
+
+        //TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
+        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
+                .strafeTo(new Vector2d(53,-30))
+                //place pixel on backboard
+                .build();
+        TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
+                .lineTo(new Vector2d(10.5, -35))
+                .build();
+        //place pixel on line
+        TrajectorySequence GeneralpositionLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
+                .lineTo(new Vector2d(33, -8))
+                .build();
+        //move to general position before white pixels from left line
+        TrajectorySequence WhiteStackPathLeft = robot.trajectorySequenceBuilder(GeneralpositionLeft.end())
+                .lineTo(new Vector2d (-56, -8))
+                .build();
+        //intake pixel off white stack
+        TrajectorySequence StacktoBackBoardLeft = robot.trajectorySequenceBuilder(WhiteStackPathLeft.end())
+                .strafeTo(new Vector2d(38, -8))
+                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
+                .build();
+        // put white pixels on backboardboard
+        TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(StacktoBackBoardLeft.end())
                 .splineToConstantHeading(new Vector2d(46,-60), Math.toRadians(0))
                 .build();
         //park
 
         //TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,-36))
+                .strafeTo(new Vector2d(53,-36))
                 .build();
         //place pixel on backboard
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
-                .lineTo(new Vector2d(20, -32))
+                .lineTo(new Vector2d(23, -31))
                 .build();
         //place pixel on line
         TrajectorySequence GeneralpositionMid = robot.trajectorySequenceBuilder(PreDropMid.end())
@@ -234,9 +235,11 @@ public class RedRight extends LinearOpMode {
                 }
 
                 lift.disableMotors();
+
                 robot.followTrajectorySequence(PreDropLeft);
-                preDropRight.setPosition(0.85);
+                preDropRight.setPosition(0.65);
                 sleep(1000);
+                preDropRight.setPosition(0.75);
                 robot.followTrajectorySequence(ParkLeft);
                 break;
 
@@ -302,10 +305,12 @@ public class RedRight extends LinearOpMode {
                 }
 
                 lift.disableMotors();
+
                 robot.followTrajectorySequence(PreDropRight);
-                preDropRight.setPosition(0.85);
+                preDropRight.setPosition(0.65);
                 sleep(1000);
-                robot.followTrajectorySequence(ParkLeft);
+                preDropRight.setPosition(0.75);
+                robot.followTrajectorySequence(ParkRight);
                 break;
 
 
@@ -371,9 +376,11 @@ public class RedRight extends LinearOpMode {
                 }
 
                 lift.disableMotors();
-                preDropRight.setPosition(0.85);
+                robot.followTrajectorySequence(PreDropMid);
+                preDropRight.setPosition(0.65);
                 sleep(1000);
-                robot.followTrajectorySequence(ParkLeft);
+                preDropRight.setPosition(0.75);
+                robot.followTrajectorySequence(ParkMid);
                 break;
 
 

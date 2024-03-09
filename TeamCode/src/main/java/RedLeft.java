@@ -1,14 +1,24 @@
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Driving;
+import org.firstinspires.ftc.teamcode.Intake;
+import org.firstinspires.ftc.teamcode.LiftConstants;
+import org.firstinspires.ftc.teamcode.OpenCv;
 import org.firstinspires.ftc.teamcode.OpenCvblue;
 import org.firstinspires.ftc.teamcode.Outake;
+import org.firstinspires.ftc.teamcode.PidControl2;
+import org.firstinspires.ftc.teamcode.RedRight;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
@@ -20,8 +30,30 @@ import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 @Autonomous
 public class RedLeft extends LinearOpMode {
     Outake outake = new Outake();
-    Driving driving = new Driving();
+    Intake intake = new Intake();
+    PidControl2 lift = new PidControl2();
+    private Servo preDropRight = null;
     OpenCvCamera camera;
+    private enum LiftState {
+        LIFT_EXTEND,
+        BOX_EXTEND,
+        LIFT_DUMP,
+        BOX_RETRACT,
+        LIFT_RETRACT,
+        LIFT_RETRACTED,
+        LIFT_DONE
+    }
+    //Timer for waiting for pixels to spin out
+    ElapsedTime liftTimer = new ElapsedTime();
+    LiftState liftState = LiftState.LIFT_EXTEND;
+    private int liftHeight = 0;
+    private CRServo IOservo = null;
+    private DcMotor leftLift = null;
+    private Servo rightServo = null;
+
+
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -30,10 +62,18 @@ public class RedLeft extends LinearOpMode {
                 .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
         OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        OpenCvblue detector = new OpenCvblue(telemetry);
+        OpenCv detector = new OpenCv (telemetry);
         camera.setPipeline(detector);
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(-34, -61, Math.toRadians(270));
+        Pose2d startPose = new Pose2d(-37, -65, Math.toRadians(180));
+        robot.setPoseEstimate(startPose);
+        Pose2d prePark = new Pose2d(0, 0, 0);
+        intake.init(hardwareMap);
+        leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
+        IOservo = hardwareMap.get(CRServo.class, "IOservo");
+        rightServo = hardwareMap.get(Servo.class, "Right_outtake");
+        preDropRight  = hardwareMap.get(Servo.class,  "preDropRight");
+        lift.init(hardwareMap);
 
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -46,56 +86,75 @@ public class RedLeft extends LinearOpMode {
             public void onError(int errorCode) {
             }
         });
-        TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
-                .splineToConstantHeading(new Vector2d(-36, -33), Math.toRadians(0))
-                .lineTo(new Vector2d(-36, -30))
-                .addTemporalMarker(() -> {
-                    outake.setPower(-1);
-                    sleep(1000); // stops program for 1000 miliseconds
-                    outake.setPower(0);
-                })
-                .waitSeconds(1)
+        // TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
+        TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(startPose)
+                .lineTo(new Vector2d(-40, -50))
+                .lineToLinearHeading(new Pose2d(-36, -38, Math.toRadians(-90)))
+                .lineTo(new Vector2d(-36,-17))
+                .strafeRight(7)
                 // spit out pixel here
-                .lineTo(new Vector2d(-34,-18))
+                .build();
+        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
+                .back(5)
+                .turn(Math.toRadians(-90))
+                .lineTo(new Vector2d(-34,-10))
                 .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
-                .lineTo(new Vector2d(30,-8))
-                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
+                .lineTo(new Vector2d(30, -8))
+                .splineToConstantHeading(new Vector2d(50,-28), Math.toRadians(0))
                 //place pixel on backboard
                 .build();
+        TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
+                .splineToConstantHeading(new Vector2d(50,-8), Math.toRadians(0))
+                .build();
 
 
 
-        TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-34, -25))
-                .addTemporalMarker(() -> {
-                    outake.setPower(-1);
-                    sleep(1000); // stops program for 1000 miliseconds
-                    outake.setPower(0);
-                })
-                .waitSeconds(1)
-                // spit out pixel here
-                .lineTo(new Vector2d(-34,-18))
-                .turn(Math.toRadians(180))
+        //TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
+        TrajectorySequence PreDropRight = robot.trajectorySequenceBuilder(startPose)
+                .lineTo(new Vector2d(-40, -50))
+                .lineTo(new Vector2d(-40,-38))
+                .turn(Math.toRadians(-135))
+                .forward(3)
+                .build();
+        // spit out pixel on line
+        TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(PreDropRight.end())
+                .back(6)
+                .turn(Math.toRadians(-225))
+                .strafeTo(new Vector2d (-40, -10))
+                .lineTo(new Vector2d(-35,-10))
                 .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
                 .lineTo(new Vector2d(30,-8))
                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
+                .build();
+        //place pixel on backboard
+        TrajectorySequence ParkRight = robot.trajectorySequenceBuilder(BackBoardDropRight.end())
+                .splineToConstantHeading(new Vector2d(56,-8), Math.toRadians(0))
+                .build();
+
+
+        //TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
+        TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(startPose)
+                .lineToConstantHeading(new Vector2d(-48,-47))
+                .strafeRight(30)
+                .lineToLinearHeading(new Pose2d(-36, -15, Math.toRadians(75)))
+                //spit out pixel here
+                .build();
+        TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(PreDropMid.end())
+                .lineTo(new Vector2d(-36,-13))
+                .turn(Math.toRadians(-105))
+                .lineTo(new Vector2d(20,-13),
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .splineToConstantHeading(new Vector2d(50.5,-35), Math.toRadians(0),
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 //place pixel on backboard
                 .build();
-
-        TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-30, -25))
-                .addTemporalMarker(() -> {
-                    outake.setPower(-1);
-                    sleep(1000); // stops program for 1000 miliseconds
-                    outake.setPower(0);
-                })
-                .waitSeconds(1)
-                // spit out pixel here
-                .lineTo(new Vector2d(-34,-18))
-                .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
-                .lineTo(new Vector2d(30,-8))
-                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
+        TrajectorySequence ParkMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
+                .splineToConstantHeading(new Vector2d(48,-8), Math.toRadians(0))
+                //park
                 .build();
+
 
         waitForStart();
 
@@ -104,28 +163,219 @@ public class RedLeft extends LinearOpMode {
             case LEFT:
                 telemetry.addData("Left side", "proceed"); // open cv detects left spike
                 telemetry.update();
-                robot.followTrajectorySequence(Left);
+                robot.followTrajectorySequence(PreDropLeft);
+                while(liftState != LiftState.LIFT_DONE){
+                    switch (liftState) {
+                        case LIFT_EXTEND:
+                            //Extend lift
+                            liftHeight = LiftConstants.liftAuto;
+                            //Check if lift has fully extended
+                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
+                                //Deploy box
+                                liftState = LiftState.BOX_EXTEND;
+                                lift.extendBox();
+                            }
+                            break;
+                        case BOX_EXTEND:
+                            //Wait for servo to reach position
+                            if (rightServo.getPosition() == LiftConstants.BoxReady) {
+                                liftState = LiftState.LIFT_DUMP;
+                            }
+                            break;
+                        case LIFT_DUMP:
+                            liftState = LiftState.BOX_RETRACT;
+                            //Turn on Outtake Servo
+                            IOservo.setPower(-1);
+                            //Reset outtake timer
+                            liftTimer.reset();
+                            break;
+                        case BOX_RETRACT:
+                            //Wait for pixels to spin out
+                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
+                                //Turn off Outtake Servo
+                                IOservo.setPower(0);
+                                lift.retractBox();
+                                liftState = LiftState.LIFT_RETRACT;
+                                liftTimer.reset();
+                            }
+                            break;
+                        case LIFT_RETRACT:
+                            //Retract Box
+
+                            // Wait for servo to return to Idle
+                            if (liftTimer.seconds() >= 0.6) {
+                                liftState = LiftState.LIFT_RETRACTED;
+                                liftHeight = LiftConstants.liftRetracted;
+                            }
+                            break;
+                        case LIFT_RETRACTED:
+                            //Retract Lift
+
+                            //Wait for Lift to return to idle
+                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
+                                liftState = RedLeft.LiftState.LIFT_DONE;
+                            }
+                            break;
+                    }
+                    lift.setHeight(liftHeight);
+                }
+
+                lift.disableMotors();
+
+                robot.followTrajectorySequence(BackBoardDropLeft);
+                preDropRight.setPosition(0.65);
+                sleep(1000);
+                preDropRight.setPosition(0.75);
+                robot.followTrajectorySequence(ParkLeft);
                 break;
 
 
             case RIGHT:
                 telemetry.addData("Right Side", "proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(PreDropRight);
+                while(liftState != RedLeft.LiftState.LIFT_DONE){
+                    switch (liftState) {
+                        case LIFT_EXTEND:
+                            //Extend lift
+                            liftHeight = LiftConstants.liftAuto;
+                            //Check if lift has fully extended
+                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
+                                //Deploy box
+                                liftState = RedLeft.LiftState.BOX_EXTEND;
+                                lift.AutoBoxReady();
+                            }
+                            break;
+                        case BOX_EXTEND:
+                            //Wait for servo to reach position
+                            if (rightServo.getPosition() == LiftConstants.AutoBoxReady) {
+                                liftState = RedLeft.LiftState.LIFT_DUMP;
+                            }
+                            break;
+                        case LIFT_DUMP:
+                            liftState = RedLeft.LiftState.BOX_RETRACT;
+                            //Turn on Outtake Servo
+                            IOservo.setPower(-1);
+                            //Reset outtake timer
+                            liftTimer.reset();
+                            break;
+                        case BOX_RETRACT:
+                            //Wait for pixels to spin out
+                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
+                                //Turn off Outtake Servo
+                                IOservo.setPower(0);
+                                lift.retractBox();
+                                liftState = RedLeft.LiftState.LIFT_RETRACT;
+                                liftTimer.reset();
+                            }
+                            break;
+                        case LIFT_RETRACT:
+                            //Retract Box
+
+                            // Wait for servo to return to Idle
+                            if (liftTimer.seconds() >= 0.6) {
+                                liftState = RedLeft.LiftState.LIFT_RETRACTED;
+                                liftHeight = LiftConstants.liftRetracted;
+                            }
+                            break;
+                        case LIFT_RETRACTED:
+                            //Retract Lift
+
+                            //Wait for Lift to return to idle
+                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
+                                liftState = RedLeft.LiftState.LIFT_DONE;
+                            }
+                            break;
+                    }
+                    lift.setHeight(liftHeight);
+                }
+
+                lift.disableMotors();
+
+                robot.followTrajectorySequence(BackBoardDropRight);
+                preDropRight.setPosition(0.65);
+                sleep(1000);
+                preDropRight.setPosition(0.75);
+                robot.followTrajectorySequence(ParkRight);
                 break;
-            //robot.followTrajectorySequence(Right);
+
 
 
             case MIDDLE:
                 telemetry.addData("Middle", "proceed");
                 telemetry.update();
+                robot.followTrajectorySequence(PreDropMid);
+                while(liftState != LiftState.LIFT_DONE){
+                    switch (liftState) {
+                        case LIFT_EXTEND:
+                            //Extend lift
+                            liftHeight = LiftConstants.liftAuto;
+                            //Check if lift has fully extended
+                            if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
+                                //Deploy box
+                                liftState = LiftState.BOX_EXTEND;
+                                lift.AutoBoxReady();
+                            }
+                            break;
+                        case BOX_EXTEND:
+                            //Wait for servo to reach position
+                            if (rightServo.getPosition() == LiftConstants.AutoBoxReady) {
+                                liftState = LiftState.LIFT_DUMP;
+                            }
+                            break;
+                        case LIFT_DUMP:
+                            liftState = LiftState.BOX_RETRACT;
+                            //Turn on Outtake Servo
+                            IOservo.setPower(-1);
+                            //Reset outtake timer
+                            liftTimer.reset();
+                            break;
+                        case BOX_RETRACT:
+                            //Wait for pixels to spin out
+                            if (liftTimer.seconds() >= LiftConstants.dumpTime) {
+                                //Turn off Outtake Servo
+                                IOservo.setPower(0);
+                                lift.retractBox();
+                                liftState = LiftState.LIFT_RETRACT;
+                                liftTimer.reset();
+                            }
+                            break;
+                        case LIFT_RETRACT:
+                            //Retract Box
+
+                            // Wait for servo to return to Idle
+                            if (liftTimer.seconds() >= 0.6) {
+                                liftState = LiftState.LIFT_RETRACTED;
+                                liftHeight = LiftConstants.liftRetracted;
+                            }
+                            break;
+                        case LIFT_RETRACTED:
+                            //Retract Lift
+
+                            //Wait for Lift to return to idle
+                            if (Math.abs(leftLift.getCurrentPosition() - LiftConstants.liftRetracted) < 10) {
+                                liftState = LiftState.LIFT_DONE;
+                            }
+                            break;
+                    }
+                    lift.setHeight(liftHeight);
+                }
+
+                lift.disableMotors();
+                robot.followTrajectorySequence(BackBoardDropMid);
+                preDropRight.setPosition(0.65);
+                sleep(1000);
+                preDropRight.setPosition(0.75);
+                robot.followTrajectorySequence(ParkMid);
                 break;
-            //robot.followTrajectorySequence(Middle);
+
 
 
             case NOT_FOUND:
                 telemetry.addData("not found", "proceed");
                 telemetry.update();
-                robot.followTrajectorySequence(Left);
+                robot.followTrajectorySequence(BackBoardDropRight);
+                robot.followTrajectorySequence(ParkLeft);
         }
         camera.stopStreaming();
     }
