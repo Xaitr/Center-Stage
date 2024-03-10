@@ -112,23 +112,28 @@ public class RedLeft extends LinearOpMode {
         //TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
         TrajectorySequence PreDropRight = robot.trajectorySequenceBuilder(startPose)
                 .lineTo(new Vector2d(-40, -50))
-                .lineTo(new Vector2d(-40,-38))
+                .lineTo(new Vector2d(-40,-40))
                 .turn(Math.toRadians(-135))
-                .forward(3)
+                .forward(5)
                 .build();
         // spit out pixel on line
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(PreDropRight.end())
                 .back(6)
-                .turn(Math.toRadians(-225))
+                .turn(Math.toRadians(137))
                 .strafeTo(new Vector2d (-40, -10))
                 .lineTo(new Vector2d(-35,-10))
                 .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
-                .lineTo(new Vector2d(30,-8))
-                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
+                .lineTo(new Vector2d(30,-8),
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .splineToConstantHeading(new Vector2d(51,-42), Math.toRadians(0),
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                //place pixel on backboard
                 .build();
         //place pixel on backboard
         TrajectorySequence ParkRight = robot.trajectorySequenceBuilder(BackBoardDropRight.end())
-                .splineToConstantHeading(new Vector2d(56,-8), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(50,-8), Math.toRadians(0))
                 .build();
 
 

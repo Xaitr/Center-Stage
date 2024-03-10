@@ -3,12 +3,12 @@ package org.firstinspires.ftc.teamcode;
 //Parameters for lift
 public class LiftConstants {
     //Lift heights in ticks
-    public static int liftHigh = 1930;
-    public static int liftMedium = 1480;
-    public static int liftLow = 1030;
+    public static int liftHigh = 1945;
+    public static int liftMedium = 1495;
+    public static int liftLow = 1045;
     //1100, 1700, 2200 MAX
     public static int liftRetracted =0;
-    public static int liftHang = 400;
+    public static int liftHang = 300;
     public static int liftHang2 = 1700;
 
     //Left and Right servo positions
