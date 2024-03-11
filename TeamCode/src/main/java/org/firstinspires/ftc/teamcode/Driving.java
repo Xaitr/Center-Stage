@@ -258,6 +258,14 @@ public class Driving extends OpMode
                  DIservoposition = LiftConstants.StackMuncherReturn;
              }
 
+             if (gamepad1.a) {
+                 preDropLeft.setPosition(0.95);
+                 preDropRight.setPosition(0.55);
+             } else if (gamepad1.b) {
+                 preDropLeft.setPosition(0.75);
+                 preDropRight.setPosition(0.75);
+             }
+
 
 
 
