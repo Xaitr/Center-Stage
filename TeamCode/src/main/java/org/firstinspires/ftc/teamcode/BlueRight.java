@@ -134,6 +134,7 @@ public class BlueRight extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-36, 38, Math.toRadians(90)))
                 .lineTo(new Vector2d(-36,17))
                 .strafeLeft(7)
+
                 // spit out pixel here
                 .build();
         TrajectorySequence BackBoardRight = robot.trajectorySequenceBuilder(PreDropRight.end())
@@ -143,10 +144,10 @@ public class BlueRight extends LinearOpMode {
                     Pose2d poseEstimate = robot.getPoseEstimate();
                     robot.setPoseEstimate(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+3.14159));
                 })
-                .lineTo(new Vector2d(-34,13))
+                .splineToConstantHeading(new Vector2d(-34,13), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(-14, 13), Math.toRadians(0))
                 .lineTo(new Vector2d(30, 13))
-                .splineToConstantHeading(new Vector2d(50,28), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(50,23.5), Math.toRadians(0))
                 //place pixel on backboard
                 .build();
         TrajectorySequence ParkRight = robot.trajectorySequenceBuilder(BackBoardRight.end())
@@ -158,7 +159,14 @@ public class BlueRight extends LinearOpMode {
        //TrajectorySequence Middle = robot.trajectorySequenceBuilder(startPose)
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(startPose)
                 .lineToConstantHeading(new Vector2d(-48,47))
-                .strafeLeft(30)
+                .strafeLeft(30,
+        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .addTemporalMarker(0,() -> {
+                    Pose2d poseEstimate = robot.getPoseEstimate();
+                    robot.setPoseEstimate(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+3.14159));
+
+                })
                 .lineToLinearHeading(new Pose2d(-36, 15, Math.toRadians(75)))
                 //spit out pixel here
                 .build();
@@ -168,11 +176,12 @@ public class BlueRight extends LinearOpMode {
                  .addTemporalMarker(0,() -> {
                      Pose2d poseEstimate = robot.getPoseEstimate();
                      robot.setPoseEstimate(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+3.14159));
+
                  })
                  .lineTo(new Vector2d(20,13),
                          SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                          SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                 .splineToConstantHeading(new Vector2d(50.5,35), Math.toRadians(0),
+                 .splineToConstantHeading(new Vector2d(51,31), Math.toRadians(0),
                          SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                          SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 //place pixel on backboard

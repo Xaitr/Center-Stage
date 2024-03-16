@@ -164,19 +164,14 @@ public class Driving extends OpMode
 
     private double incrementDiservo(double currentPosition) {
         if (currentPosition == LiftConstants.StackMuncherReturn) {
-            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             return LiftConstants.StackMuncher1;
         } else if (currentPosition == LiftConstants.StackMuncher1) {
-            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             return LiftConstants.StackMuncher2;
         } else if (currentPosition == LiftConstants.StackMuncher2) {
-            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             return LiftConstants.StackMuncher3;
         } else if (currentPosition == LiftConstants.StackMuncher3) {
-            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
             return LiftConstants.StackMuncher4;
         } else if (currentPosition == LiftConstants.StackMuncher4) {
-            Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
             return LiftConstants.StackMuncher5;
         } else {
             return LiftConstants.StackMuncherReturn;
@@ -227,6 +222,10 @@ public class Driving extends OpMode
             Intake.setPower(-1);
             IOservo.setPower(1);
             //Break Beam Driver feedback via controller rumble
+            if (!boxBeam.getState()) {
+                gamepad1.rumble(200);
+                gamepad2.rumble(200);
+            }
             boxDrop = false;
 
         } else if (!boxDrop) {

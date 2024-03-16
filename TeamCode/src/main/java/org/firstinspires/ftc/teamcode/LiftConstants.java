@@ -18,7 +18,7 @@ public class LiftConstants {
 
     public static double droneAngle = 0.84;
 
-    public static int droneLift = 1000;
+    public static int droneLift = 600;
 
     public static double StackMuncher1 = 0.875;
 

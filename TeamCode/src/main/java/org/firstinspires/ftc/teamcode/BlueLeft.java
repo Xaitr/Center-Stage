@@ -281,7 +281,7 @@ public class BlueLeft extends LinearOpMode {
                 robot.followTrajectorySequence(PreDropLeft);
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
-
+                preDropLeft.setPosition(0.75);
 //                robot.followTrajectorySequence(Generalposition);
 //
 //                robot.followTrajectorySequence(WhiteStackPath);
@@ -355,7 +355,7 @@ public class BlueLeft extends LinearOpMode {
                 robot.followTrajectorySequence(PreDropRight);
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
-
+                preDropLeft.setPosition(0.75);
                 robot.followTrajectorySequence(ParkRight);
                 break;
 
@@ -424,7 +424,7 @@ public class BlueLeft extends LinearOpMode {
                 robot.followTrajectorySequence(PreDropMid);
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
-
+                preDropLeft.setPosition(0.75);
                robot.followTrajectorySequence(ParkMid);
                 break;
 
