@@ -203,6 +203,7 @@ public class BlueRight extends LinearOpMode {
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
                 preDropLeft.setPosition(0.75);
+              //  wait(10);
                 robot.followTrajectorySequence(BackBoardLeft);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
@@ -270,6 +271,7 @@ public class BlueRight extends LinearOpMode {
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
                 preDropLeft.setPosition(0.75);
+               // wait(10);
                 robot.followTrajectorySequence(BackBoardRight);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {
@@ -340,6 +342,7 @@ public class BlueRight extends LinearOpMode {
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
                 preDropLeft.setPosition(0.75);
+              //  wait(10);
                 robot.followTrajectorySequence(BackBoardMid);
                 while(liftState != LiftState.LIFT_DONE){
                     switch (liftState) {

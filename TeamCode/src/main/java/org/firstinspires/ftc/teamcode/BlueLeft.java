@@ -188,7 +188,7 @@ public class BlueLeft extends LinearOpMode {
                 .build();
                 //place pixel on backboard
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
-                .lineTo(new Vector2d(20, 32))
+                .lineTo(new Vector2d(20, 31.5))
                 .build();
         //place pixel on line
         TrajectorySequence GeneralpositionMid = robot.trajectorySequenceBuilder(PreDropMid.end())
@@ -368,7 +368,7 @@ public class BlueLeft extends LinearOpMode {
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
-                            liftHeight = LiftConstants.liftAuto;
+                            liftHeight = 870;
                             //Check if lift has fully extended
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box

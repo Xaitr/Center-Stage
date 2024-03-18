@@ -147,7 +147,7 @@ public class RedRight extends LinearOpMode {
                 .build();
         //place pixel on backboard
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
-                .lineTo(new Vector2d(23, -31))
+                .lineTo(new Vector2d(23, -32))
                 .build();
         //place pixel on line
         TrajectorySequence GeneralpositionMid = robot.trajectorySequenceBuilder(PreDropMid.end())
