@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2DFormat;
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2DFormat;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -91,11 +97,47 @@ public class AprilTag extends LinearOpMode {
                     BuiltinCameraDirection.BACK, aprilTag);
         }
 
+
+
+
+
     }   // end method initAprilTag()
 
     /**
      * Add telemetry about AprilTag detections.
      */
+   private void AprilTagDetection () {
+       Vector2d cameraVector = new
+               Vector2d(ourTag.ftcPose.y,OurTag.ftcPose.x);
+       Vector2d rTag = tagPositions[Ourtag.id - 1];
+       Vector2d returnVector = rTag.minus(deltaF);
+       returnVector = returnVector.minus(cameraVector);
+       Pose2d returnPose = new Pose2d(returnVector, Math.toRadians(-OurTag.ftcPose.yaw));
+
+       Vector2d new deltaF.rotated(-OurTag.ftcPose.yaw);
+       Vector2d cameraVector = new Vector2d(OurTag.ftcPose.y, -OurTag.ftcPose.x).rotated(-OurTag.ftcPose);
+
+       VectorF tagPositions = OurTag.metadata.fieldPosition;
+       Vector2d rTag = new Vector2d(tagPosition.get(0), tagPosition.get(1));
+
+       Vector2DFormat returnVector = rTag.minus(newDeltaF);
+       returnVector = returnVector.minus(cameraVector);
+
+       Pose2d return = new Pose2d(returnVector,
+      Math.toRadians(-OurTag.ftcPose.yaw));
+// to do for nate and kallie add a library of april tags to refrence that should gte rid of the errors for Our tag
+
+       return returnPose;
+
+   }
+
+
+
+
+
+
+
+
     private void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();

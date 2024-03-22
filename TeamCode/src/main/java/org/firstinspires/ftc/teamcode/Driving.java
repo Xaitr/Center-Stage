@@ -381,7 +381,7 @@ public class Driving extends OpMode
                 if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 20) {
                     //Angle box out of the way
                     lift.hangBox();
-                    if (gamepad2.dpad_up)
+                    if (gamepad2.dpad_down)
                         hangState = HangState.LIFT_RETRACT;
                 }
                 break;
@@ -451,17 +451,17 @@ public class Driving extends OpMode
 
         //Rezeroing the slides using limit switch
         //Adds an offset value to the liftHeight based on the left motors difference
-        if (gamepad2.dpad_down){
-            if (limitswitch.getState()){
-                liftHeight = -400;
-                isOn = false;
-            } else if (!isOn && !limitswitch.getState()){
-                isOn = true;
-                liftHeight = 0;
-                //Adding 25 to relieve the stress that comes from slamming the box down lol
-                liftOffset = leftLift.getCurrentPosition()+25;
-            }
-        }
+//        if (gamepad2.dpad_down){
+//            if (limitswitch.getState()){
+//                liftHeight = -400;
+//                isOn = false;
+//            } else if (!isOn && !limitswitch.getState()){
+//                isOn = true;
+//                liftHeight = 0;
+//                //Adding 25 to relieve the stress that comes from slamming the box down lol
+//                liftOffset = leftLift.getCurrentPosition()+25;
+//            }
+//        }
 
         //Actually setting the lift height; kept out of the finite state machine so that the PID continues to update
         lift.setHeight(liftHeight + liftOffset);
