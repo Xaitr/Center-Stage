@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.LiftConstants.liftLow;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -15,7 +16,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -95,7 +100,7 @@ public class Driving extends OpMode
     }
     ElapsedTime droneTimer = new ElapsedTime();
     dronestate droneState = dronestate.LIFT_START;
-
+    private IMU imu = null;
     //Presets for fine adjustment in lift
     int heightAdjust = 0;
     //Timer for waiting for pixels to spin out
@@ -157,6 +162,11 @@ public class Driving extends OpMode
         //Box servo moving in init
         lift.retractBox();
     DIservo.setPosition(LiftConstants.StackMuncherReturn);
+
+        imu = hardwareMap.get(IMU.class, "imu");
+        RevHubOrientationOnRobot RevOrientation = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.UP);
+        imu.initialize(new IMU.Parameters(RevOrientation));
+        imu.resetYaw();
     }
 
 
@@ -267,7 +277,7 @@ public class Driving extends OpMode
         //Claw Code: Opens with GP2 X and opens less when past vertical position
         // BIGGER CLOSES MORE*********************
 
-
+        telemetry.addData("IMU:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         if (gamepad1.left_bumper) {
             drone.setPosition(0.6);
         }
