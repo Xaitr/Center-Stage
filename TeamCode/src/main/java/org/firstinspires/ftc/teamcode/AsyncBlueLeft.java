@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
 
 import android.graphics.Canvas;
+import android.util.Size;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -13,7 +17,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureRequest;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureSession;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraException;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.SwitchableCamera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.CameraControl;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -21,6 +33,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.opencv.core.Mat;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 
 import java.util.ArrayList;
 
@@ -30,6 +44,7 @@ public class AsyncBlueLeft extends LinearOpMode {
     //This enum defines steps of the trajectories
     enum State {
         BACKBOARD_DROP, //First drop of the yellow preload on the backboard
+        BACKBOARD_WAIT,
         PREDROP, //Then place the purple preload on the spikemark
         DROP_WAIT, //Short wait to drop purple pixel
         GENERAL_STACK, //Then drive to in front of the white stacks
@@ -69,6 +84,9 @@ public class AsyncBlueLeft extends LinearOpMode {
     //Lets the lift state machine know when the trajectory to the backboard is finished
     private boolean readyToDrop = false;
 
+    //Time for pixels to drop from bucket
+    private double dropTime = 2;
+
     //Declare our April tag & OpenCV vision portal
     private VisionPortal OpenCvVisionPortal;
 
@@ -91,6 +109,11 @@ public class AsyncBlueLeft extends LinearOpMode {
 
         TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
                 .strafeTo(new Vector2d(52,42))
+                .addTemporalMarker(pathTime -> pathTime-2,() -> {
+                    //Starts extending lift
+                    liftState = LiftState.LIFT_EXTEND;
+                    liftHeight = LiftConstants.liftAuto;
+                })
                 .build();
         TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
                 .lineTo(new Vector2d(33, 32))
@@ -133,6 +156,12 @@ public class AsyncBlueLeft extends LinearOpMode {
         webcam1 = hardwareMap.get(WebcamName.class, "Webcam 1");
         webcam2 = hardwareMap.get(WebcamName.class, "Webcam 2");
 
+        //Lift initialization
+        leftLift = hardwareMap.get(DcMotor.class, "left_lift");
+        lift.init(hardwareMap);
+        IOservo = hardwareMap.get(CRServo.class, "IOservo");
+        preDropLeft = hardwareMap.get(Servo.class,  "preDropLeft");
+
         //init AprilTag & Colour processor
         aprilProcessor = new AprilTagProcessor.Builder()
                 .build();
@@ -141,14 +170,9 @@ public class AsyncBlueLeft extends LinearOpMode {
         //init VisionPortal
         OpenCvVisionPortal = new VisionPortal.Builder()
                 .setCamera(webcam1)
-                .setCamera(webcam2)
                 .addProcessor(blueProcessor)
-                .addProcessor(aprilProcessor)
+                .setCameraResolution(new Size(1920,1080))
                 .build();
-
-        //Enable colour processor and webcam1
-        OpenCvVisionPortal.setProcessorEnabled(blueProcessor, true);
-        OpenCvVisionPortal.setActiveCamera(webcam1);
 
         //Updates telemetry with current prop location
         while (opModeInInit()){
@@ -171,9 +195,6 @@ public class AsyncBlueLeft extends LinearOpMode {
                 break;
         }
         driveState = State.BACKBOARD_DROP;
-
-        //Start raising the lift right at the beginning.
-        liftHeight = LiftConstants.liftAuto;
 
         //Turn off Vision Portal to conserve resources
         OpenCvVisionPortal.stopStreaming();
@@ -226,10 +247,7 @@ public class AsyncBlueLeft extends LinearOpMode {
             //State machine for controlling lift
             switch (liftState) {
                 case LIFT_IDLE:
-                    //Move to next state when lift height is changed through Roadrunner markers
-                    if (liftHeight > liftRetracted) {
-                        liftState = LiftState.LIFT_EXTEND;
-                    }
+                    break;
                 case LIFT_EXTEND:
                     //Check if lift has fully extended
                     if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 20) {
@@ -241,7 +259,7 @@ public class AsyncBlueLeft extends LinearOpMode {
                     break;
                 case BOX_EXTEND:
                     //Wait for servo to reach position
-                    if (liftTimer.seconds() >= 0.3) {
+                    if (readyToDrop) {
                         //Spin out pixels and move to next state
                         liftState = LiftState.LIFT_DUMP;
                         IOservo.setPower(-1);

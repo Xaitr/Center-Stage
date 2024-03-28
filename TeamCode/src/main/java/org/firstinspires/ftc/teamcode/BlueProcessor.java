@@ -59,21 +59,21 @@ public class BlueProcessor implements VisionProcessor {
 
         if (rightValue > leftValue && rightValue > middleValue) {
             location = BlueProcessor.Location.RIGHT;
-            telemetry.addData("Marker Location", "right");
+            //telemetry.addData("Marker Location", "right");
         }
         else if (leftValue > rightValue && leftValue > middleValue) {
             location = BlueProcessor.Location.LEFT;
-            telemetry.addData("Marker Location", "left");
+            //telemetry.addData("Marker Location", "left");
         } else if (middleValue > rightValue && middleValue > leftValue) {
             location = BlueProcessor.Location.MIDDLE;
-            telemetry.addData("Middle", "Placeholder");
+            //telemetry.addData("Middle", "Placeholder");
         }
         else {
             location = BlueProcessor.Location.NOT_FOUND;
-            telemetry.addData("Marker Location", "Not Found");
+            //telemetry.addData("Marker Location", "Not Found");
         }
 
-        telemetry.update();
+        //telemetry.update();
 
 
         return mat;
