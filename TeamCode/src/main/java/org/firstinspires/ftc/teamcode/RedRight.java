@@ -83,7 +83,6 @@ public class RedRight extends LinearOpMode {
         });
 
         //TrajectorySequence Right = robot.trajectorySequenceBuilder(startPose)
-
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
                 .strafeTo(new Vector2d(53,-44))
                 .build();
@@ -93,16 +92,11 @@ public class RedRight extends LinearOpMode {
                 .build();
         //put pixel on left line
 
-        TrajectorySequence GeneralpositionRight = robot.trajectorySequenceBuilder(PreDropRight.end())
+        TrajectorySequence WhiteStackPathRight = robot.trajectorySequenceBuilder(PreDropRight.end())
                 .lineTo(new Vector2d(33, -8))
-                .build();
-        //move to general position before white pixels from left line
-
-        TrajectorySequence WhiteStackPathRight = robot.trajectorySequenceBuilder(GeneralpositionRight.end())
                 .lineTo(new Vector2d (-56, -8))
                 .build();
         //intake pixel off white stack
-
         TrajectorySequence StacktoBackBoardRight = robot.trajectorySequenceBuilder(WhiteStackPathRight.end())
                 .strafeTo(new Vector2d(38, -8))
                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
@@ -123,16 +117,14 @@ public class RedRight extends LinearOpMode {
                 .lineTo(new Vector2d(10.5, -35))
                 .build();
         //place pixel on line
-        TrajectorySequence GeneralpositionLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
-                .lineTo(new Vector2d(33, -8))
-                .build();
-        //move to general position before white pixels from left line
-        TrajectorySequence WhiteStackPathLeft = robot.trajectorySequenceBuilder(GeneralpositionLeft.end())
+        TrajectorySequence WhiteStackPathLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
+                .lineToConstantHeading (new Vector2d(15, -32))
+                .splineToConstantHeading(new Vector2d(10,-8), Math.toRadians(90))
                 .lineTo(new Vector2d (-56, -8))
                 .build();
         //intake pixel off white stack
         TrajectorySequence StacktoBackBoardLeft = robot.trajectorySequenceBuilder(WhiteStackPathLeft.end())
-                .strafeTo(new Vector2d(38, -8))
+                .strafeTo(new Vector2d(16,-8))
                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
                 .build();
         // put white pixels on backboardboard
@@ -147,20 +139,18 @@ public class RedRight extends LinearOpMode {
                 .build();
         //place pixel on backboard
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
-                .lineTo(new Vector2d(23, -32))
+                .strafeRight(10)
+                .lineTo(new Vector2d(15, -22))
+                .back(4)
                 .build();
         //place pixel on line
-        TrajectorySequence GeneralpositionMid = robot.trajectorySequenceBuilder(PreDropMid.end())
-                .lineTo(new Vector2d(33, -8))
-                .build();
-        //move to general position before white pixels from left line
-
-        TrajectorySequence WhiteStackPathMid = robot.trajectorySequenceBuilder(GeneralpositionMid.end())
+        TrajectorySequence WhiteStackPathMid = robot.trajectorySequenceBuilder(PreDropMid.end())
+                .lineTo(new Vector2d(24, -8))
                 .lineTo(new Vector2d (-56, -8))
                 .build();
         //intake pixel off white stack
-
         TrajectorySequence StacktoBackBoardMid = robot.trajectorySequenceBuilder(WhiteStackPathMid.end())
+                .strafeTo(new Vector2d(16,-8))
                 .strafeTo(new Vector2d(38, -8))
                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
                 .build();

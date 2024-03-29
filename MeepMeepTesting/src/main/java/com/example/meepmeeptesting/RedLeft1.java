@@ -19,6 +19,8 @@ public class RedLeft1 {
                                 .turn(0)
                                 //place pixel on line
                                 .lineTo(new Vector2d(-34,-18))
+                                .splineToConstantHeading(new Vector2d(-20,-8), Math.toRadians(0))
+                                .lineTo(new Vector2d(-55,-8))
                                 .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
                                 .lineTo(new Vector2d(30,-8))
                                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))

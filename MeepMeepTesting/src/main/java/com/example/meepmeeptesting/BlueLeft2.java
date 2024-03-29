@@ -24,10 +24,10 @@ public class BlueLeft2 {
                     //. strafeRight(20)
                  // put pixel on board
                     // .splineToConstantHeading(new Vector2d(56, 60), Math.toRadians(0))
-                    .strafeTo(new Vector2d(50,32))
+                    .strafeTo(new Vector2d(52,36))
                     .turn(0)
                     // place pixel on backboard
-                    .lineTo(new Vector2d(15, 22))
+                    .lineTo(new Vector2d(20, 32))
                     .turn(0)
                     //place pixel on line
                     .lineTo(new Vector2d(33, 8))
