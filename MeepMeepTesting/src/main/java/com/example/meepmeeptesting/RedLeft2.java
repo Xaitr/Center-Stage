@@ -15,10 +15,13 @@ public class RedLeft2 {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-34, -61, Math.toRadians(180)))
-                                .lineTo(new Vector2d(-30, -25))
-                                .turn(0)
+                                .lineTo(new Vector2d(-35, -17))
+                                .turn(1)
+                                .back(5)
+                                .turn(-1)
+                                .lineTo(new Vector2d (-35,-8))
+                                .lineToConstantHeading(new Vector2d(-53,-8))
                                 //place pixel on line
-                                .lineTo(new Vector2d(-34,-18))
                                 .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
                                 .lineTo(new Vector2d(30,-8))
                                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))

@@ -6,7 +6,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class BlueLeft1 {
+public class BlueLeft2Test {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
@@ -15,28 +15,31 @@ public class BlueLeft1 {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(14, 61, Math.toRadians(180)))
-                               // .back(8)
-                                //.splineToConstantHeading(new Vector2d (34,34), Math.toRadians(0))
-                              // .lineToConstantHeading(new Vector2d(14, 34))
-                            // .splineToConstantHeading(new Vector2d(34, 34), Math.toRadians(0))
-//                                // Spit out pixel here
-                               // .splineTo(new Vector2d(48, 34), Math.toRadians(0))
-                                // put pixel on board here
-                              // .strafeRight(25)
-                                //.back(13)
-                                .strafeTo(new Vector2d(52,42))
-                                //place pixel on backboard
-                                .lineTo(new Vector2d(33, 32))
-                                //place pixel on line
-                                .lineTo(new Vector2d(33, 8))
-                                .lineTo(new Vector2d (-56, 8))
-                                // pick up white pixels off stack
-                                .strafeTo(new Vector2d(38, 8))
-                                .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
+                                .strafeTo(new Vector2d(52,36))
                                 .turn(0)
-                                //place pixel on backboard
+                                // place pixel on backboard
+                                .lineTo(new Vector2d(20, 32))
+                                .turn(0)
+                                //place pixel on line
+                                .lineTo(new Vector2d(33, 57))
+                                .lineTo(new Vector2d (-45,57))
+                                .turn(0.3)
+                                .lineTo(new Vector2d(-55,35))
+                                // pick up white pixels off stack
+                                .lineTo(new Vector2d(-45,57))
+                                .turn(-0.3)
+                                .lineTo(new Vector2d(33,57))
                                 .splineToConstantHeading(new Vector2d(56,60), Math.toRadians(0))
-                                //park
+                                //place two white pixels
+                                .lineTo(new Vector2d (-45,57))
+                                .turn(0.3)
+                                .lineTo(new Vector2d(-55,35))
+                                // pick up white pixels off stack
+                                .lineTo(new Vector2d(-45,57))
+                                .turn(-0.3)
+                                .lineTo(new Vector2d(33,57))
+                                .splineToConstantHeading(new Vector2d(56,60), Math.toRadians(0))
+                        //park and place white pixels
                                 .build()
                 );
 

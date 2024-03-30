@@ -37,8 +37,10 @@ public class BlueRight3 {
                                 //place pixel on line
                                 .back(6)
                                 .turn(Math.toRadians(225))
-                                .strafeTo(new Vector2d (-40, 10))
-                                .lineTo(new Vector2d(-35,10))
+                                .strafeTo(new Vector2d (-35, 8))
+                                .lineTo(new Vector2d(-40,8))
+                                .splineToConstantHeading(new Vector2d(-55,8), Math.toRadians(0))
+                                //pick up one white pixel
                                 .splineToConstantHeading(new Vector2d(-14, 8), Math.toRadians(0))
                                 .lineTo(new Vector2d(30,8))
                                 .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))

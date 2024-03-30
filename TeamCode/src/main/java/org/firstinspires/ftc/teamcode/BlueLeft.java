@@ -124,7 +124,6 @@ public class BlueLeft extends LinearOpMode {
         });
 
         //TrajectorySequence Left = robot.trajectorySequenceBuilder(startPose)
-
        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
                .strafeTo(new Vector2d(52,42))
                .build();
@@ -173,6 +172,7 @@ public class BlueLeft extends LinearOpMode {
                 .build();
         //intake pixel off white stack
         TrajectorySequence StacktoBackBoardRight = robot.trajectorySequenceBuilder(WhiteStackPathRight.end())
+                .strafeTo(new Vector2d(16,8))
                 .strafeTo(new Vector2d(38, 8))
                 .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
                 .build();
@@ -188,7 +188,7 @@ public class BlueLeft extends LinearOpMode {
                 .build();
                 //place pixel on backboard
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
-                .lineTo(new Vector2d(20, 31.5))
+                .lineTo(new Vector2d(20, 32))
                 .build();
         //place pixel on line
         TrajectorySequence GeneralpositionMid = robot.trajectorySequenceBuilder(PreDropMid.end())
@@ -202,6 +202,7 @@ public class BlueLeft extends LinearOpMode {
         //intake pixel off white stack
 
         TrajectorySequence StacktoBackBoardMid = robot.trajectorySequenceBuilder(WhiteStackPathMid.end())
+                .strafeTo(new Vector2d(16,8))
                 .strafeTo(new Vector2d(38, 8))
                 .splineToConstantHeading(new Vector2d(50,32), Math.toRadians(0))
                 .build();
@@ -281,7 +282,7 @@ public class BlueLeft extends LinearOpMode {
                 robot.followTrajectorySequence(PreDropLeft);
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
-                preDropLeft.setPosition(0.75);
+
 //                robot.followTrajectorySequence(Generalposition);
 //
 //                robot.followTrajectorySequence(WhiteStackPath);
@@ -355,7 +356,7 @@ public class BlueLeft extends LinearOpMode {
                 robot.followTrajectorySequence(PreDropRight);
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
-                preDropLeft.setPosition(0.75);
+
                 robot.followTrajectorySequence(ParkRight);
                 break;
 
@@ -368,7 +369,7 @@ public class BlueLeft extends LinearOpMode {
                     switch (liftState) {
                         case LIFT_EXTEND:
                             //Extend lift
-                            liftHeight = 870;
+                            liftHeight = LiftConstants.liftAuto;
                             //Check if lift has fully extended
                             if (Math.abs(leftLift.getCurrentPosition() - liftHeight) < 15) {
                                 //Deploy box
@@ -424,7 +425,7 @@ public class BlueLeft extends LinearOpMode {
                 robot.followTrajectorySequence(PreDropMid);
                 preDropLeft.setPosition(0.85);
                 sleep(1000);
-                preDropLeft.setPosition(0.75);
+
                robot.followTrajectorySequence(ParkMid);
                 break;
 

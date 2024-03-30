@@ -6,7 +6,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class RedRight2 {
+public class RedRight2Test {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
@@ -15,15 +15,6 @@ public class RedRight2 {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(14, -61, Math.toRadians(180)))
-                                //.lineToConstantHeading(new Vector2d(14, -36))
-                                //.turn(Math.toRadians(-180))
-                                // spit out pixel here
-                                //.splineToConstantHeading(new Vector2d(25, -32), Math.toRadians(0))
-                                //.splineTo(new Vector2d(46, -32), Math.toRadians(0))
-                                //.turn(Math.toRadians(90))
-                                // put pixel on board here
-                                //.strafeLeft(25)
-                                //.back(15)
                                 .strafeTo(new Vector2d(50,-32))
                                 .turn(0)
                                 // place pixel on backboard
@@ -32,17 +23,24 @@ public class RedRight2 {
                                 .back(4)
                                 .turn(0)
                                 //place pixel on line
-                                .lineTo(new Vector2d(24, -8))
-                                .lineTo(new Vector2d (-56, -8))
-                                //grab pixels off stack
-                                .strafeTo(new Vector2d(16,-8))
-                                .strafeTo(new Vector2d(38, -8))
-                                .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
-                                .turn(0)
-                                //place pixel on backboard
+                                .lineTo(new Vector2d(33, -57))
+                                .lineTo(new Vector2d (-45,-57))
+                                .turn(-0.3)
+                                .lineTo(new Vector2d(-55,-35))
+                                // pick up white pixels off stack
+                                .lineTo(new Vector2d(-45,-57))
+                                .turn(0.3)
+                                .lineTo(new Vector2d(33,-57))
                                 .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
-                                //park
-
+                                .lineTo(new Vector2d (-45,-57))
+                                .turn(-0.3)
+                                .lineTo(new Vector2d(-55,-35))
+                                // pick up white pixels off stack
+                                .lineTo(new Vector2d(-45,-57))
+                                .turn(0.3)
+                                .lineTo(new Vector2d(33,-57))
+                                .splineToConstantHeading(new Vector2d(56,-60), Math.toRadians(0))
+                                //park and place white pixels
                                 .build()
 
 

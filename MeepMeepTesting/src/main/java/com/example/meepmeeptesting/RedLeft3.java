@@ -31,7 +31,9 @@ public class RedLeft3 {
                                 //place pixel on line
                                 .lineTo(new Vector2d(-34,-18))
                                 .turn(Math.toRadians(180))
-                                .splineToConstantHeading(new Vector2d(-14, -8), Math.toRadians(0))
+                                .strafeTo(new Vector2d(-34,-8))
+                                .lineTo(new Vector2d(-55,-8))
+                                .lineTo(new Vector2d(-14, -8))
                                 .lineTo(new Vector2d(30,-8))
                                 .splineToConstantHeading(new Vector2d(50,-32), Math.toRadians(0))
                                 .turn (0)
