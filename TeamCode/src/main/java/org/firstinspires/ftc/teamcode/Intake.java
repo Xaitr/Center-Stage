@@ -8,12 +8,15 @@ import static org.firstinspires.ftc.teamcode.LiftConstants.StackMuncher5;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake {
     private DcMotor intake;
+    private Servo DIservo;
 
     public void init(HardwareMap hardwareMap) {
         intake = hardwareMap.get(DcMotor.class, "intake");
+        DIservo = hardwareMap.get(Servo.class, "DIservo");
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
@@ -28,6 +31,10 @@ public class Intake {
 
     public void RejectOff() {
         intake.setPower(0);
+    }
+
+    public void DeployIntakeFirst() {
+
     }
 
 

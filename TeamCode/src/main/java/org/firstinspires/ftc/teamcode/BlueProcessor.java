@@ -34,24 +34,35 @@ public class BlueProcessor implements VisionProcessor {
 
     Mat mat = new Mat();
 
+    public BlueProcessor(Telemetry telemetry) {this.telemetry = telemetry;}
+
+    public BlueProcessor() {}
+
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
     }
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
-        Imgproc.cvtColor(frame, mat, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGB2HSV);
         Scalar lowHSV = new Scalar(61, 50, 70);
         Scalar highHSV = new Scalar(120, 255, 255);
 
-        Core.inRange(mat, lowHSV, highHSV, mat);
+        Core.inRange(frame, lowHSV, highHSV, frame);
 
-        Mat left = mat.submat(rectLeft);
-        Mat right = mat.submat(rectMiddle);
-        Mat middle = mat.submat(rectRight);
+        Mat left = frame.submat(rectLeft);
+        Mat right = frame.submat(rectRight);
+        Mat middle = frame.submat(rectMiddle);
 
         double leftValue = Core.sumElems(left).val[0] / rectLeft.area();
         double rightValue = Core.sumElems(right).val[0] / rectRight.area();
         double middleValue = Core.sumElems(middle).val[0] / rectMiddle.area();
+
+        if (telemetry != null) {
+            telemetry.addData("Left Value", leftValue);
+            telemetry.addData("Right Value", rightValue);
+            telemetry.addData("Middle Value", middleValue);
+            telemetry.update();
+        }
 
         left.release();
         right.release();
@@ -73,10 +84,8 @@ public class BlueProcessor implements VisionProcessor {
             //telemetry.addData("Marker Location", "Not Found");
         }
 
-        //telemetry.update();
 
-
-        return mat;
+        return location;
     }
     //Converts OpenCV Rectangle to Android rectangle
     private android.graphics.Rect makeGraphicsRect(Rect rect, float scaleBmpPxToCanvasPx) {
@@ -93,12 +102,12 @@ public class BlueProcessor implements VisionProcessor {
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx,
                             float scaleCanvasDensity, Object userContext) {
         Paint selectedPaint = new Paint();
-        selectedPaint.setColor(Color.RED);
+        selectedPaint.setColor(Color.GREEN);
         selectedPaint.setStyle(Paint.Style.STROKE);
         selectedPaint.setStrokeWidth(scaleCanvasDensity * 4);
 
         Paint nonSelectedPaint = new Paint(selectedPaint);
-        nonSelectedPaint.setColor(Color.GREEN);
+        nonSelectedPaint.setColor(Color.RED);
 
         android.graphics.Rect drawRectangleLeft = makeGraphicsRect(rectLeft, scaleBmpPxToCanvasPx);
         android.graphics.Rect drawRectangleMiddle = makeGraphicsRect(rectMiddle, scaleBmpPxToCanvasPx);
