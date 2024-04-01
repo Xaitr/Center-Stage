@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -21,8 +19,7 @@ public class PidControl2 {
 //0.000001
     ElapsedTime timer = new ElapsedTime();
     private double lastError = 0;
-    private Servo rightServo = null;
-    private Servo leftServo =null;
+    private Servo rightServo, leftServo, wristServo = null;
 
     public void init(HardwareMap hardwareMap) {
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
@@ -43,6 +40,7 @@ public class PidControl2 {
 
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
         leftServo = hardwareMap.get(Servo.class, "Left_outtake");
+
         rightServo.setDirection(Servo.Direction.REVERSE);
 
     }
@@ -87,6 +85,24 @@ public void droneBox () {
         rightServo.setPosition(LiftConstants.droneAngle);
         leftServo.setPosition(LiftConstants.droneAngle);
 }
+    //Rotates the wrist clockwise to the next wrist position
+    public double wristRight(double currentPosition) {
+        if (currentPosition == LiftConstants.wristRight1)
+            return LiftConstants.wristMiddle1;
+        else if (currentPosition == LiftConstants.wristMiddle1)
+            return LiftConstants.wristLeft1;
+        else if (currentPosition == LiftConstants.wristLeft1)
+            return LiftConstants.wristLeft2;
+        else if (currentPosition == LiftConstants.wristLeft2)
+            return LiftConstants.wristMiddle2;
+        else if (currentPosition == LiftConstants.wristMiddle2)
+            return LiftConstants.wristRight2;
+        else
+            return LiftConstants.wristRight1;
+    }
+
+    //Rotates the wrist counter-clockwise to the next wrist position
+
 
 
 }

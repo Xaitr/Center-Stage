@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.LiftConstants.droneLift;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftHang;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftLow;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
+import static org.firstinspires.ftc.teamcode.LiftConstants.wristIdle;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -40,12 +41,11 @@ public class Driving extends OpMode
     private DcMotor leftLift = null;
 
     private CRServo IOservo = null; // intake and outtake servo
-    private Servo rightServo = null;
+    private Servo rightServo, wristServo = null;
 
 
     private Servo  DIservo = null;
-    private Servo preDropRight = null;
-    private Servo preDropLeft = null;
+    private Servo preDropRight, preDropLeft = null;
     private Servo drone = null;
 
     private RevBlinkinLedDriver Blinky = null;
@@ -135,7 +135,7 @@ public class Driving extends OpMode
        preDropLeft = hardwareMap.get(Servo.class, "preDropLeft");
        drone = hardwareMap.get(Servo.class, "drone");
        Blinky = hardwareMap.get(RevBlinkinLedDriver.class, "Blinky");
-
+       wristServo = hardwareMap.get(Servo.class, "wrist_servo");
 
 
 
@@ -335,6 +335,11 @@ public class Driving extends OpMode
                 } else if (gamepad2.right_stick_y < 0.6) {
                     liftDecrease = false;
                 }
+                //Wrist adjustments
+                if (gamepad2.right_stick_x > 0.6) {
+                    wristServo.setPosition(lift.wristRight(wristServo.getPosition()));
+                }
+
 
                 //Servo Drop: Changes boxDrop variable too stop intake code
                 if (gamepad2.right_stick_button) {
