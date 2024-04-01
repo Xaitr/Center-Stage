@@ -16,29 +16,25 @@ public class BlueLeft3Test {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(13, 65, Math.toRadians(180)))
                                 .strafeTo(new Vector2d(52,30))
-                                .turn(0)
                                 // place pixel on backboard
                                 .lineTo(new Vector2d(10, 35))
-                                .turn(0)
                                 //place pixel on line
-                                .lineTo(new Vector2d(33, 57))
-                                .lineTo(new Vector2d (-45,57))
-                                .turn(0.3)
-                                .lineTo(new Vector2d(-55,35))
+                                .lineTo(new Vector2d(15, 50))
+                                .splineToConstantHeading(new Vector2d (10,57), Math.toRadians(180))
+                                .splineToConstantHeading(new Vector2d (-30,57), Math.toRadians(180))
+                                .splineToConstantHeading(new Vector2d (-35,57), Math.toRadians(180))
+                                .lineToLinearHeading(new Pose2d(-60,44,  Math.toRadians(225)))
                                 // pick up white pixels off stack
-                                .lineTo(new Vector2d(-45,57))
-                                .turn(-0.3)
+                                .lineToLinearHeading(new Pose2d(-35,57,  Math.toRadians(-180)))
                                 .lineTo(new Vector2d(33,57))
-                                .splineToConstantHeading(new Vector2d(56,60), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(56,57), Math.toRadians(0))
                                 //place two white pixels
-                                .lineTo(new Vector2d (-45,57))
-                                .turn(0.3)
-                                .lineTo(new Vector2d(-55,35))
+                                .lineTo(new Vector2d (-35,57))
+                                .lineToLinearHeading(new Pose2d(-60,44,  Math.toRadians(225)))
                                 // pick up white pixels off stack
-                                .lineTo(new Vector2d(-45,57))
-                                .turn(-0.3)
+                                .lineToLinearHeading(new Pose2d(-35,57,  Math.toRadians(-180)))
                                 .lineTo(new Vector2d(33,57))
-                                .splineToConstantHeading(new Vector2d(56,60), Math.toRadians(0))
+                                .splineToConstantHeading(new Vector2d(56,57), Math.toRadians(0))
                                 //park and place white pixels
                                 .build()
                 );
