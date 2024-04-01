@@ -97,12 +97,27 @@ public void droneBox () {
             return LiftConstants.wristMiddle2;
         else if (currentPosition == LiftConstants.wristMiddle2)
             return LiftConstants.wristRight2;
-        else
+        else {
             return LiftConstants.wristRight1;
+        }
     }
 
     //Rotates the wrist counter-clockwise to the next wrist position
-
+    public double wristLeft(double currentPosition) {
+        if (currentPosition == LiftConstants.wristRight1)
+            return LiftConstants.wristRight2;
+        else if (currentPosition == LiftConstants.wristRight2)
+            return LiftConstants.wristMiddle2;
+        else if (currentPosition == LiftConstants.wristMiddle2)
+            return LiftConstants.wristLeft2;
+        else if (currentPosition == LiftConstants.wristLeft2)
+            return LiftConstants.wristLeft1;
+        else if (currentPosition == LiftConstants.wristLeft1)
+            return LiftConstants.wristMiddle1;
+        else {
+            return LiftConstants.wristRight1;
+        }
+    }
 
 
 }

@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.LiftConstants.liftHang;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftLow;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristIdle;
+import static org.firstinspires.ftc.teamcode.LiftConstants.wristLeft2;
+import static org.firstinspires.ftc.teamcode.LiftConstants.wristMiddle1;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -40,8 +42,11 @@ public class Driving extends OpMode
     private DcMotor rightBackDrive = null;
     private DcMotor leftLift = null;
 
-    private CRServo IOservo = null; // intake and outtake servo
-    private Servo rightServo, wristServo = null;
+    private CRServo transfer = null; // intake and outtake servo
+    private Servo rightServo, wristServo, frontPincher, backPincher = null;
+    private double wristPosition = wristIdle;
+    private boolean dpadLeft = false;
+    private int pixelDrop = 1;
 
 
     private Servo  DIservo = null;
@@ -61,9 +66,12 @@ public class Driving extends OpMode
 
     private boolean liftDecrease = false;
 
+    private boolean wristRotateRight = false;
+    private boolean wristRotateLeft = false;
     private int liftOffset = 0;
     private DcMotor Intake = null;
     private int liftHeight = 0;
+    private int storeLiftHeight = 0;
 
 
 
@@ -73,6 +81,7 @@ public class Driving extends OpMode
     // Enum to represent lift state
     private enum LiftState {
         LIFT_START,
+        PINCHER_CLOSE,
         LIFT_EXTEND,
         BOX_EXTEND,
         LIFT_DUMP,
@@ -125,7 +134,6 @@ public class Driving extends OpMode
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
 
-        IOservo = hardwareMap.get(CRServo.class, "IOservo");
         Intake=hardwareMap.get(DcMotor.class, "intake");
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
         limitswitch = hardwareMap.get(DigitalChannel.class, "limitswitch");
@@ -136,6 +144,9 @@ public class Driving extends OpMode
        drone = hardwareMap.get(Servo.class, "drone");
        Blinky = hardwareMap.get(RevBlinkinLedDriver.class, "Blinky");
        wristServo = hardwareMap.get(Servo.class, "wrist_servo");
+       frontPincher = hardwareMap.get(Servo.class, "front_pincher");
+       backPincher = hardwareMap.get(Servo.class, "back_pincher");
+       transfer = hardwareMap.get(CRServo.class, "transfer");
 
 
 
@@ -167,6 +178,10 @@ public class Driving extends OpMode
         RevHubOrientationOnRobot RevOrientation = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.UP);
         imu.initialize(new IMU.Parameters(RevOrientation));
         imu.resetYaw();
+
+        backPincher.setPosition(0.5);
+        frontPincher.setPosition(1);
+        wristServo.setPosition(wristIdle);
     }
 
 
@@ -220,30 +235,24 @@ public class Driving extends OpMode
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
 
-        if (gamepad2.dpad_left) {
-            liftState = LiftState.BOX_RETRACT;
-        }
         //Intake and Reject
         if (gamepad2.a) {
             Intake.setPower(1);
-            IOservo.setPower(1);
-            boxDrop = false;
+            transfer.setPower(1);
         } else if (gamepad2.b) {
             Intake.setPower(-1);
-            IOservo.setPower(1);
+            transfer.setPower(1);
+
             //Break Beam Driver feedback via controller rumble
             if (!boxBeam.getState()) {
                 gamepad1.rumble(200);
                 gamepad2.rumble(200);
             }
-            boxDrop = false;
-
-        } else if (!boxDrop) {
+        } else {
             Intake.setPower(0);
-            IOservo.setPower(0);
+            transfer.setPower(0);
 
         }
-        telemetry.addData("boxDrop", boxDrop);
 
         if (!boxBeam.getState()) {
             Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
@@ -289,19 +298,36 @@ public class Driving extends OpMode
                 // In Idle state, wait until Driver 2 right bumper is pressed
                 //Extend lift
                 if (gamepad2.right_bumper) {
-                    liftState = LiftState.LIFT_EXTEND;
-                    liftHeight = LiftConstants.liftHigh;
+                    liftState = LiftState.PINCHER_CLOSE;
+                    storeLiftHeight = LiftConstants.liftHigh;
+                    liftTimer.reset();
                 } else if (gamepad2.right_trigger >= 0.9) {
-                    liftState = LiftState.LIFT_EXTEND;
-                    liftHeight = LiftConstants.liftMedium;
+                    liftState = LiftState.PINCHER_CLOSE;
+                    storeLiftHeight = LiftConstants.liftMedium;
+                    liftTimer.reset();
                 } else if (gamepad2.left_bumper) {
+                    liftState = LiftState.PINCHER_CLOSE;
+                    storeLiftHeight = LiftConstants.liftLow;
+                    liftTimer.reset();
+                }
+                break;
+            case PINCHER_CLOSE:
+                //First close front pincher
+                frontPincher.setPosition(0);
+
+                //After x seconds close back pincher
+                if (liftTimer.seconds() > 0.2){
+                    backPincher.setPosition(1);
+                }
+                //Wait for back pincher to close before extending lift
+                if (liftTimer.seconds() > 0.4) {
+                    liftHeight = storeLiftHeight;
                     liftState = LiftState.LIFT_EXTEND;
-                    liftHeight = LiftConstants.liftLow;
                 }
                 break;
             case LIFT_EXTEND:
                 //Check if lift has fully extended
-                if (Math.abs(leftLift.getCurrentPosition() - liftHeight - liftOffset) < 20) {
+                if (leftLift.getCurrentPosition() > 300) {
                     //Deploy box
                     lift.extendBox();
                     liftState = LiftState.BOX_EXTEND;
@@ -311,6 +337,7 @@ public class Driving extends OpMode
                 //Wait for servo to reach position
                 if (rightServo.getPosition() == LiftConstants.BoxReady) {
                     liftState = LiftState.LIFT_DUMP;
+                    wristServo.setPosition(LiftConstants.wristMiddle1);
                 }
                 break;
             case LIFT_DUMP:
@@ -322,40 +349,62 @@ public class Driving extends OpMode
                 } else if (gamepad2.left_bumper) {
                     liftHeight = LiftConstants.liftLow;
                 }
+
+                //Individual pixel adjustment up
                 if (gamepad2.right_stick_y < -0.6 && !liftIncrease) { // lift goes up
                     liftHeight += 225;
                     liftIncrease = true;
                 } else if (gamepad2.right_stick_y > -0.6 ) {
                     liftIncrease = false;
                 }
-
+                //Individual pixel adjustment down
                 if (gamepad2.right_stick_y > 0.6 && !liftDecrease) {
                     liftHeight -= 225;
                     liftDecrease = true;
                 } else if (gamepad2.right_stick_y < 0.6) {
                     liftDecrease = false;
                 }
-                //Wrist adjustments
-                if (gamepad2.right_stick_x > 0.6) {
-                    wristServo.setPosition(lift.wristRight(wristServo.getPosition()));
-                }
 
+                //Wrist adjustment clockwise
+                if (gamepad2.right_stick_x > 0.6 && !wristRotateRight) {
+                    wristPosition = lift.wristRight(wristPosition);
+                    wristServo.setPosition(wristPosition);
+                    wristRotateRight = true;
+                } else if (gamepad2.right_stick_x <= 0.6)
+                    wristRotateRight = false;
+                //Wrist Adjustment Counter-clockwise
+                if(gamepad2.right_stick_x < -0.6 && !wristRotateLeft) {
+                    wristPosition = lift.wristLeft(wristPosition);
+                    wristServo.setPosition(wristPosition);
+                    wristRotateLeft = true;
+                } else if (gamepad2.right_stick_x >= -0.6)
+                    wristRotateLeft = false;
 
-                //Servo Drop: Changes boxDrop variable too stop intake code
-                if (gamepad2.right_stick_button) {
-                    //Turn on Outtake Servo
-                    IOservo.setPower(-1);
-                    boxDrop = true;
-                   // heightAdjust = 1;
-                } else{
-                    boxDrop = false;
-                    IOservo.setPower(0);
+                //Individual pixel drop with dpad left
+                if (gamepad2.dpad_left && !dpadLeft && pixelDrop == 1) {
+                   frontPincher.setPosition(1);
+                   pixelDrop = 2;
+                   dpadLeft = true;
+                } else if (gamepad2.dpad_left && !dpadLeft && pixelDrop == 2){
+                    backPincher.setPosition(0.5);
+                    pixelDrop = 1;
+                    dpadLeft = true;
+                } else if (!gamepad2.dpad_left)
+                    dpadLeft = false;
+
+                //Group pixel drop with dpad right
+                if (gamepad2.dpad_right) {
+                    frontPincher.setPosition(1);
+                    backPincher.setPosition(0.5);
                 }
 
                 if (gamepad2.left_trigger >= 0.8) {
-                    IOservo.setPower(0);
+                    //IOservo.setPower(0);
                     lift.retractBox();
+                    wristServo.setPosition(wristIdle);
                     liftState = LiftState.LIFT_RETRACT;
+                    //Set pixel drop back to 1 in case we only dropped one of two pixels then retracted lift
+                    pixelDrop = 1;
                 }
                 break;
             case LIFT_RETRACT:
@@ -480,6 +529,7 @@ public class Driving extends OpMode
 
         //Actually setting the lift height; kept out of the finite state machine so that the PID continues to update
         lift.setHeight(liftHeight + liftOffset);
+        telemetry.addData("wristServo", wristServo.getPosition());
     }
 
 

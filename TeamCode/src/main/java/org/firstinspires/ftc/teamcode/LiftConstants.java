@@ -34,13 +34,13 @@ public class LiftConstants {
     public static double AutoBoxReady = 0.4;
 
     //Wrist rotations (Right/Left is the side thats higher)
-   public static double wristIdle = 0;
-   public static double wristMiddle1 = 90*(1/177.5);
-   public static double wristRight1 = 30*(1/177.5);
-   public static double wristLeft1 = 150*(1/177.5);
-   public static double wristMiddle2 = -90*(1/177.5);
-   public static double wristRight2 = -30*(1/177.5);
-   public static double wristLeft2 = -150*(1/177.5);
+   public static double wristIdle = 0.51;
+   public static double wristMiddle1 = 0.76;
+   public static double wristRight1 = 0.6;
+   public static double wristLeft1 = 0.92;
+   public static double wristMiddle2 = 0.26;
+   public static double wristRight2 = 0.4;
+   public static double wristLeft2 = 0.12;
 
     //Time it takes for both pixels to spin out
 
