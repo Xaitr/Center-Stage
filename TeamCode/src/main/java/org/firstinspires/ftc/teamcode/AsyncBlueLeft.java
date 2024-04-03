@@ -305,7 +305,7 @@ public class AsyncBlueLeft extends LinearOpMode {
                     if(!robot.isBusy()) {
                         driveState = State.DROP_WAIT;
                         driveTimer.reset();
-                        preDropLeft.setPosition(0.85);
+                        preDropLeft.setPosition(0.1);
                     }
                     break;
                 case DROP_WAIT:

@@ -320,14 +320,14 @@ public class Driving extends OpMode
                     backPincher.setPosition(1);
                 }
                 //Wait for back pincher to close before extending lift
-                if (liftTimer.seconds() > 0.4) {
+                if (liftTimer.seconds() > 0.5) {
                     liftHeight = storeLiftHeight;
                     liftState = LiftState.LIFT_EXTEND;
                 }
                 break;
             case LIFT_EXTEND:
                 //Check if lift has fully extended
-                if (leftLift.getCurrentPosition() > 300) {
+                if (leftLift.getCurrentPosition() > 600) {
                     //Deploy box
                     lift.extendBox();
                     liftState = LiftState.BOX_EXTEND;
@@ -399,18 +399,17 @@ public class Driving extends OpMode
                 }
 
                 if (gamepad2.left_trigger >= 0.8) {
-                    //IOservo.setPower(0);
                     lift.retractBox();
                     wristServo.setPosition(wristIdle);
                     liftState = LiftState.LIFT_RETRACT;
                     //Set pixel drop back to 1 in case we only dropped one of two pixels then retracted lift
                     pixelDrop = 1;
+                    liftTimer.reset();
                 }
                 break;
             case LIFT_RETRACT:
                 // Wait for servo to return to Idle
-                lift.retractBox();
-                if (rightServo.getPosition() == LiftConstants.BoxIdle) {
+                if (liftTimer.seconds() >= 0.3) {
                     liftState = LiftState.LIFT_RETRACTED;
                     //Retract Lift
                     liftHeight = liftRetracted;
