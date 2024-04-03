@@ -46,7 +46,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
     Pose2d poseEstimate;
 
     //Instantiate our driveState
-    State driveState = State.PREDROP;
+    State driveState = State.BACKBOARD_DROP;
 
     //Declare purple preload servo
     private Servo preDropLeft = null;
@@ -194,7 +194,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     intake.setPower(1);
                     transfer.setPower(1);
                 })
-                .lineToLinearHeading(new Pose2d(-60,44,  Math.toRadians(225)))
+                .lineToLinearHeading(new Pose2d(-56,38,  Math.toRadians(225)))
                 .build();
         // pick up white pixels off stack
 
