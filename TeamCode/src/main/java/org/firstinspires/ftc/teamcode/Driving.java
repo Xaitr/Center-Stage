@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.LiftConstants.StackMuncher2;
+import static org.firstinspires.ftc.teamcode.LiftConstants.backPincherClose;
+import static org.firstinspires.ftc.teamcode.LiftConstants.backPincherOpen;
 import static org.firstinspires.ftc.teamcode.LiftConstants.droneLift;
+import static org.firstinspires.ftc.teamcode.LiftConstants.frontPincherClose;
+import static org.firstinspires.ftc.teamcode.LiftConstants.frontPincherOpen;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftHang;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftLow;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
@@ -179,8 +183,8 @@ public class Driving extends OpMode
         imu.initialize(new IMU.Parameters(RevOrientation));
         imu.resetYaw();
 
-        backPincher.setPosition(0.5);
-        frontPincher.setPosition(1);
+        backPincher.setPosition(backPincherOpen);
+        frontPincher.setPosition(frontPincherOpen);
         wristServo.setPosition(wristIdle);
     }
 
@@ -313,11 +317,11 @@ public class Driving extends OpMode
                 break;
             case PINCHER_CLOSE:
                 //First close front pincher
-                frontPincher.setPosition(0);
+                frontPincher.setPosition(frontPincherClose);
 
                 //After x seconds close back pincher
                 if (liftTimer.seconds() > 0.2){
-                    backPincher.setPosition(1);
+                    backPincher.setPosition(backPincherClose);
                 }
                 //Wait for back pincher to close before extending lift
                 if (liftTimer.seconds() > 0.5) {
@@ -382,11 +386,11 @@ public class Driving extends OpMode
 
                 //Individual pixel drop with dpad left
                 if (gamepad2.dpad_left && !dpadLeft && pixelDrop == 1) {
-                   frontPincher.setPosition(1);
+                   frontPincher.setPosition(frontPincherOpen);
                    pixelDrop = 2;
                    dpadLeft = true;
                 } else if (gamepad2.dpad_left && !dpadLeft && pixelDrop == 2){
-                    backPincher.setPosition(0.5);
+                    backPincher.setPosition(backPincherOpen);
                     pixelDrop = 1;
                     dpadLeft = true;
                 } else if (!gamepad2.dpad_left)
@@ -394,14 +398,17 @@ public class Driving extends OpMode
 
                 //Group pixel drop with dpad right
                 if (gamepad2.dpad_right) {
-                    frontPincher.setPosition(1);
-                    backPincher.setPosition(0.5);
+                    frontPincher.setPosition(frontPincherOpen);
+                    backPincher.setPosition(backPincherOpen);
                 }
 
                 if (gamepad2.left_trigger >= 0.8) {
                     lift.retractBox();
                     wristServo.setPosition(wristIdle);
                     liftState = LiftState.LIFT_RETRACT;
+                    //Open both pinchers in-case driver retracts without dropping
+                    frontPincher.setPosition(frontPincherOpen);
+                    backPincher.setPosition(backPincherOpen);
                     //Set pixel drop back to 1 in case we only dropped one of two pixels then retracted lift
                     pixelDrop = 1;
                     liftTimer.reset();

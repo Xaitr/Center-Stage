@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.LiftConstants.backPincherClose;
+import static org.firstinspires.ftc.teamcode.LiftConstants.backPincherOpen;
+import static org.firstinspires.ftc.teamcode.LiftConstants.frontPincherClose;
+import static org.firstinspires.ftc.teamcode.LiftConstants.frontPincherOpen;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristIdle;
 
@@ -294,7 +298,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
         imuTimer.reset();
 
         //Close pincher for yellow preload
-        backPincher.setPosition(1);
+        backPincher.setPosition(backPincherClose);
 
         //Turn off Vision Portal to conserve resources
         OpenCvVisionPortal.stopStreaming();
@@ -387,11 +391,11 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     break;
                 case CLOSE_PINCHERS:
                     //First close front pincher
-                    frontPincher.setPosition(0);
+                    frontPincher.setPosition(frontPincherClose);
 
                     //After x seconds close back pincher
                     if (liftTimer.seconds() > 0.2){
-                        backPincher.setPosition(1);
+                        backPincher.setPosition(backPincherClose);
                     }
                     //Wait for back pincher to close before extending lift
                     if (liftTimer.seconds() > 0.5) {
@@ -413,8 +417,8 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     if (readyToDrop) {
                         //Release pixels and move to next state
                         liftState = LiftState.LIFT_DUMP;
-                        frontPincher.setPosition(1);
-                        backPincher.setPosition(0.5);
+                        frontPincher.setPosition(frontPincherOpen);
+                        backPincher.setPosition(backPincherOpen);
                         liftTimer.reset();
                     }
                     break;
