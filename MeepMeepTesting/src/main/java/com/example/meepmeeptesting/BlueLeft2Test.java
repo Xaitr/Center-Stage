@@ -23,7 +23,8 @@ public class BlueLeft2Test {
                                 .splineToConstantHeading(new Vector2d (10,57), Math.toRadians(180))
                                 .splineToConstantHeading(new Vector2d (-30,57), Math.toRadians(180))
                                 .splineToConstantHeading(new Vector2d (-35,57), Math.toRadians(180))
-                                .lineToLinearHeading(new Pose2d(-60,44,  Math.toRadians(225)))
+                                .splineTo(new Vector2d(-60, 44), Math.toRadians(225))
+//                                .lineToLinearHeading(new Pose2d(-60,44,  Math.toRadians(225)))
                                 // pick up white pixels off stack
                                 .lineToLinearHeading(new Pose2d(-35,57,  Math.toRadians(-180)))
                                 .lineTo(new Vector2d(33,57))
