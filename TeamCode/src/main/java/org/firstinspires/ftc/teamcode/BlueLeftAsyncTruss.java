@@ -70,7 +70,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
     //Creating lift variables and servos
     ElapsedTime liftTimer = new ElapsedTime();
     LiftState liftState = LiftState.LIFT_IDLE;
-    private int liftHeight = 0;
+    private int liftHeight, storeLiftHeight = 0;
     private CRServo transfer = null;
     private Servo frontPincher, backPincher, wrist = null;
     private DcMotor leftLift,intake = null;
@@ -170,37 +170,40 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
 
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,36))
+                .strafeTo(new Vector2d(52,35))
                 // place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift
                     liftState = LiftState.CLOSE_PINCHERS;
-                    liftHeight = LiftConstants.liftAuto;
+                    storeLiftHeight = LiftConstants.liftAuto;
                 })
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     readyToDrop = true;
                 })
                 .build();
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
-                .lineTo(new Vector2d(20, 32))
+                .lineTo(new Vector2d(20, 30))
                 .build();
         TrajectorySequence WhiteStackOneMid = robot.trajectorySequenceBuilder(PreDropMid.end())
                 .lineTo(new Vector2d(20, 50))
-                .splineToConstantHeading(new Vector2d (10,57), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-30,57), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-35,57), Math.toRadians(180))
-                .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
-                    DIservo.setPosition(LiftConstants.StackMuncher2);
+                .splineToConstantHeading(new Vector2d (10,58), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-15,57), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-20,57), Math.toRadians(180))
+                .addTemporalMarker(pathTime -> pathTime-2,() -> {
+                    DIservo.setPosition(LiftConstants.StackMuncher1);
                     intake.setPower(1);
                     transfer.setPower(1);
                 })
-                .lineToLinearHeading(new Pose2d(-56,38,  Math.toRadians(225)))
+                .splineTo(new Vector2d(-55.5,39),Math.toRadians(225))
                 .build();
+
         // pick up white pixels off stack
 
         //From stack to backstage beside the backdrop
         TrajectorySequence BackDrop = robot.trajectorySequenceBuilder(WhiteStackOneMid.end())
-                .lineToLinearHeading(new Pose2d(-35,57,  Math.toRadians(-180)))
+                .splineTo(new Vector2d(-35, 57), Math.toRadians(-180))
+//                .lineToLinearHeading(new Pose2d(-35,57,  Math.toRadians(-180))
+
                 .addTemporalMarker(0.5, () -> {
                     //Reject any extra pixel that might have been intaked
                     intake.setPower(-1);
@@ -212,14 +215,14 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     transfer.setPower(0);
 
                 })
-                .lineTo(new Vector2d(33,57))
+                .splineToConstantHeading(new Vector2d(33,57), Math.toRadians(0))
                 .splineToConstantHeading(new Vector2d(56,57), Math.toRadians(0))
                 //place two white pixels
                 //put pixel on backboard
-                .addTemporalMarker(pathTime -> pathTime-1,() -> {
+                .addTemporalMarker(pathTime -> pathTime-2,() -> {
                     //Starts extending lift x seconds before reaching the backboard
                     liftState = LiftState.CLOSE_PINCHERS;
-                    liftHeight = LiftConstants.liftAuto;
+                    storeLiftHeight = LiftConstants.liftAuto;
                 })
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     readyToDrop = true;
@@ -357,6 +360,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 case GENERAL_STACK:
                     if (!robot.isBusy()) {
                         //Reset timer once we've reached the stacks
+                        preDropLeft.setPosition(0.75);
                         driveTimer.reset();
                         driveState = State.INTAKE_STACK;
                     }
@@ -399,12 +403,13 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     }
                     //Wait for back pincher to close before extending lift
                     if (liftTimer.seconds() > 0.5) {
+                        liftHeight = storeLiftHeight;
                         liftState = LiftState.LIFT_EXTEND;
                     }
                     break;
                 case LIFT_EXTEND:
                     //Check if lift has fully extended
-                    if (leftLift.getCurrentPosition() > 600) {
+                    if (leftLift.getCurrentPosition() > 400) {
                         //Deploy box
                         lift.extendBox();
                         wrist.setPosition(LiftConstants.wristMiddle1);
