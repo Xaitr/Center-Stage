@@ -11,6 +11,7 @@ import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -100,6 +101,9 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
     //Declare our colour processor
     private BlueProcessor blueProcessor;
 
+    //Instantiate trajectories from stack to backstage seperately, because these need to be chained differently
+    Trajectory TestBackDrop;
+    TrajectorySequence TestBackDrop2;
     @Override
     public void runOpMode() throws InterruptedException {
         //Instantiate SampleMecanumDrive
@@ -170,7 +174,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
 
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,35))
+                .strafeTo(new Vector2d(52,37))
                 // place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift
@@ -186,22 +190,56 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 .build();
         TrajectorySequence WhiteStackOneMid = robot.trajectorySequenceBuilder(PreDropMid.end())
                 .lineTo(new Vector2d(20, 50))
+                .addTemporalMarker(0.5, () -> {
+                    //Close the preDrop servo
+                    preDropLeft.setPosition(0.75);
+                })
                 .splineToConstantHeading(new Vector2d (10,58), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-15,57), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-20,57), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-15,58), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-20,58), Math.toRadians(180))
                 .addTemporalMarker(pathTime -> pathTime-2,() -> {
                     DIservo.setPosition(LiftConstants.StackMuncher1);
                     intake.setPower(1);
                     transfer.setPower(1);
                 })
-                .splineTo(new Vector2d(-55.5,39),Math.toRadians(225))
+                .splineTo(new Vector2d(-53,40),Math.toRadians(215))
                 .build();
 
         // pick up white pixels off stack
 
         //From stack to backstage beside the backdrop
+//        TestBackDrop = robot.trajectoryBuilder(WhiteStackOneMid.end(), true)
+//                .addTemporalMarker(0.5, () -> {
+//                    //Reject any extra pixel that might have been intaked
+//                    intake.setPower(-1);
+//                    transfer.setPower(1);
+//                })
+//                .splineTo(new Vector2d(-35, 57), Math.toRadians(-180))
+//
+//                .build();
+//
+//        TestBackDrop2 = robot.trajectorySequenceBuilder(TestBackDrop.end())
+//                .addTemporalMarker(1.0,() -> {
+//                    //Turn off the intake
+//                    intake.setPower(0);
+//                    transfer.setPower(0);
+//
+//                })
+//                .splineTo(new Vector2d(33,57), Math.toRadians(180))
+//                .splineTo(new Vector2d(56,57), Math.toRadians(180))
+//                .addTemporalMarker(pathTime -> pathTime-2,() -> {
+//                    //Starts extending lift x seconds before reaching the backboard
+//                    liftState = LiftState.CLOSE_PINCHERS;
+//                    storeLiftHeight = LiftConstants.liftAuto;
+//                })
+//                .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
+//                    readyToDrop = true;
+//                })
+//                .build();
+
         TrajectorySequence BackDrop = robot.trajectorySequenceBuilder(WhiteStackOneMid.end())
-                .splineTo(new Vector2d(-35, 57), Math.toRadians(-180))
+                .splineToConstantHeading(new Vector2d(-25, 57), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(-15,57, Math.toRadians(180)), Math.toRadians(0))
 //                .lineToLinearHeading(new Pose2d(-35,57,  Math.toRadians(-180))
 
                 .addTemporalMarker(0.5, () -> {
@@ -215,8 +253,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     transfer.setPower(0);
 
                 })
-                .splineToConstantHeading(new Vector2d(33,57), Math.toRadians(0))
-                .splineToConstantHeading(new Vector2d(56,57), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(50,57), Math.toRadians(0))
                 //place two white pixels
                 //put pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-2,() -> {
@@ -360,19 +397,18 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 case GENERAL_STACK:
                     if (!robot.isBusy()) {
                         //Reset timer once we've reached the stacks
-                        preDropLeft.setPosition(0.75);
                         driveTimer.reset();
                         driveState = State.INTAKE_STACK;
                     }
                     break;
                 case INTAKE_STACK:
                     //Lower the Stack muncher for the second pixel after x seconds
-                    if(driveTimer.seconds() >= 0.3)
+                    if(driveTimer.seconds() >= 0)
                         DIservo.setPosition(LiftConstants.StackMuncher2);
 
                     //Drive to backstage after x seconds
                     if(driveTimer.seconds() >= 0.5) {
-                        robot.followTrajectorySequenceAsync(BackDrop);
+                        robot.followTrajectorySequence(BackDrop);
                         //Bring back the Stack Muncher to idle
                         DIservo.setPosition(LiftConstants.StackMuncherReturn);
                         driveState = State.BACKBOARD_STACK;
@@ -380,6 +416,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     break;
                 case BACKBOARD_STACK:
                     if (!robot.isBusy()) {
+                        telemetry.addData("UH OH ", "AHHH");
                         driveTimer.reset();
                         driveState = State.IDLE;
                     }
