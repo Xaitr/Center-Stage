@@ -299,9 +299,7 @@ public class Driving extends OpMode
         // BIGGER CLOSES MORE*********************
 
         telemetry.addData("IMU:", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-        if (gamepad1.left_bumper) {
-            drone.setPosition(0.6);
-        }
+
 
 
         //Switch Case for Lift gm0.org
