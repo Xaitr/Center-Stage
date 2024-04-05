@@ -29,6 +29,7 @@ public class BlueLeft2Test {
                                 .splineToSplineHeading(new Pose2d(-35,57, Math.toRadians(180)),  Math.toRadians(0))
                                 .splineToConstantHeading(new Vector2d(42,57), Math.toRadians(180))
                                 //place two white pixels
+                                .splineToConstantHeading(new Vector2d (10,57), Math.toRadians(180))
                                 .splineToConstantHeading(new Vector2d (-30,57), Math.toRadians(180))
                                 .splineToConstantHeading(new Vector2d (-35,57), Math.toRadians(180))
                                 .splineTo(new Vector2d(-60, 44), Math.toRadians(225))
