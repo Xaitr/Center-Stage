@@ -24,19 +24,20 @@ public class BlueLeft2Test {
                                 .splineToConstantHeading(new Vector2d (-30,57), Math.toRadians(180))
                                 .splineToConstantHeading(new Vector2d (-35,57), Math.toRadians(180))
                                 .splineTo(new Vector2d(-60, 44), Math.toRadians(225))
+                                .forward(5)
                                 // pick up white pixels off stack
-                                .splineToConstantHeading(new Vector2d(-50,57), Math.toRadians(0))
-                                .splineToSplineHeading(new Pose2d(-35,57, Math.toRadians(180)),  Math.toRadians(0))
-                                .splineToConstantHeading(new Vector2d(42,57), Math.toRadians(180))
+                                .lineToLinearHeading(new Pose2d(-35,57,  Math.toRadians(-180)))
+                                .lineTo(new Vector2d(33,57))
+                                .splineToConstantHeading(new Vector2d(56,57), Math.toRadians(0))
                                 //place two white pixels
                                 .splineToConstantHeading(new Vector2d (10,57), Math.toRadians(180))
                                 .splineToConstantHeading(new Vector2d (-30,57), Math.toRadians(180))
                                 .splineToConstantHeading(new Vector2d (-35,57), Math.toRadians(180))
                                 .splineTo(new Vector2d(-60, 44), Math.toRadians(225))
                                 // pick up white pixels off stack
-                                .splineToConstantHeading(new Vector2d(-50,57), Math.toRadians(0))
-                                .splineToSplineHeading(new Pose2d(-35,57, Math.toRadians(180)),  Math.toRadians(0))
-                                .splineToConstantHeading(new Vector2d(42,57), Math.toRadians(0))
+                                .lineToLinearHeading(new Pose2d(-35,57,  Math.toRadians(-180)))
+                                .lineTo(new Vector2d(33,57))
+                                .splineToConstantHeading(new Vector2d(56,57), Math.toRadians(0))
                         //park and place white pixels
                                 .build()
                 );

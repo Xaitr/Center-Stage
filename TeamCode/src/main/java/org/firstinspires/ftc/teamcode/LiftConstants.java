@@ -22,7 +22,7 @@ public class LiftConstants {
 
     public static double StackMuncher1 = 0.875;
 
-    public static double StackMuncher2 = 0.90;
+    public static double StackMuncher2 = 0.890;
 
     public static double StackMuncher3 = 0.905;
 
