@@ -19,12 +19,13 @@ public class BlueLeft2Test {
                                 // place pixel on backboard
                                 .lineTo(new Vector2d(20, 32))
                                 //place pixel on line
-                                .lineTo(new Vector2d(33, 50))
-                                .splineToConstantHeading(new Vector2d (10,57), Math.toRadians(180))
-                                .splineToConstantHeading(new Vector2d (-30,57), Math.toRadians(180))
-                                .splineToConstantHeading(new Vector2d (-35,57), Math.toRadians(180))
-                                .splineTo(new Vector2d(-60, 44), Math.toRadians(225))
+                                .lineTo(new Vector2d(33, 51))
+                                .splineToConstantHeading(new Vector2d (10,59), Math.toRadians(180))
+                                .splineToConstantHeading(new Vector2d (-15,58), Math.toRadians(180))
+                                //.splineToConstantHeading(new Vector2d (-5,58), Math.toRadians(180))
+                                .splineTo(new Vector2d(-47,38),Math.toRadians(200))
                                 .forward(5)
+                                .back(3)
                                 // pick up white pixels off stack
                                 .lineToLinearHeading(new Pose2d(-35,57,  Math.toRadians(-180)))
                                 .lineTo(new Vector2d(33,57))

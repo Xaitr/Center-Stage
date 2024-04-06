@@ -131,7 +131,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 })
                 .build();
         TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
-                .lineTo(new Vector2d(33, 32))
+                .lineTo(new Vector2d(33, 40))
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     preDropLeft.setPosition(0.85);
                 })
@@ -139,9 +139,12 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 //put pixel on left line
         TrajectorySequence WhiteStackOneLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
                 .lineTo(new Vector2d(33, 51))
+                .addTemporalMarker(0.5, () -> {
+                    //Close the preDrop servo
+                    preDropLeft.setPosition(0.75);
+                })
                 .splineToConstantHeading(new Vector2d (10,59), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-30,58), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-35,58), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-15,58), Math.toRadians(180))
                 .addTemporalMarker(pathTime -> pathTime - 3, () -> {
                     DIservo.setPosition(LiftConstants.StackMuncher1);
                 })
@@ -149,8 +152,8 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     intake.setPower(1);
                     transfer.setPower(1);
                 })
-                .splineTo(new Vector2d(-49,37.5),Math.toRadians(200))
-                .forward(3)
+                .splineTo(new Vector2d(-47,38),Math.toRadians(200))
+                .forward(5)
                 .back(3)
                 .addDisplacementMarker(() -> {
                     DIservo.setPosition(LiftConstants.StackMuncher2);
@@ -184,6 +187,10 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 .build();
         TrajectorySequence WhiteStackOneRight = robot.trajectorySequenceBuilder(PreDropRight.end())
                 .lineTo(new Vector2d(15, 51))
+                .addTemporalMarker(0.5, () -> {
+                    //Close the preDrop servo
+                    preDropLeft.setPosition(0.75);
+                })
                 .splineToConstantHeading(new Vector2d (10,59), Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d (-15,58), Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d (-20,58), Math.toRadians(180))
@@ -506,12 +513,12 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     }
                     if (driveTimer.seconds() >= 1.2){
                         driveState = State.BACKBOARD_STACK;
-                        //robot.followTrajectorySequenceAsync(BackDrop);
+                        robot.followTrajectorySequenceAsync(BackDrop);
             }
                     break;
                 case BACKBOARD_STACK:
                     if (!robot.isBusy()) {
-                       // telemetry.addData("UH OH ", "AHHH");
+                        telemetry.addData("UH OH ", "AHHH");
                         robot.followTrajectorySequenceAsync(WhiteStackTwo);
                         driveTimer.reset();
                         driveState = State.GENERAL_STACK2;

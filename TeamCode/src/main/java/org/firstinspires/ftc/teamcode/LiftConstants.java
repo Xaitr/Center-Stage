@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode;
 //Parameters for lift
 public class LiftConstants {
     //Lift heights in ticks
-    public static int liftHigh = 1945;
-    public static int liftMedium = 1495;
-    public static int liftLow = 1045;
+    public static int liftHigh = 1560;
+    public static int liftMedium = 1110;
+    public static int liftLow = 660;
     //1100, 1700, 2200 MAX
     public static int liftRetracted =0;
     public static int liftHang = 300;
@@ -35,14 +35,14 @@ public class LiftConstants {
 
     //Wrist rotations (Right/Left is the side thats higher)
    public static double wristIdle = 0.51;
-   public static double wristMiddle1 = 0.76;
+   public static double wristMiddle1 = 0.78;
    public static double wristRight1 = 0.6;
-   public static double wristLeft1 = 0.92;
-   public static double wristMiddle2 = 0.26;
+   public static double wristLeft1 = 0.98;
+   public static double wristMiddle2 = 0.22;
    public static double wristRight2 = 0.4;
-   public static double wristLeft2 = 0.12;
+   public static double wristLeft2 = 0.04;
 
-    //Time it takes for both pixels to spin out
+
 
 //    public static double AutoBoxReady = 0.4;
     public static double dumpTime = 1.5;

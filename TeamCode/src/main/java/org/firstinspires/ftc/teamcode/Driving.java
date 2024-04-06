@@ -326,11 +326,11 @@ public class Driving extends OpMode
                 frontPincher.setPosition(frontPincherClose);
 
                 //After x seconds close back pincher
-                if (liftTimer.seconds() > 0.2){
+                if (liftTimer.seconds() > 0.3){
                     backPincher.setPosition(backPincherClose);
                 }
                 //Wait for back pincher to close before extending lift
-                if (liftTimer.seconds() > 0.5) {
+                if (liftTimer.seconds() > 0.6) {
                     liftHeight = storeLiftHeight;
                     liftState = LiftState.LIFT_EXTEND;
                 }
