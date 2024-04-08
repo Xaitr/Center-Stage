@@ -87,7 +87,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
     //Timer for periodically updating the heading with the imu
     ElapsedTime imuTimer = new ElapsedTime();
-    private double headingInterval = 3;
+    private double headingInterval = 5;
 
     //Lets the lift state machine know when the trajectory to the backboard is finished
     private boolean readyToDrop = false;
@@ -168,7 +168,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
 
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,33))
+                .strafeTo(new Vector2d(52,32))
                 //place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift
@@ -186,14 +186,14 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 })
                 .build();
         TrajectorySequence WhiteStackOneRight = robot.trajectorySequenceBuilder(PreDropRight.end())
-                .lineTo(new Vector2d(20, 51))
+                .lineTo(new Vector2d(20, 50))
                 .addTemporalMarker(0.5, () -> {
                     //Close the preDrop servo
                     preDropLeft.setPosition(0.75);
                 })
-                .splineToConstantHeading(new Vector2d (10,59), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-15,58), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-20,58), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (10,58), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-15,55), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-20,55), Math.toRadians(180))
                 .addTemporalMarker(pathTime -> pathTime - 3, () -> {
                     DIservo.setPosition(LiftConstants.StackMuncher1);
                 })
@@ -201,7 +201,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     intake.setPower(1);
                     transfer.setPower(1);
                 })
-                .splineTo(new Vector2d(-50,37.5),Math.toRadians(200))
+                .splineTo(new Vector2d(-53,52.5),Math.toRadians(200))
                 .forward(3)
                 .back(3)
                 .addDisplacementMarker(() -> {
@@ -305,7 +305,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     intake.setPower(-1);
                     transfer.setPower(1);
                 })
-                .addTemporalMarker(1.8,() -> {
+                .addTemporalMarker(2.5,() -> {
                     //Turn off the intake
                     intake.setPower(0);
                     transfer.setPower(0);
@@ -359,7 +359,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     intake.setPower(-1);
                     transfer.setPower(1);
                 })
-                .addTemporalMarker(1.8,() -> {
+                .addTemporalMarker(2.5,() -> {
                     //Turn off the intake
                     intake.setPower(0);
                     transfer.setPower(0);
