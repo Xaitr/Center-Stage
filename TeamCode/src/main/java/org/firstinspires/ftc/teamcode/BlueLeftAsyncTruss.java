@@ -168,7 +168,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
 
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,30))
+                .strafeTo(new Vector2d(52,33))
                 //place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift
@@ -186,7 +186,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 })
                 .build();
         TrajectorySequence WhiteStackOneRight = robot.trajectorySequenceBuilder(PreDropRight.end())
-                .lineTo(new Vector2d(15, 51))
+                .lineTo(new Vector2d(20, 51))
                 .addTemporalMarker(0.5, () -> {
                     //Close the preDrop servo
                     preDropLeft.setPosition(0.75);
@@ -206,10 +206,11 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 .back(3)
                 .addDisplacementMarker(() -> {
                     DIservo.setPosition(LiftConstants.StackMuncher2);
-                    intake.setPower(-1);
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
                     intake.setPower(1);
+
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
+                    intake.setPower(-1);
                 })
                 .forward(3)
                 .build();
@@ -254,10 +255,10 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 .back(3)
                 .addDisplacementMarker(() -> {
                     DIservo.setPosition(LiftConstants.StackMuncher2);
-                    intake.setPower(-1);
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
                     intake.setPower(1);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
+                    intake.setPower(-1);
                 })
                 .forward(3)
                 .build();
@@ -299,12 +300,12 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(-35,56,  Math.toRadians(-180)))
                 .lineTo(new Vector2d(50,56))
 
-                .addTemporalMarker(1.5, () -> {
+                .addTemporalMarker(1.2, () -> {
                     //Reject any extra pixel that might have been intaked
                     intake.setPower(-1);
                     transfer.setPower(1);
                 })
-                .addTemporalMarker(2.5,() -> {
+                .addTemporalMarker(1.8,() -> {
                     //Turn off the intake
                     intake.setPower(0);
                     transfer.setPower(0);
@@ -325,38 +326,40 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
         //Moves from backstage to stack
         TrajectorySequence WhiteStackTwo = robot.trajectorySequenceBuilder(BackDrop.end())
                 .splineToConstantHeading(new Vector2d (10,53), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-35,53), Math.toRadians(180))
-                .splineTo(new Vector2d(-50, 34.5), Math.toRadians(200))
+                .splineToConstantHeading(new Vector2d (-20,53), Math.toRadians(180))
+                .splineTo(new Vector2d(-49, 35), Math.toRadians(200))
                 .forward(3)
                 //Turn on intake and lower the stack-muncher
+                .addTemporalMarker(pathTime -> pathTime - 3, () -> {
+                    DIservo.setPosition(LiftConstants.StackMuncher3);
+                })
                 .addTemporalMarker(pathTime -> pathTime-2.5,() -> {
                     intake.setPower(1);
                     transfer.setPower(1);
-                    DIservo.setPosition(StackMuncher3);
                 })
                 .back(3)
                 .addDisplacementMarker(() -> {
                     DIservo.setPosition(LiftConstants.StackMuncher4);
-                    intake.setPower(-1);
-                })
-                .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
                     intake.setPower(1);
+                })
+                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
+                    intake.setPower(-1);
                 })
                 .forward(3)
                 .build();
 
         TrajectorySequence BackDrop2 = robot.trajectorySequenceBuilder(WhiteStackOneMid.end())
-                .forward(2)
-                .lineToLinearHeading(new Pose2d(-35,51,  Math.toRadians(-180)))
-                .lineTo(new Vector2d(50,51), SampleMecanumDrive.getVelocityConstraint(60, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .forward(4)
+                .lineToLinearHeading(new Pose2d(-35,52,  Math.toRadians(-180)))
+                .lineTo(new Vector2d(50,52), SampleMecanumDrive.getVelocityConstraint(60, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL * 1.5))
 
-                .addTemporalMarker(1.5, () -> {
+                .addTemporalMarker(1.2, () -> {
                     //Reject any extra pixel that might have been intaked
                     intake.setPower(-1);
                     transfer.setPower(1);
                 })
-                .addTemporalMarker(2.5,() -> {
+                .addTemporalMarker(1.8,() -> {
                     //Turn off the intake
                     intake.setPower(0);
                     transfer.setPower(0);
@@ -427,7 +430,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 robot.followTrajectorySequenceAsync(BackBoardDropMid);
                 break;
             case RIGHT:
-                robot.followTrajectorySequence(BackBoardDropRight);
+                robot.followTrajectorySequenceAsync(BackBoardDropRight);
                 break;
         }
 
@@ -507,11 +510,11 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
 
                     //Drive to backstage after x seconds
-                    if (driveTimer.seconds() >= 0.5) {
+                    if (driveTimer.seconds() >= 0.3) {
                         DIservo.setPosition(LiftConstants.StackMuncherReturn);
                         //Bring back the Stack Muncher to idle
                     }
-                    if (driveTimer.seconds() >= 1.2){
+                    if (driveTimer.seconds() >= 1){
                         driveState = State.BACKBOARD_STACK;
                         robot.followTrajectorySequenceAsync(BackDrop);
             }
