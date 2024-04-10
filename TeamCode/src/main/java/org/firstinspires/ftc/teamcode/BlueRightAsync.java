@@ -115,7 +115,7 @@ public class BlueRightAsync extends LinearOpMode {
         //Instantiate SampleMecanumDrive
         SampleMecanumDrive robot = new SampleMecanumDrive(hardwareMap);
         //Define robots starting position and orientation
-        Pose2d startPose = new Pose2d(13, 65, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(-34, 57, Math.toRadians(90));
         robot.setPoseEstimate(startPose);
 
         TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
@@ -130,6 +130,7 @@ public class BlueRightAsync extends LinearOpMode {
                     readyToDrop = true;
                 })
                 .build();
+
         TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
                 .lineTo(new Vector2d(33, 40))
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
@@ -137,6 +138,7 @@ public class BlueRightAsync extends LinearOpMode {
                 })
                 .build();
         //put pixel on left line
+
         TrajectorySequence WhiteStackOneLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
                 .lineTo(new Vector2d(33, 51))
                 .addTemporalMarker(0.5, () -> {
