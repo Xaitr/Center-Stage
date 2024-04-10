@@ -14,37 +14,24 @@ public class BlueRight1 {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-34, 57, Math.toRadians(180)))
-                               // .lineTo(new Vector2d(-36, 30))
-                                // spit out pixel here
-                              //  .lineTo(new Vector2d(-33, 11))
-                                //.splineToSplineHeading(new Pose2d(-32, 10, Math.toRadians(0)), Math.toRadians(0))
-                                //.splineToConstantHeading(new Vector2d(-16, 10), Math.toRadians(0))
-                                //.splineToConstantHeading(new Vector2d(38, 10), Math.toRadians(0))
-                                //.splineToConstantHeading(new Vector2d(50, 34), Math.toRadians(0))
-                                // put pixel on board here
-                                //.splineToConstantHeading(new Vector2d(58, 14), Math.toRadians(0))
-                                .lineTo(new Vector2d(-40, 50))
-                                .lineToLinearHeading(new Pose2d(-36, 38, Math.toRadians(90)))
-                                .lineTo(new Vector2d(-36,17))
-                                .strafeLeft(7)
-                                //place pixel on line
-                                .back(4)
-                                .turn(Math.toRadians(90))
-                                .splineToConstantHeading(new Vector2d(-55,13), Math.toRadians(0))
-                                //pick up white pixel
-                                .splineToConstantHeading (new Vector2d(34, 13), Math.toRadians(0))
-                                .splineToConstantHeading(new Vector2d(50,23.5), Math.toRadians(0))
-                                .turn(0)
-                                //place pixel on backboard
-                                .splineToConstantHeading(new Vector2d(30,13), Math.toRadians(180))
-                                .lineTo(new Vector2d(-14,13))
-                                .lineTo(new Vector2d(-55,13))
-                                //pick up two white pixels off stack
-                                .lineTo(new Vector2d(-14,13))
+                        drive.trajectorySequenceBuilder(new Pose2d(-34, 57, Math.toRadians(90)))
+                                .back(2)
+                                .splineToConstantHeading(new Vector2d(-34,20), Math.toRadians(-90))
+                                //place pixel on right line
+                                .lineToLinearHeading(new Pose2d(-48,13, Math.toRadians(-180)))
+                                .splineToConstantHeading(new Vector2d(-52, 13), Math.toRadians(180))
+                                //pick up one white pixel
+                                .splineToConstantHeading(new Vector2d(-14,13), Math.toRadians(0))
                                 .lineTo(new Vector2d(30,13))
                                 .splineToConstantHeading(new Vector2d(50,34),Math.toRadians(0))
-                                .turn(0)
+                                //place pixel on backboard
+                                .lineTo(new Vector2d(30,13))
+                                .lineTo(new Vector2d(-14,13))
+                                .splineToConstantHeading(new Vector2d(-52, 13), Math.toRadians(180))
+                                //pick up two white pixels off stack
+                               // .lineTo(new Vector2d(-14,13))
+                                .lineTo(new Vector2d(30,13))
+                                .splineToConstantHeading(new Vector2d(50,34),Math.toRadians(0))
                                 //place pixels on backboard
                                 .splineToConstantHeading(new Vector2d(50,13), Math.toRadians(0))
                                 .build()

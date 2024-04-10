@@ -27,12 +27,12 @@ public class BlueRight2 {
                                 //.strafeLeft(23)
                                 //.back(12)
                                 //.lineTo(new Vector2d(-30, 20))
-                                .lineToConstantHeading(new Vector2d(-48,47))
-                                .strafeLeft(30)
+                                .splineToConstantHeading(new Vector2d(-38,25), Math.toRadians(0))
                                 .lineToLinearHeading(new Pose2d(-36, 15, Math.toRadians(75)))
                                 //place pixel on line
-                                .lineTo(new Vector2d(-36,13))
-                                .turn(Math.toRadians(105))
+                                .splineToLinearHeading(new Pose2d(-36,13), Math.toRadians(180))
+                               // .lineTo(new Vector2d(-36,13))
+                               // .turn(Math.toRadians(105))
                                 .splineToConstantHeading(new Vector2d(-55,13), Math.toRadians(180))
                                 //pick one white pixel off of stack
                                 .lineTo(new Vector2d(20,13))
