@@ -105,7 +105,8 @@ public class BlueRightAsync extends LinearOpMode {
     private AprilTagProcessor aprilProcessor;
 
     //Declare our colour processor
-    private BlueProcessor blueProcessor;
+    private BlueProcessorFrontStage blueProcessorFrontStage;
+    // private BlueProcessor blueProcessor;
 
     //Instantiate trajectories from stack to backstage seperately, because these need to be chained differently
     Trajectory TestBackDrop;
@@ -171,51 +172,54 @@ public class BlueRightAsync extends LinearOpMode {
                 .back(2)
                 .splineToConstantHeading(new Vector2d(-34,20), Math.toRadians(-90))
                 //place pixel on right line
-                .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
-                    //Starts extending lift
-                    liftState = LiftState.CLOSE_PINCHERS;
-                    storeLiftHeight = LiftConstants.liftAuto;
-                })
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
-                    readyToDrop = true;
+                    preDropLeft.setPosition(0.85);
                 })
+//                .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
+//                    //Starts extending lift
+//                    liftState = LiftState.CLOSE_PINCHERS;
+//                    storeLiftHeight = LiftConstants.liftAuto;
+//                })
+//                .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
+//                    readyToDrop = true;
+//                })
                 .build();
+
                 TrajectorySequence WhiteStackOneRight = robot.trajectorySequenceBuilder(PreDropRight.end())
                 .lineToLinearHeading(new Pose2d(-48,13, Math.toRadians(-180)))
                 .splineToConstantHeading(new Vector2d(-52, 13), Math.toRadians(180))
                         //pick up white pixel
-                .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
-                    preDropLeft.setPosition(0.85);
-                })
+                        .addTemporalMarker(0.5, () -> {
+                            //Close the preDrop servo
+                            preDropLeft.setPosition(0.75);
+                        })
+                        .addTemporalMarker(pathTime -> pathTime - 3, () -> {
+                            DIservo.setPosition(LiftConstants.StackMuncher1);
+                        })
+                        .addTemporalMarker(pathTime -> pathTime-2.5,() -> {
+                            intake.setPower(1);
+                            transfer.setPower(1);
+                        })
                 .build();
+
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(PreDropRight.end())
                 .splineToConstantHeading(new Vector2d(-14,13), Math.toRadians(0))
                 .lineTo(new Vector2d(30,13))
                 .splineToConstantHeading(new Vector2d(50,34),Math.toRadians(0))
                 //place pixel on backboard
-                .addTemporalMarker(0.5, () -> {
-                    //Close the preDrop servo
-                    preDropLeft.setPosition(0.75);
-                })
-                .addTemporalMarker(pathTime -> pathTime - 3, () -> {
-                    DIservo.setPosition(LiftConstants.StackMuncher1);
-                })
-                .addTemporalMarker(pathTime -> pathTime-2.5,() -> {
-                    intake.setPower(1);
-                    transfer.setPower(1);
-                })
-                .splineTo(new Vector2d(-53,52.5),Math.toRadians(200))
-                .forward(3)
-                .back(3)
-                .addDisplacementMarker(() -> {
-                    DIservo.setPosition(LiftConstants.StackMuncher2);
-                    intake.setPower(1);
 
-                })
-                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
-                    intake.setPower(-1);
-                })
-                .forward(3)
+//                .splineTo(new Vector2d(-53,52.5),Math.toRadians(200))
+//                .forward(3)
+//                .back(3)
+//                .addDisplacementMarker(() -> {
+//                    DIservo.setPosition(LiftConstants.StackMuncher2);
+//                    intake.setPower(1);
+//
+//                })
+//                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
+//                    intake.setPower(-1);
+//                })
+//                .forward(3)
                 .build();
 
 
@@ -406,25 +410,32 @@ public class BlueRightAsync extends LinearOpMode {
         //init AprilTag & Colour processor
         aprilProcessor = new AprilTagProcessor.Builder()
                 .build();
-        blueProcessor = new BlueProcessor(telemetry);
+        blueProcessorFrontStage = new BlueProcessorFrontStage(telemetry);
+
+       //   blueProcessor = new BlueProcessor(telemetry);
 
         //init VisionPortal
         OpenCvVisionPortal = new VisionPortal.Builder()
-                .setCamera(webcam1)
-                .addProcessor(blueProcessor)
+                .setCamera(webcam2)
+                .addProcessor(blueProcessorFrontStage)
+             //   .addProcessor(blueProcessor)
+
                 .setCameraResolution(new Size(1920,1080))
                 .enableLiveView(true)
                 .build();
 
         //Updates telemetry with current prop location
         while (opModeInInit()){
-            telemetry.addData("Location: ", blueProcessor.getLocation());
+            telemetry.addData("Location: ", blueProcessorFrontStage.getLocation());
+            //   telemetry.addData("Location: ", blueProcessor.getLocation());
             telemetry.update();
         }
         waitForStart();
 
         //Sets beginning trajectory and drive state based off the blueProcessor's detection
-        switch (blueProcessor.getLocation()) {
+       switch (blueProcessorFrontStage.getLocation()) {
+           // switch (blueProcessor.getLocation()) {
+
             case LEFT:
             case NOT_FOUND:
                 robot.followTrajectorySequenceAsync(BackBoardDropLeft);
@@ -461,7 +472,8 @@ public class BlueRightAsync extends LinearOpMode {
                     //Wait for backboard trajectory to finish
                     if (!robot.isBusy()) {
                         //Runs the the different preDrop purple trajectories based on camera detection
-                        switch (blueProcessor.getLocation()) {
+                        switch (blueProcessorFrontStage.getLocation()) {
+                     //           switch (blueProcessor.getLocation()) {
                             case LEFT:
                             case NOT_FOUND:
                                 robot.followTrajectorySequenceAsync(PreDropLeft);
@@ -483,7 +495,8 @@ public class BlueRightAsync extends LinearOpMode {
 
 
                         //Based on camera detection from beginning, run trajectory from spike mark to stacks
-                        switch (blueProcessor.getLocation()) {
+                      switch (blueProcessorFrontStage.getLocation()) {
+                       //     switch (blueProcessor.getLocation()) {
                             case LEFT:
                             case NOT_FOUND:
                                 robot.followTrajectorySequenceAsync(WhiteStackOneLeft);
