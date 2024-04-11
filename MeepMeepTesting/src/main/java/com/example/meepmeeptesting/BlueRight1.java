@@ -14,11 +14,12 @@ public class BlueRight1 {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-34, 57, Math.toRadians(90)))
+                        drive.trajectorySequenceBuilder(new Pose2d(-40, 62, Math.toRadians(90)))
                                 .back(2)
-                                .splineToConstantHeading(new Vector2d(-34,20), Math.toRadians(-90))
+                                .splineToConstantHeading(new Vector2d(-36, 30), Math.toRadians(-90))
+                                .splineToConstantHeading(new Vector2d(-50,20), Math.toRadians(180))
                                 //place pixel on right line
-                                .lineToLinearHeading(new Pose2d(-48,13, Math.toRadians(-180)))
+                                .lineToLinearHeading(new Pose2d(-48,13, Math.toRadians(180)))
                                 .splineToConstantHeading(new Vector2d(-52, 13), Math.toRadians(180))
                                 //pick up one white pixel
                                 .splineToConstantHeading(new Vector2d(-14,13), Math.toRadians(0))
