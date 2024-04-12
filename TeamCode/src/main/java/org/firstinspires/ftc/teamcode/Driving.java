@@ -1,41 +1,38 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.LiftConstants.StackMuncher2;
 import static org.firstinspires.ftc.teamcode.LiftConstants.backPincherClose;
 import static org.firstinspires.ftc.teamcode.LiftConstants.backPincherOpen;
-import static org.firstinspires.ftc.teamcode.LiftConstants.droneLift;
 import static org.firstinspires.ftc.teamcode.LiftConstants.frontPincherClose;
 import static org.firstinspires.ftc.teamcode.LiftConstants.frontPincherOpen;
+import static org.firstinspires.ftc.teamcode.LiftConstants.liftAngled;
+import static org.firstinspires.ftc.teamcode.LiftConstants.liftFlat;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftHang;
-import static org.firstinspires.ftc.teamcode.LiftConstants.liftLow;
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristIdle;
+import static org.firstinspires.ftc.teamcode.LiftConstants.wristLeft1;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristLeft2;
-import static org.firstinspires.ftc.teamcode.LiftConstants.wristMiddle1;
+import static org.firstinspires.ftc.teamcode.LiftConstants.wristRight1;
+import static org.firstinspires.ftc.teamcode.LiftConstants.wristRight2;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.CRServo;
 
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import java.util.Arrays;
+import java.util.stream.IntStream;
 
 @TeleOp
 public class Driving extends OpMode
@@ -69,6 +66,9 @@ public class Driving extends OpMode
     private boolean liftIncrease = false;
 
     private boolean liftDecrease = false;
+
+    private boolean wristAngled = false;
+    private boolean wristRotate = false;
 
     private boolean wristRotateRight = false;
     private boolean wristRotateLeft = false;
@@ -127,7 +127,7 @@ public class Driving extends OpMode
     @Override
     public void init() {
 
-        lift.init(hardwareMap);
+        lift.initTele(hardwareMap);
         //Declare variables for phone to recognise//
 
         //names on the config
@@ -174,7 +174,7 @@ public class Driving extends OpMode
         Intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         telemetry.addData("status", "Initialized");
-        //Box servo moving in init
+        //Box servo moving in initAuto
         lift.retractBox();
     DIservo.setPosition(LiftConstants.StackMuncherReturn);
 
@@ -361,16 +361,47 @@ public class Driving extends OpMode
                 }
 
                 //Individual pixel adjustment up
-                if (gamepad2.right_stick_y < -0.6 && !liftIncrease) { // lift goes up
+                if (gamepad2.right_stick_y < -0.6 && !liftIncrease) {
                     liftHeight += 225;
                     liftIncrease = true;
-                } else if (gamepad2.right_stick_y > -0.6 ) {
+//                    if (!wristAngled) {
+//                        for(int i = 0; i < liftFlat.length; i++) {
+//                            //If the current lift height is between the "i"th element of the flat array and the previous array element, then set liftHeight to the "i"th element
+//                            if (liftHeight < liftFlat[i] && liftHeight >= liftFlat[Math.abs(i-1)]) {
+//                                liftHeight = liftFlat[i];
+//                            }
+//                        }
+//                    } else {
+//                        for (int i = 0; i < liftAngled.length; i++) {
+//                            // Same thing here but goes through angled array
+//                            if (liftHeight < liftAngled[i] && liftHeight >= liftAngled[Math.abs(i-1)]){
+//                                liftHeight = liftAngled[i];
+//                            }
+//                        }
+//                    }
+                }else if (gamepad2.right_stick_y > -0.6 ) {
                     liftIncrease = false;
                 }
+
                 //Individual pixel adjustment down
                 if (gamepad2.right_stick_y > 0.6 && !liftDecrease) {
                     liftHeight -= 225;
                     liftDecrease = true;
+//                    if (!wristAngled) {
+//                        for(int i = 0; i < liftFlat.length; i++) {
+//                            //If the current lift height is between the "i"th element of the flat array and the previous array element, then set liftHeight to the "i"th element
+//                            if (liftHeight > liftFlat[i] && liftHeight <= liftFlat[Math.abs(i+1)]) {
+//                                liftHeight = liftFlat[i];
+//                            }
+//                        }
+//                    } else {
+//                        for (int i = 0; i < liftAngled.length; i++) {
+//                            // Same thing here but goes through angled array
+//                            if (liftHeight > liftAngled[i] && liftHeight <= liftAngled[Math.abs(i+1)]){
+//                                liftHeight = liftAngled[i];
+//                            }
+//                        }
+//                    }
                 } else if (gamepad2.right_stick_y < 0.6) {
                     liftDecrease = false;
                 }
@@ -380,6 +411,10 @@ public class Driving extends OpMode
                     wristPosition = lift.wristRight(wristPosition);
                     wristServo.setPosition(wristPosition);
                     wristRotateRight = true;
+                    if(wristPosition == wristLeft2 || wristPosition == wristLeft1 || wristPosition == wristRight1 || wristPosition == wristRight2) {
+                        wristAngled = true;
+                    } else
+                        wristAngled = false;
                 } else if (gamepad2.right_stick_x <= 0.6)
                     wristRotateRight = false;
                 //Wrist Adjustment Counter-clockwise
@@ -387,6 +422,10 @@ public class Driving extends OpMode
                     wristPosition = lift.wristLeft(wristPosition);
                     wristServo.setPosition(wristPosition);
                     wristRotateLeft = true;
+                    if(wristPosition == wristLeft2 || wristPosition == wristLeft1 || wristPosition == wristRight1 || wristPosition == wristRight2) {
+                        wristAngled = true;
+                    } else
+                        wristAngled = false;
                 } else if (gamepad2.right_stick_x >= -0.6)
                     wristRotateLeft = false;
 
@@ -418,6 +457,7 @@ public class Driving extends OpMode
                     //Set pixel drop back to 1 in case we only dropped one of two pixels then retracted lift
                     pixelDrop = 1;
                     liftTimer.reset();
+                    wristAngled = false;
                 }
                 break;
             case LIFT_RETRACT:
@@ -446,7 +486,7 @@ public class Driving extends OpMode
         switch (hangState) {
             case LIFT_START:
                 //Driver 2 Dpad starts sequence
-                if (gamepad2.dpad_up) {
+                if (gamepad2.touchpad) {
                     hangState = HangState.LIFT_EXTEND;
                     //Extend lift
                     liftHeight = LiftConstants.liftHang2;

@@ -118,7 +118,7 @@ public class BlueRightAsync extends LinearOpMode {
         Pose2d startPose = new Pose2d(-40, 62, Math.toRadians(90));
         robot.setPoseEstimate(startPose);
 
-        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
+        TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(startPose)
                 .strafeTo(new Vector2d(52,44))
                 //put pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {

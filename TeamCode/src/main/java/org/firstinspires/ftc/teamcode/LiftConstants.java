@@ -6,6 +6,9 @@ public class LiftConstants {
     public static int liftHigh = 1560;
     public static int liftMedium = 1110;
     public static int liftLow = 660;
+
+    public static int[] liftFlat = {435, 660, 885, 1110, 1335, 1560, 1785, 2010, 2235};
+    public static int[] liftAngled = {600, 825, 1050, 1275, 1500, 1725, 1950, 2175};
     //1100, 1700, 2200 MAX
     public static int liftRetracted =0;
     public static int liftHang = 300;
@@ -39,8 +42,8 @@ public class LiftConstants {
    public static double wristRight1 = 0.6;
    public static double wristLeft1 = 0.98;
    public static double wristMiddle2 = 0.22;
-   public static double wristRight2 = 0.4;
-   public static double wristLeft2 = 0.04;
+   public static double wristLeft2 = 0.4;
+   public static double wristRight2 = 0.04;
 
 
 

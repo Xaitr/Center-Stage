@@ -2,11 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
 
-import android.graphics.Canvas;
 import android.util.Size;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -19,28 +15,12 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.function.Continuation;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureRequest;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureSession;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraException;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.SwitchableCamera;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.CameraControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.opencv.core.Mat;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvSwitchableWebcam;
-
-import java.util.ArrayList;
 
 @Autonomous
 public class AsyncBlueLeft extends LinearOpMode {
@@ -219,18 +199,18 @@ public class AsyncBlueLeft extends LinearOpMode {
 
         //Lift initialization
         leftLift = hardwareMap.get(DcMotor.class, "left_lift");
-        lift.init(hardwareMap);
+        lift.initAuto(hardwareMap);
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         preDropLeft = hardwareMap.get(Servo.class,  "preDropLeft");
         DIservo = hardwareMap.get(Servo.class, "DIservo");
         intake = hardwareMap.get(DcMotor.class, "intake");
 
-        //init AprilTag & Colour processor
+        //initAuto AprilTag & Colour processor
         aprilProcessor = new AprilTagProcessor.Builder()
                 .build();
         blueProcessor = new BlueProcessor(telemetry);
 
-        //init VisionPortal
+        //initAuto VisionPortal
         OpenCvVisionPortal = new VisionPortal.Builder()
                 .setCamera(webcam1)
                 .addProcessor(blueProcessor)

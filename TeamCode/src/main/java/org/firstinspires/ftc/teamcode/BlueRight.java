@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import static com.sun.tools.doclint.Entity.pi;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -21,11 +18,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 
 @Autonomous
 public class BlueRight extends LinearOpMode {
@@ -71,7 +66,7 @@ public class BlueRight extends LinearOpMode {
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
-        lift.init(hardwareMap);
+        lift.initAuto(hardwareMap);
         //IMU setup
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot RevOrientation = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.UP);

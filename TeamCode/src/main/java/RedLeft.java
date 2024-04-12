@@ -4,7 +4,6 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -13,22 +12,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.Driving;
 import org.firstinspires.ftc.teamcode.Intake;
 import org.firstinspires.ftc.teamcode.LiftConstants;
 import org.firstinspires.ftc.teamcode.OpenCv;
-import org.firstinspires.ftc.teamcode.OpenCvblue;
 import org.firstinspires.ftc.teamcode.Outake;
 import org.firstinspires.ftc.teamcode.PidControl2;
-import org.firstinspires.ftc.teamcode.RedRight;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 
 @Autonomous
 public class RedLeft extends LinearOpMode {
@@ -77,7 +71,7 @@ public class RedLeft extends LinearOpMode {
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
         preDropRight  = hardwareMap.get(Servo.class,  "preDropRight");
-        lift.init(hardwareMap);
+        lift.initAuto(hardwareMap);
         // iMU setup
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot RevOrientation = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, RevHubOrientationOnRobot.UsbFacingDirection.UP);

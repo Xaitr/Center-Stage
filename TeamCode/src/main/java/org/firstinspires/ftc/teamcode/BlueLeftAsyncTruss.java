@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.LiftConstants.StackMuncher3;
 import static org.firstinspires.ftc.teamcode.LiftConstants.StackMuncherReturn;
 import static org.firstinspires.ftc.teamcode.LiftConstants.backPincherClose;
 import static org.firstinspires.ftc.teamcode.LiftConstants.backPincherOpen;
@@ -390,7 +389,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
         //Lift initialization
         leftLift = hardwareMap.get(DcMotor.class, "left_lift");
-        lift.init(hardwareMap);
+        lift.initAuto(hardwareMap);
         transfer = hardwareMap.get(CRServo.class, "transfer");
         preDropLeft = hardwareMap.get(Servo.class,  "preDropLeft");
         DIservo = hardwareMap.get(Servo.class, "DIservo");
@@ -400,12 +399,12 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
         wrist = hardwareMap.get(Servo.class, "wrist_servo");
         boxBeam = hardwareMap.get(DigitalChannel.class, "box_beam");
 
-        //init AprilTag & Colour processor
+        //initAuto AprilTag & Colour processor
         aprilProcessor = new AprilTagProcessor.Builder()
                 .build();
         blueProcessor = new BlueProcessor(telemetry);
 
-        //init VisionPortal
+        //initAuto VisionPortal
         OpenCvVisionPortal = new VisionPortal.Builder()
                 .setCamera(webcam1)
                 .addProcessor(blueProcessor)

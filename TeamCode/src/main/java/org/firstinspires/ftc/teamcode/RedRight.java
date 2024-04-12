@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,11 +13,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvSwitchableWebcam;
 
 @Autonomous
 public class RedRight extends LinearOpMode {
@@ -66,7 +63,7 @@ public class RedRight extends LinearOpMode {
         IOservo = hardwareMap.get(CRServo.class, "IOservo");
         rightServo = hardwareMap.get(Servo.class, "Right_outtake");
         preDropRight  = hardwareMap.get(Servo.class,  "preDropRight");
-        lift.init(hardwareMap);
+        lift.initAuto(hardwareMap);
 
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()

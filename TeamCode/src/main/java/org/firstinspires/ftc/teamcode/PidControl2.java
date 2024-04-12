@@ -21,12 +21,33 @@ public class PidControl2 {
     private double lastError = 0;
     private Servo rightServo, leftServo, wristServo = null;
 
-    public void init(HardwareMap hardwareMap) {
+    public void initAuto(HardwareMap hardwareMap) {
         leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
         rightLift = hardwareMap.get(DcMotorEx.class, "right_lift");
 
         leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftLift.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        rightLift.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftLift.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightLift.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+        leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        rightServo = hardwareMap.get(Servo.class, "Right_outtake");
+        leftServo = hardwareMap.get(Servo.class, "Left_outtake");
+
+        rightServo.setDirection(Servo.Direction.REVERSE);
+
+    }
+
+    public void initTele(HardwareMap hardwareMap) {
+        leftLift = hardwareMap.get(DcMotorEx.class, "left_lift");
+        rightLift = hardwareMap.get(DcMotorEx.class, "right_lift");
 
         leftLift.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightLift.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -87,35 +108,35 @@ public void droneBox () {
 }
     //Rotates the wrist clockwise to the next wrist position
     public double wristRight(double currentPosition) {
-        if (currentPosition == LiftConstants.wristRight1)
-            return LiftConstants.wristMiddle1;
-        else if (currentPosition == LiftConstants.wristMiddle1)
+        if (currentPosition == LiftConstants.wristMiddle1)
             return LiftConstants.wristLeft1;
         else if (currentPosition == LiftConstants.wristLeft1)
-            return LiftConstants.wristLeft2;
-        else if (currentPosition == LiftConstants.wristLeft2)
-            return LiftConstants.wristMiddle2;
-        else if (currentPosition == LiftConstants.wristMiddle2)
-            return LiftConstants.wristRight2;
-        else {
-            return LiftConstants.wristRight1;
-        }
-    }
-
-    //Rotates the wrist counter-clockwise to the next wrist position
-    public double wristLeft(double currentPosition) {
-        if (currentPosition == LiftConstants.wristRight1)
             return LiftConstants.wristRight2;
         else if (currentPosition == LiftConstants.wristRight2)
             return LiftConstants.wristMiddle2;
         else if (currentPosition == LiftConstants.wristMiddle2)
             return LiftConstants.wristLeft2;
         else if (currentPosition == LiftConstants.wristLeft2)
-            return LiftConstants.wristLeft1;
-        else if (currentPosition == LiftConstants.wristLeft1)
-            return LiftConstants.wristMiddle1;
-        else {
             return LiftConstants.wristRight1;
+        else {
+            return LiftConstants.wristMiddle1;
+        }
+    }
+
+    //Rotates the wrist counter-clockwise to the next wrist position
+    public double wristLeft(double currentPosition) {
+        if (currentPosition == LiftConstants.wristMiddle1)
+            return LiftConstants.wristRight1;
+        else if (currentPosition == LiftConstants.wristRight1)
+            return LiftConstants.wristLeft2;
+        else if (currentPosition == LiftConstants.wristLeft2)
+            return LiftConstants.wristMiddle2;
+        else if (currentPosition == LiftConstants.wristMiddle2)
+            return LiftConstants.wristRight2;
+        else if (currentPosition == LiftConstants.wristRight2)
+            return LiftConstants.wristLeft1;
+        else {
+            return LiftConstants.wristMiddle1;
         }
     }
 

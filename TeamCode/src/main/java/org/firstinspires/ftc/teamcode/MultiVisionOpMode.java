@@ -36,13 +36,13 @@ public class MultiVisionOpMode extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        // init apriltag vision processor
+        // initAuto apriltag vision processor
         AprilTagVisionProcessor = new AprilTagProcessor.Builder()
                 .build();
-        // init opencv vision processor
+        // initAuto opencv vision processor
 //        OpenCvVisionProcessor = new OpenCVProcessor(telemetry);
 
-        // init opencv vision portal
+        // initAuto opencv vision portal
 //        OpenCvVisionPortal = new VisionPortal.Builder()
 //                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
 //                .addProcessor(OpenCvVisionProcessor)
@@ -70,7 +70,7 @@ public class MultiVisionOpMode extends LinearOpMode {
 //        OpenCvVisionPortal.setProcessorEnabled(OpenCvVisionProcessor, false);
 //        OpenCvVisionPortal.close();
 
-        // init apriltag vision portal
+        // initAuto apriltag vision portal
         AprilTagVisionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"))
                 .enableLiveView(true)
