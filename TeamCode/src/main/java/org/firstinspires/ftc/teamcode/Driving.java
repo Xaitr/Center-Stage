@@ -239,6 +239,8 @@ public class Driving extends OpMode
         leftBackDrive.setPower(leftBackPower);
         rightBackDrive.setPower(rightBackPower);
 
+
+
         //Intake and Reject
         if (gamepad2.a) {
             Intake.setPower(1);

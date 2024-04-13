@@ -104,6 +104,8 @@ public class MultiVisionOpMode extends LinearOpMode {
 //            telemetry.addData("Location", location);
             telemetry.update();
 
+
+
         }
     }
 
@@ -113,17 +115,21 @@ public class MultiVisionOpMode extends LinearOpMode {
 
         // Step through the list of detections and display info for each one.
         for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
+            if (detection.id == 2) {
                 double[] result = corrected_x_y(detection);
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
                 telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
                 telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
                 telemetry.addLine(String.format("CX CY %6.1f %6.1f", result[0], result[1]));
+                telemetry.addData("X", 60.25 - result[1]);
+                telemetry.addData("Y", 35.41 + result[0]);
             } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+             //   telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+             //   telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
             }
+            double[] result = corrected_x_y(detection);
+
         }   // end for() loop
 
     }   // end method telemetryAprilTag()
@@ -132,7 +138,7 @@ public class MultiVisionOpMode extends LinearOpMode {
         // returns an array of length 2 (x' and y')
         double x_prime = 0;
         double y_prime = 0;
-        double y_offset = 0;
+        double y_offset = 8.5;
 
         // calculation stuff
         double corrected_range = Math.sqrt(Math.pow(det.ftcPose.y+y_offset,2) + Math.pow(det.ftcPose.x,2));
