@@ -115,7 +115,7 @@ public class MultiVisionOpMode extends LinearOpMode {
 
         // Step through the list of detections and display info for each one.
         for (AprilTagDetection detection : currentDetections) {
-            if (detection.id == 2) {
+            if (detection.id == 5) {
                 double[] result = corrected_x_y(detection);
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
@@ -123,7 +123,7 @@ public class MultiVisionOpMode extends LinearOpMode {
                 telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
                 telemetry.addLine(String.format("CX CY %6.1f %6.1f", result[0], result[1]));
                 telemetry.addData("X", 60.25 - result[1]);
-                telemetry.addData("Y", 35.41 + result[0]);
+                telemetry.addData("Y", -35.41 + result[0]);
             } else {
              //   telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
              //   telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
@@ -141,9 +141,9 @@ public class MultiVisionOpMode extends LinearOpMode {
         double y_offset = 8.5;
 
         // calculation stuff
-        double corrected_range = Math.sqrt(Math.pow(det.ftcPose.y+y_offset,2) + Math.pow(det.ftcPose.x,2));
+        double corrected_range = Math.sqrt(Math.pow(det.ftcPose.y, 2) + Math.pow(det.ftcPose.x, 2));
         double theta_rad = Math.toRadians(det.ftcPose.yaw - det.ftcPose.bearing);
-        x_prime = Math.sin(theta_rad) * corrected_range;
+        x_prime = Math.sin(theta_rad) * corrected_range - y_offset;
         y_prime = Math.cos(theta_rad) * corrected_range;
 
 

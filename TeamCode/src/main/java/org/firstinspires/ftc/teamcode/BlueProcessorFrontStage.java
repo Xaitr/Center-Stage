@@ -28,15 +28,18 @@ public class BlueProcessorFrontStage implements VisionProcessor {
     //The regions of interest
     //X increases left to right / Y increases up to down
     //x & y give top left corner, width and height go out from there
-
-      private Rect rectLeft = new Rect(1, 340, 230, 250);
+    //Coordinate are for 1920 by 1080
+    private Rect regionLeft = new Rect(1, 340, 230, 250);
   //  private Rect rectLeft = new Rect(600, 630, 230, 250);
-
-    private Rect rectMiddle = new Rect(560, 330, 220, 250);
+    private Rect regionMiddle = new Rect(560, 330, 220, 250);
   //  private Rect rectMiddle = new Rect(1160,480 , 220, 250);
-    private Rect rectRight = new Rect(1250, 330, 210, 250);
+    private Rect regionRight = new Rect(1250, 330, 210, 250);
 
   // private Rect rectRight = new Rect(1710, 550, 210, 250);
+
+    //Resolution we're running the camera at
+    private int cameraHeight = 1080;
+    private int cameraWidth = 1920;
 
     Mat mat = new Mat();
 
@@ -54,6 +57,10 @@ public class BlueProcessorFrontStage implements VisionProcessor {
         Scalar highHSV = new Scalar(120, 255, 255);
 
         Core.inRange(frame, lowHSV, highHSV, frame);
+
+        Rect rectLeft = resolutionScale(regionLeft, cameraWidth, cameraHeight);
+        Rect rectRight = resolutionScale(regionRight, cameraWidth, cameraHeight);
+        Rect rectMiddle = resolutionScale(regionMiddle, cameraWidth, cameraHeight);
 
         Mat left = frame.submat(rectLeft);
         Mat right = frame.submat(rectRight);
@@ -103,6 +110,16 @@ public class BlueProcessorFrontStage implements VisionProcessor {
         return new android.graphics.Rect(left, top, right, bottom);
     }
 
+    //Scales Regions of interest into camera resolution
+    private Rect resolutionScale(Rect rect, int cameraWidth, int cameraHeight) {
+        int x = Math.round(rect.x * (cameraWidth/1920));
+        int y = Math.round(rect.y * (cameraHeight/1080));
+        int width = Math.round(rect.width * (cameraWidth/1920));
+        int height = Math.round(rect.height * (cameraHeight/1080));
+
+        return new Rect(x, y, width, height);
+    }
+
     //Painting :3
     @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx,
@@ -115,9 +132,9 @@ public class BlueProcessorFrontStage implements VisionProcessor {
         Paint nonSelectedPaint = new Paint(selectedPaint);
         nonSelectedPaint.setColor(Color.RED);
 
-        android.graphics.Rect drawRectangleLeft = makeGraphicsRect(rectLeft, scaleBmpPxToCanvasPx);
-        android.graphics.Rect drawRectangleMiddle = makeGraphicsRect(rectMiddle, scaleBmpPxToCanvasPx);
-        android.graphics.Rect drawRectangleRight = makeGraphicsRect(rectRight, scaleBmpPxToCanvasPx);
+        android.graphics.Rect drawRectangleLeft = makeGraphicsRect(regionLeft, scaleBmpPxToCanvasPx);
+        android.graphics.Rect drawRectangleMiddle = makeGraphicsRect(regionMiddle, scaleBmpPxToCanvasPx);
+        android.graphics.Rect drawRectangleRight = makeGraphicsRect(regionRight, scaleBmpPxToCanvasPx);
 
         location = (Location) userContext;
         switch (location) {

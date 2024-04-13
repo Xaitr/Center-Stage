@@ -114,7 +114,6 @@ public class BlueRightAsync extends LinearOpMode {
 
     //Declare our April tag & OpenCV vision portal
     private VisionPortal OpenCvVisionPortal;
-    private VisionPortal aprilVisionPortal;
 
     //Declare both webcams
     private WebcamName webcam1, webcam2;
@@ -129,11 +128,7 @@ public class BlueRightAsync extends LinearOpMode {
 
     //Declare our colour processor
     private BlueProcessorFrontStage blueProcessorFrontStage;
-    // private BlueProcessor blueProcessor;
 
-    //Instantiate trajectories from stack to backstage seperately, because these need to be chained differently
-    Trajectory TestBackDrop;
-    TrajectorySequence TestBackDrop2;
     @Override
     public void runOpMode() throws InterruptedException {
         //Instantiate SampleMecanumDrive
@@ -366,13 +361,12 @@ public class BlueRightAsync extends LinearOpMode {
                 .setCamera(webcam2)
                 .addProcessor(blueProcessorFrontStage)
                 .addProcessor(aprilProcessor)
-             //   .addProcessor(blueProcessor)
-
-                .setCameraResolution(new Size(1920,1080))
+                .setCameraResolution(new Size(1920 ,1080))
                 .enableLiveView(true)
                 .build();
         OpenCvVisionPortal.setProcessorEnabled(blueProcessorFrontStage, true);
         OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, false);
+
         //Updates telemetry with current prop location
         while (opModeInInit()){
             telemetry.addData("Location: ", blueProcessorFrontStage.getLocation());

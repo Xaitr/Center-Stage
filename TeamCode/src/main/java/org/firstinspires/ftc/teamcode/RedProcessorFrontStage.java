@@ -29,12 +29,12 @@ public class RedProcessorFrontStage implements VisionProcessor {
     //X increases left to right / Y increases up to down
     //x & y give top left corner, width and height go out from there
 
-    private Rect rectLeft = new Rect(1690, 340, 230, 250);
+    private Rect rectRight = new Rect(1740, 340, 180, 250);
     //  private Rect rectLeft = new Rect(600, 630, 230, 250);
 
-    private Rect rectMiddle = new Rect(1140, 330, 220, 250);
+    private Rect rectMiddle = new Rect(1040, 350, 220, 250);
     //  private Rect rectMiddle = new Rect(1160,480 , 220, 250);
-    private Rect rectRight = new Rect(460, 330, 210, 250);
+    private Rect rectLeft = new Rect(460, 350, 210, 250);
 
     // private Rect rectRight = new Rect(1710, 550, 210, 250);
 
