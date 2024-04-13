@@ -17,7 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Autonomous(name="MultiVisionOpMode")
+@Autonomous (name="MultiVisionOpMode")
 public class MultiVisionOpMode extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
