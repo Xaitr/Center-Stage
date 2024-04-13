@@ -13,6 +13,7 @@ import android.util.Size;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -124,7 +125,7 @@ public class BlueRightAsync extends LinearOpMode {
     double y_prime = 0;
     double y_offset = 8.5;
     private Vector2d[] aprilTagLibrary = {new Vector2d(60.25,41.41), new Vector2d(60.25, 35.41), new Vector2d(60.25, 29.41)};
-
+    private RevBlinkinLedDriver Blinky = null;
 
     //Declare our colour processor
     private BlueProcessorFrontStage blueProcessorFrontStage;
@@ -145,16 +146,18 @@ public class BlueRightAsync extends LinearOpMode {
 
         TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(startPose)
                 .back(2)
-                .splineToConstantHeading(new Vector2d(-28, 26), Math.toRadians(0))
+                //.splineToConstantHeading(new Vector2d(-28.5, 26), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(-31.5, 26), Math.toRadians(0))
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     preDropRight.setPosition(0.65);
                 })
+                .turn(Math.toRadians(-20))
                 .build();
         //put pixel on left line
 
         TrajectorySequence WhiteStackOneLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
                 .lineToLinearHeading(new Pose2d(-48,13, Math.toRadians(180)))
-                .splineToConstantHeading(new Vector2d(-53.5, 13), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-54.5, 12.5), Math.toRadians(180))
                 //pick up white pixel
                 .addTemporalMarker(0.5, () -> {
                     //Close the preDrop servo
@@ -169,32 +172,36 @@ public class BlueRightAsync extends LinearOpMode {
                 })
                 .build();
 
-        TrajectorySequence AprilTagLeft= robot.trajectorySequenceBuilder(PreDropLeft.end())
+        TrajectorySequence AprilTagLeft = robot.trajectorySequenceBuilder(WhiteStackOneLeft.end())
                 .addTemporalMarker(0.5, () -> {
                     intake.setPower(-1);
                 })
-                .addTemporalMarker(1.5,()->{
+                .addTemporalMarker(2,()->{
                     intake.setPower(0);
                     transfer.setPower(0);
                 })
-                .lineTo(new Vector2d(32,10))
+                .lineTo(new Vector2d(32,13))
                 .splineToConstantHeading(new Vector2d(40,40),Math.toRadians(0))
 
                 //place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime -0.5, () -> {
+                    OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
                     liftState = LiftState.CLOSE_PINCHERS;
                     alternateWristAngle = LiftConstants.wristMiddle2;
                     storeLiftHeight = 760;
                 })
                 .build();
 
-        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(WhiteStackOneLeft.end())
-                .lineTo(new Vector2d(50.5, 41))
+        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(AprilTagLeft.end())
+                .lineTo(new Vector2d(50.5, 43))
                 .addTemporalMarker(pathTime -> pathTime -0.2, () -> {
                     readyToDrop = true;
                 })
                 .build();
         // pick up white pixels off stack
+        TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
+                .splineToConstantHeading(new Vector2d(50,11), Math.toRadians(0))
+                .build();
 
 
         TrajectorySequence PreDropRight = robot.trajectorySequenceBuilder(startPose)
@@ -229,7 +236,7 @@ public class BlueRightAsync extends LinearOpMode {
                 .addTemporalMarker(0.5, () -> {
                     intake.setPower(-1);
                 })
-                .addTemporalMarker(1.5,()->{
+                .addTemporalMarker(2,()->{
                     intake.setPower(0);
                     transfer.setPower(0);
                 })
@@ -238,13 +245,14 @@ public class BlueRightAsync extends LinearOpMode {
 
                 //place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime -0.5, () -> {
+                    OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
                     liftState = LiftState.CLOSE_PINCHERS;
                     storeLiftHeight = 760;
                 })
                 .build();
 
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(AprilTagRight.end())
-                .lineTo(new Vector2d(50.5, 33))
+                .lineTo(new Vector2d(50.5, 28))
                 .addTemporalMarker(pathTime -> pathTime -0.2, () -> {
                     readyToDrop = true;
                 })
@@ -296,7 +304,7 @@ public class BlueRightAsync extends LinearOpMode {
                 .addTemporalMarker(0.5, () -> {
                     intake.setPower(-1);
                 })
-                .addTemporalMarker(1.5,()->{
+                .addTemporalMarker(2,()->{
                     intake.setPower(0);
                     transfer.setPower(0);
                 })
@@ -307,7 +315,7 @@ public class BlueRightAsync extends LinearOpMode {
                 .addTemporalMarker(pathTime -> pathTime - 0.5, () -> {
                     OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
                     liftState = LiftState.CLOSE_PINCHERS;
-                    storeLiftHeight = LiftConstants.liftLow;
+                    storeLiftHeight = 760;
                 })
                 .build();
 
@@ -322,91 +330,6 @@ public class BlueRightAsync extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(50,11), Math.toRadians(0))
                 .build();
 
-        TrajectorySequence BackDrop = robot.trajectorySequenceBuilder(WhiteStackOneMid.end())
-                .forward(2)
-                .lineToLinearHeading(new Pose2d(-35,56,  Math.toRadians(-180)))
-                .lineTo(new Vector2d(50,56))
-
-                .addTemporalMarker(1.2, () -> {
-                    //Reject any extra pixel that might have been intaked
-                    intake.setPower(-1);
-                    transfer.setPower(1);
-                })
-                .addTemporalMarker(2.5,() -> {
-                    //Turn off the intake
-                    intake.setPower(0);
-                    transfer.setPower(0);
-
-                })
-                //place two white pixels
-                //put pixel on backboard
-                .addTemporalMarker(pathTime -> pathTime-2,() -> {
-                    //Starts extending lift x seconds before reaching the backboard
-                    liftState = LiftState.CLOSE_PINCHERS;
-                    storeLiftHeight = LiftConstants.liftAuto;
-                })
-                .addTemporalMarker(pathTime -> pathTime-0.5,() -> {
-                    readyToDrop = true;
-                })
-                .build();
-
-        //Moves from backstage to stack
-        TrajectorySequence WhiteStackTwo = robot.trajectorySequenceBuilder(BackDrop.end())
-                .splineToConstantHeading(new Vector2d (10,53), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-20,53), Math.toRadians(180))
-                .splineTo(new Vector2d(-49, 35), Math.toRadians(200))
-                .forward(3)
-                //Turn on intake and lower the stack-muncher
-                .addTemporalMarker(pathTime -> pathTime - 3, () -> {
-                    DIservo.setPosition(LiftConstants.StackMuncher3);
-                })
-                .addTemporalMarker(pathTime -> pathTime-2.5,() -> {
-                    intake.setPower(1);
-                    transfer.setPower(1);
-                })
-                .back(3)
-                .addDisplacementMarker(() -> {
-                    DIservo.setPosition(LiftConstants.StackMuncher4);
-                    intake.setPower(1);
-                })
-                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
-                    intake.setPower(-1);
-                })
-                .forward(3)
-                .build();
-
-        TrajectorySequence BackDrop2 = robot.trajectorySequenceBuilder(WhiteStackOneMid.end())
-                .forward(4)
-                .lineToLinearHeading(new Pose2d(-35,52,  Math.toRadians(-180)))
-                .lineTo(new Vector2d(50,52), SampleMecanumDrive.getVelocityConstraint(60, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL * 1.5))
-
-                .addTemporalMarker(1.2, () -> {
-                    //Reject any extra pixel that might have been intaked
-                    intake.setPower(-1);
-                    transfer.setPower(1);
-                })
-                .addTemporalMarker(2.5,() -> {
-                    //Turn off the intake
-                    intake.setPower(0);
-                    transfer.setPower(0);
-
-                })
-                //place two white pixels
-                //put pixel on backboard
-                .addTemporalMarker(pathTime -> pathTime-2,() -> {
-                    //Starts extending lift x seconds before reaching the backboard
-                    liftState = LiftState.CLOSE_PINCHERS;
-                    storeLiftHeight = LiftConstants.liftAuto;
-                })
-                .addTemporalMarker(pathTime -> pathTime-0.5,() -> {
-                    readyToDrop = true;
-                })
-                .build();
-
-        TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
-                .splineToConstantHeading(new Vector2d(50,13), Math.toRadians(0))
-                .build();
 
         //IMU setup
         imu = hardwareMap.get(IMU.class, "imu");
@@ -429,6 +352,7 @@ public class BlueRightAsync extends LinearOpMode {
         backPincher = hardwareMap.get(Servo.class, "back_pincher");
         wrist = hardwareMap.get(Servo.class, "wrist_servo");
         boxBeam = hardwareMap.get(DigitalChannel.class, "box_beam");
+        Blinky = hardwareMap.get(RevBlinkinLedDriver.class, "Blinky");
 
         //init AprilTag & Colour processor
         aprilProcessor = new AprilTagProcessor.Builder()
@@ -476,6 +400,7 @@ public class BlueRightAsync extends LinearOpMode {
         imuTimer.reset();
 
         DIservo.setPosition(StackMuncherReturn);
+        Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
 
         //Close pincher for yellow preload
         backPincher.setPosition(backPincherClose);
@@ -519,7 +444,7 @@ public class BlueRightAsync extends LinearOpMode {
                       switch (blueProcessorFrontStage.getLocation()) {
                             case LEFT:
                             case NOT_FOUND:
-                                robot.followTrajectorySequenceAsync(BackBoardDropLeft);
+                                robot.followTrajectorySequenceAsync(AprilTagLeft);
                                 break;
                             case MIDDLE:
                                 robot.followTrajectorySequenceAsync(AprilTagMid);
@@ -545,13 +470,15 @@ public class BlueRightAsync extends LinearOpMode {
                                 x_prime = Math.sin(theta_rad) * corrected_range;
                                 y_prime = Math.cos(theta_rad) * corrected_range;
                                 robot.setPoseEstimate(new Pose2d(aprilTagLibrary[0].getX() - y_prime, aprilTagLibrary[1].getY() + x_prime, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.toRadians(90)));
+                                Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
+                                telemetry.addData("We got it", "Yay!!!!!");
                             }
                         }
                         //Park after placing the pixels
                         switch (blueProcessorFrontStage.getLocation()) {
                             case LEFT:
                             case NOT_FOUND:
-                                robot.followTrajectorySequenceAsync(ParkLeft);
+                                robot.followTrajectorySequenceAsync(BackBoardDropLeft);
                                 break;
                             case MIDDLE:
                                 robot.followTrajectorySequenceAsync(BackBoardDropMid);
@@ -579,39 +506,6 @@ public class BlueRightAsync extends LinearOpMode {
                         }
                         driveState = State.IDLE;
                     }
-                    break;
-                case BACKBOARD_STACK:
-                    if (!robot.isBusy()) {
-                        telemetry.addData("UH OH ", "AHHH");
-                        robot.followTrajectorySequenceAsync(WhiteStackTwo);
-                        driveTimer.reset();
-                        driveState = State.GENERAL_STACK2;
-                    }
-                    break;
-                case GENERAL_STACK2:
-                    if (!boxBeam.getState())
-                        DIservo.setPosition(LiftConstants.StackMuncher4);
-
-                    if (!robot.isBusy()) {
-                        //Reset timer once we've reached the stacks
-                        driveTimer.reset();
-                        driveState = State.INTAKE_STACK2;
-                    }
-                    break;
-                case INTAKE_STACK2:
-                    if (driveTimer.seconds() >= 0.3) {
-                        DIservo.setPosition(LiftConstants.StackMuncherReturn);
-                        //Bring back the Stack Muncher to idle
-                    }
-
-                    //Drive to backstage after x seconds
-                    if (driveTimer.seconds() >= 1){
-                        driveState = State.BACKBOARD_STACK2;
-                        robot.followTrajectorySequenceAsync(BackDrop2);
-                    }
-                    break;
-                case BACKBOARD_STACK2:
-
                     break;
             }
 
