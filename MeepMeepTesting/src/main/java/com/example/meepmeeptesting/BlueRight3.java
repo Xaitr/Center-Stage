@@ -18,7 +18,7 @@ public class BlueRight3 {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-40, 62, Math.toRadians(90)))
                                 .back(2)
-                                .splineToConstantHeading(new Vector2d(-34, 25), Math.toRadians(-90))
+                                .splineToLinearHeading(new Pose2d(-34, 25, Math.toRadians(70)), Math.toRadians(0))
                                 //.splineToConstantHeading(new Vector2d(-50,20), Math.toRadians(180))
                                 //place pixel on right line
                                 .lineToLinearHeading(new Pose2d(-48,13, Math.toRadians(180)))
