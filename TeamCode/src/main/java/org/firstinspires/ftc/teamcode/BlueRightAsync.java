@@ -168,7 +168,8 @@ public class BlueRightAsync extends LinearOpMode {
                     transfer.setPower(1);
                 })
                 .build();
-        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(WhiteStackOneLeft.end())
+
+        TrajectorySequence AprilTagLeft= robot.trajectorySequenceBuilder(PreDropLeft.end())
                 .addTemporalMarker(0.5, () -> {
                     intake.setPower(-1);
                 })
@@ -176,14 +177,19 @@ public class BlueRightAsync extends LinearOpMode {
                     intake.setPower(0);
                     transfer.setPower(0);
                 })
-                .lineTo(new Vector2d(30,13))
-                .splineToConstantHeading(new Vector2d(50,44),Math.toRadians(0))
+                .lineTo(new Vector2d(32,10))
+                .splineToConstantHeading(new Vector2d(40,40),Math.toRadians(0))
+
                 //place pixel on backboard
-                .addTemporalMarker(pathTime -> pathTime -2, () -> {
+                .addTemporalMarker(pathTime -> pathTime -0.5, () -> {
                     liftState = LiftState.CLOSE_PINCHERS;
-                    storeLiftHeight = LiftConstants.liftLow;
                     alternateWristAngle = LiftConstants.wristMiddle2;
+                    storeLiftHeight = 760;
                 })
+                .build();
+
+        TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(WhiteStackOneLeft.end())
+                .lineTo(new Vector2d(50.5, 41))
                 .addTemporalMarker(pathTime -> pathTime -0.2, () -> {
                     readyToDrop = true;
                 })
@@ -201,7 +207,7 @@ public class BlueRightAsync extends LinearOpMode {
                 })
                 .build();
 
-                TrajectorySequence WhiteStackOneRight = robot.trajectorySequenceBuilder(PreDropRight.end())
+        TrajectorySequence WhiteStackOneRight = robot.trajectorySequenceBuilder(PreDropRight.end())
                 .lineToLinearHeading(new Pose2d(-48,13, Math.toRadians(180)))
                 .splineToConstantHeading(new Vector2d(-55, 13), Math.toRadians(180))
                         //pick up white pixel
