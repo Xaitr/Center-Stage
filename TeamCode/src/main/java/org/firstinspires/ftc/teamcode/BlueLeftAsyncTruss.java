@@ -127,7 +127,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 })
                 .build();
         TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
-                .lineTo(new Vector2d(33, 40))
+                .lineTo(new Vector2d(32.5, 40))
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     preDropLeft.setPosition(0.85);
                 })
@@ -269,7 +269,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
 
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,38))
+                .strafeTo(new Vector2d(52,37.5))
                 // place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift

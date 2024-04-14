@@ -113,7 +113,7 @@ public class BlueRightAsync extends LinearOpMode {
     private double dropTime = 1.5;
 
     //Declare our April tag & OpenCV vision portal
-    private VisionPortal OpenCvVisionPortal;
+    private VisionPortal OpenCvVisionPortal, AprilTagVisionPortal;
 
     //Declare both webcams
     private WebcamName webcam1, webcam2;
@@ -176,11 +176,11 @@ public class BlueRightAsync extends LinearOpMode {
                     transfer.setPower(0);
                 })
                 .lineTo(new Vector2d(32,13))
-                .splineToConstantHeading(new Vector2d(40,40),Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(40,36),Math.toRadians(0))
 
                 //place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime -0.5, () -> {
-                    OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
+//                    OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
                     liftState = LiftState.CLOSE_PINCHERS;
                     alternateWristAngle = LiftConstants.wristMiddle2;
                     storeLiftHeight = 760;
@@ -188,7 +188,7 @@ public class BlueRightAsync extends LinearOpMode {
                 .build();
 
         TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(AprilTagLeft.end())
-                .lineTo(new Vector2d(50.5, 43))
+                .lineTo(new Vector2d(50.5, 41.5))
                 .addTemporalMarker(pathTime -> pathTime -0.2, () -> {
                     readyToDrop = true;
                 })
@@ -240,20 +240,21 @@ public class BlueRightAsync extends LinearOpMode {
 
                 //place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime -0.5, () -> {
-                    OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
+//                    OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
                     liftState = LiftState.CLOSE_PINCHERS;
                     storeLiftHeight = 760;
                 })
                 .build();
 
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(AprilTagRight.end())
-                .lineTo(new Vector2d(50.5, 28))
+                .lineTo(new Vector2d(50.5, 28.5))
                 .addTemporalMarker(pathTime -> pathTime -0.2, () -> {
                     readyToDrop = true;
                 })
                 .build();
 
         TrajectorySequence ParkRight = robot.trajectorySequenceBuilder(BackBoardDropRight.end())
+                .forward(2)
                 .splineToConstantHeading(new Vector2d(50,11), Math.toRadians(0))
                 .build();
 
@@ -277,7 +278,7 @@ public class BlueRightAsync extends LinearOpMode {
                 .build();
         TrajectorySequence WhiteStackOneMid = robot.trajectorySequenceBuilder(PreDropMid.end())
                 .lineToLinearHeading(new Pose2d(-48,13, Math.toRadians(180)))
-                .splineToConstantHeading(new Vector2d(-55, 13), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-54.5, 13), Math.toRadians(180))
                 //pick up one white pixel
 //                .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
 //                    preDropRight.setPosition(0.85);
@@ -308,7 +309,7 @@ public class BlueRightAsync extends LinearOpMode {
                 //50
                 //place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime - 0.5, () -> {
-                    OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
+//                    OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
                     liftState = LiftState.CLOSE_PINCHERS;
                     storeLiftHeight = 760;
                 })
@@ -355,17 +356,20 @@ public class BlueRightAsync extends LinearOpMode {
         blueProcessorFrontStage = new BlueProcessorFrontStage(telemetry);
 
        //   blueProcessor = new BlueProcessor(telemetry);
+        int[] ids = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.HORIZONTAL);
 
         //init VisionPortal
         OpenCvVisionPortal = new VisionPortal.Builder()
                 .setCamera(webcam2)
                 .addProcessor(blueProcessorFrontStage)
-                .addProcessor(aprilProcessor)
-                .setCameraResolution(new Size(1920 ,1080))
-                .enableLiveView(true)
+                //   .addProcessor(aprilProcessor)
+                //   .addProcessor(blueProcessor)
+                .setLiveViewContainerId(ids[0])
+                .setCameraResolution(new Size(1920,1080))
+                // .enableLiveView(true)
                 .build();
         OpenCvVisionPortal.setProcessorEnabled(blueProcessorFrontStage, true);
-        OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, false);
+//        OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, false);
 
         //Updates telemetry with current prop location
         while (opModeInInit()){
@@ -374,9 +378,21 @@ public class BlueRightAsync extends LinearOpMode {
             telemetry.update();
         }
         waitForStart();
+        BlueProcessorFrontStage.Location location = blueProcessorFrontStage.getLocation();
+        OpenCvVisionPortal.setProcessorEnabled(blueProcessorFrontStage, false);
+
+        AprilTagVisionPortal = new VisionPortal.Builder()
+                .setCamera(webcam2)
+                // .addProcessor(redProcessorFrontStage)
+                .addProcessor(aprilProcessor)
+                //   .addProcessor(blueProcessor)
+                .setLiveViewContainerId(ids[1])
+                .setCameraResolution(new Size(800,600))
+                //   .enableLiveView(true)
+                .build();
 
         //Sets beginning trajectory and drive state based off the blueProcessor's detection
-       switch (blueProcessorFrontStage.getLocation()) {
+       switch (location) {
            // switch (blueProcessor.getLocation()) {
 
             case LEFT:
@@ -400,7 +416,7 @@ public class BlueRightAsync extends LinearOpMode {
         backPincher.setPosition(backPincherClose);
 
         //Turn off Vision Portal to conserve resources
-        OpenCvVisionPortal.setProcessorEnabled(blueProcessorFrontStage, false);
+//        OpenCvVisionPortal.setProcessorEnabled(blueProcessorFrontStage, false);
         //Need to test if this prevents crashing when stopping autonomous
         if (isStopRequested()) return;
 
@@ -463,7 +479,7 @@ public class BlueRightAsync extends LinearOpMode {
                                 double theta_rad = Math.toRadians(detection.ftcPose.yaw - detection.ftcPose.bearing);
                                 x_prime = Math.sin(theta_rad) * corrected_range;
                                 y_prime = Math.cos(theta_rad) * corrected_range;
-                                robot.setPoseEstimate(new Pose2d(aprilTagLibrary[0].getX() - y_prime, aprilTagLibrary[1].getY() + x_prime, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.toRadians(90)));
+                                robot.setPoseEstimate(new Pose2d(aprilTagLibrary[0].getX() - y_prime, aprilTagLibrary[1].getY() + detection.ftcPose.x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.toRadians(90)));
                                 Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
                                 telemetry.addData("We got it", "Yay!!!!!");
                             }
