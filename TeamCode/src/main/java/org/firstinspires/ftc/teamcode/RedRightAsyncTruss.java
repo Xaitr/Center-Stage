@@ -34,7 +34,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 public class RedRightAsyncTruss extends LinearOpMode {
 
     //This enum defines steps of the trajectories
-    enum State {
+     private enum State {
         BACKBOARD_DROP, //First drop of the yellow preload on the backboard
         PREDROP, //Then place the purple preload on the spikemark
         GENERAL_STACK, //Then drive to the white stacks
@@ -51,7 +51,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
     Pose2d poseEstimate;
 
     //Instantiate our driveState
-    BlueLeftAsyncTruss.State driveState = BlueLeftAsyncTruss.State.BACKBOARD_DROP;
+    State driveState = State.BACKBOARD_DROP;
 
     //Declare purple preload servo
     private Servo preDropRight = null;
@@ -85,7 +85,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
 
     //Timer for periodically updating the heading with the imu
     ElapsedTime imuTimer = new ElapsedTime();
-    private double headingInterval = 3;
+    private double headingInterval = 5;
 
     //Lets the lift state machine know when the trajectory to the backboard is finished
     private boolean readyToDrop = false;
@@ -103,7 +103,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
     private AprilTagProcessor aprilProcessor;
 
     //Declare our colour processor
-    private BlueProcessor blueProcessor;
+    private RedProcessor redProcessor;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -114,29 +114,80 @@ public class RedRightAsyncTruss extends LinearOpMode {
         robot.setPoseEstimate(startPose);
 
         TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(50,-32))
+                .strafeTo(new Vector2d(52.5,-31.5))
                 // place pixel on backboard
-                .addTemporalMarker(pathTime -> pathTime-1,() -> {
+                .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift x seconds before reaching the backboard
-                    liftState = LiftState.LIFT_EXTEND;
-                    liftHeight = LiftConstants.liftAuto;
+                    liftState = LiftState.CLOSE_PINCHERS;
+                    storeLiftHeight = LiftConstants.liftAuto;
                 })
-                .addTemporalMarker(pathTime -> pathTime-0.5,() -> {
+                .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     readyToDrop = true;
                 })
                 .build();
         TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
-                .lineTo(new Vector2d(10, -32))
+                .lineTo(new Vector2d(10, -42))
+                .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
+                    preDropRight.setPosition(0.55);
+                })
                 //place pixel on line
                 .build();
 
         TrajectorySequence WhiteStackOneLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
-                .lineTo(new Vector2d(33, -50))
-                .splineToConstantHeading(new Vector2d (10,-57), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-30,-57), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-35,-57), Math.toRadians(180))
-                .lineToLinearHeading(new Pose2d(-60,-44,  Math.toRadians(-225)))
-        // pick up white pixels off stack
+                .lineTo(new Vector2d(20, -50))
+                .addTemporalMarker(0.5, () -> {
+                    //Close the preDrop servo
+                    preDropRight.setPosition(0.75);
+                })
+                .splineToConstantHeading(new Vector2d (10,-60), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-22,-59.5), Math.toRadians(180))
+                .addTemporalMarker(pathTime -> pathTime - 3, () -> {
+                    DIservo.setPosition(LiftConstants.StackMuncher1);
+                })
+                .addTemporalMarker(pathTime -> pathTime-2.5,() -> {
+                    intake.setPower(1);
+                    transfer.setPower(1);
+                })
+                .splineTo(new Vector2d(-52,-51),Math.toRadians(145))
+                .forward(4)
+                .back(3)
+                .addDisplacementMarker(() -> {
+                    DIservo.setPosition(LiftConstants.StackMuncher2);
+                    intake.setPower(1);
+
+                })
+//                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
+//                    intake.setPower(-1);
+//                })
+                .forward(2.5)
+                // pick up white pixels off stack
+                .build();
+        TrajectorySequence BackDropLeft = robot.trajectorySequenceBuilder(WhiteStackOneLeft.end())
+                .forward(2)
+                .lineToLinearHeading(new Pose2d(-35,-62,  Math.toRadians(-180)))
+                .lineTo(new Vector2d(46,-63))
+
+                .addTemporalMarker(1.2, () -> {
+                    //Reject any extra pixel that might have been intaked
+                    intake.setPower(-1);
+                    transfer.setPower(1);
+                })
+                .addTemporalMarker(2.5,() -> {
+                    //Turn off the intake
+                    intake.setPower(0);
+                    transfer.setPower(0);
+
+                })
+                //place two white pixels
+                //put pixel on backboard
+                .addTemporalMarker(pathTime -> pathTime-2,() -> {
+                    //Starts extending lift x seconds before reaching the backboard
+                    liftState = LiftState.CLOSE_PINCHERS;
+                    storeLiftHeight = LiftConstants.liftAuto;
+                })
+                .addTemporalMarker(pathTime -> pathTime-0.5,() -> {
+                    readyToDrop = true;
+                })
                 .build();
 
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
@@ -154,7 +205,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
         TrajectorySequence PreDropRight = robot.trajectorySequenceBuilder(BackBoardDropRight.end())
                 .lineTo(new Vector2d(33, -40))
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
-                    preDropRight.setPosition(0.85);
+                    preDropRight.setPosition(0.55);
                 })
                 .build();
 
@@ -164,8 +215,8 @@ public class RedRightAsyncTruss extends LinearOpMode {
                     //Close the preDrop servo
                     preDropRight.setPosition(0.75);
                 })
-                .splineToConstantHeading(new Vector2d (10,-59), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-15,-58), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (10,-58.5), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-20,-59.5), Math.toRadians(180))
                 .addTemporalMarker(pathTime -> pathTime - 3, () -> {
                     DIservo.setPosition(LiftConstants.StackMuncher1);
                 })
@@ -173,8 +224,8 @@ public class RedRightAsyncTruss extends LinearOpMode {
                     intake.setPower(1);
                     transfer.setPower(1);
                 })
-                .splineTo(new Vector2d(-47,-38),Math.toRadians(160))
-                .forward(5)
+                .splineTo(new Vector2d(-51,-47),Math.toRadians(160))
+                .forward(3.5)
                 .back(3)
                 .addDisplacementMarker(() -> {
                     DIservo.setPosition(LiftConstants.StackMuncher2);
@@ -183,14 +234,41 @@ public class RedRightAsyncTruss extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0.2, () -> {
                     intake.setPower(1);
                 })
-                .forward(3)
+                .forward(2.5)
+                .build();
+
+        TrajectorySequence BackDropRight = robot.trajectorySequenceBuilder(WhiteStackOneRight.end())
+                .forward(2)
+                .lineToLinearHeading(new Pose2d(-35,-62.5,  Math.toRadians(-180)))
+                .lineTo(new Vector2d(50,-64))
+
+                .addTemporalMarker(1.2, () -> {
+                    //Reject any extra pixel that might have been intaked
+                    intake.setPower(-1);
+                    transfer.setPower(1);
+                })
+                .addTemporalMarker(2.5,() -> {
+                    //Turn off the intake
+                    intake.setPower(0);
+                    transfer.setPower(0);
+
+                })
+                //place two white pixels
+                //put pixel on backboard
+                .addTemporalMarker(pathTime -> pathTime-2,() -> {
+                    //Starts extending lift x seconds before reaching the backboard
+                    liftState = LiftState.CLOSE_PINCHERS;
+                    storeLiftHeight = LiftConstants.liftAuto;
+                })
+                .addTemporalMarker(pathTime -> pathTime-0.5,() -> {
+                    readyToDrop = true;
+                })
                 .build();
 
 
 
-
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,-36))
+                .strafeTo(new Vector2d(52,-38))
                 // place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift
@@ -202,21 +280,21 @@ public class RedRightAsyncTruss extends LinearOpMode {
                 })
                 .build();
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
-                .lineTo(new Vector2d(20, -31))
+                .lineTo(new Vector2d(26, -32))
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     preDropRight.setPosition(0.55);
                 })
                 .build();
 
         TrajectorySequence WhiteStackOneMid = robot.trajectorySequenceBuilder(PreDropMid.end())
-                .lineTo(new Vector2d(20, -51))
+                .lineTo(new Vector2d(20, -53))
                 .addTemporalMarker(0.5, () -> {
                     //Close the preDrop servo
                     preDropRight.setPosition(0.75);
                 })
-                .splineToConstantHeading(new Vector2d (10,-60), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-15,-59), Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d (-20,-59), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (10,-61), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-15,-60), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d (-20,-60), Math.toRadians(180))
                 .addTemporalMarker(pathTime -> pathTime - 3, () -> {
                     DIservo.setPosition(LiftConstants.StackMuncher1);
                 })
@@ -224,23 +302,23 @@ public class RedRightAsyncTruss extends LinearOpMode {
                     intake.setPower(1);
                     transfer.setPower(1);
                 })
-                .splineToConstantHeading(new Vector2d(-52,-39.5),Math.toRadians(160))
-                .forward(3)
+                .splineTo(new Vector2d(-51,-47),Math.toRadians(160))
+                .forward(3.5)
                 .back(3)
                 .addDisplacementMarker(() -> {
                     DIservo.setPosition(LiftConstants.StackMuncher2);
                     intake.setPower(1);
                 })
-                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
-                    intake.setPower(-1);
-                })
-                .forward(3)
+//                .UNSTABLE_addTemporalMarkerOffset(-0.2, () -> {
+//                    intake.setPower(-1);
+//                })
+                .forward(2.5)
                 .build();
 
         TrajectorySequence BackDrop = robot.trajectorySequenceBuilder(WhiteStackOneMid.end())
                 .forward(2)
-                .lineToLinearHeading(new Pose2d(-35,-60,  Math.toRadians(-180)))
-                .lineTo(new Vector2d(50,-60))
+                .lineToLinearHeading(new Pose2d(-35,-61.5,  Math.toRadians(-180)))
+                .lineTo(new Vector2d(50,-63.5))
 
                 .addTemporalMarker(1.2, () -> {
                     //Reject any extra pixel that might have been intaked
@@ -343,25 +421,25 @@ public class RedRightAsyncTruss extends LinearOpMode {
         //initAuto AprilTag & Colour processor
         aprilProcessor = new AprilTagProcessor.Builder()
                 .build();
-        blueProcessor = new BlueProcessor(telemetry);
+        redProcessor = new RedProcessor(telemetry);
 
         //initAuto VisionPortal
         OpenCvVisionPortal = new VisionPortal.Builder()
                 .setCamera(webcam1)
-                .addProcessor(blueProcessor)
+                .addProcessor(redProcessor)
                 .setCameraResolution(new Size(1920,1080))
                 .enableLiveView(true)
                 .build();
 
         //Updates telemetry with current prop location
         while (opModeInInit()){
-            telemetry.addData("Location: ", blueProcessor.getLocation());
+            telemetry.addData("Location: ", redProcessor.getLocation());
             telemetry.update();
         }
         waitForStart();
 
-        //Sets beginning trajectory and drive state based off the blueProcessor's detection
-        switch (blueProcessor.getLocation()) {
+        //Sets beginning trajectory and drive state based off the redProcessor's detection
+        switch (redProcessor.getLocation()) {
             case LEFT:
             case NOT_FOUND:
                 robot.followTrajectorySequenceAsync(BackBoardDropLeft);
@@ -396,8 +474,10 @@ public class RedRightAsyncTruss extends LinearOpMode {
                 case BACKBOARD_DROP:
                     //Wait for backboard trajectory to finish
                     if (!robot.isBusy()) {
+                        robot.setPoseEstimate(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+3.14159));
+
                         //Runs the the different preDrop purple trajectories based on camera detection
-                        switch (blueProcessor.getLocation()) {
+                        switch (redProcessor.getLocation()) {
                             case LEFT:
                             case NOT_FOUND:
                                 robot.followTrajectorySequenceAsync(PreDropLeft);
@@ -410,16 +490,16 @@ public class RedRightAsyncTruss extends LinearOpMode {
                                 break;
                         }
                         //Advances driveState to next trajectory
-                        driveState = BlueLeftAsyncTruss.State.PREDROP;
+                        driveState = State.PREDROP;
                     }
                     break;
                 case PREDROP:
                     if (!robot.isBusy()) {
                         //Drop preloaded purple pixel
-
+                        robot.setPoseEstimate(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+3.14159));
 
                         //Based on camera detection from beginning, run trajectory from spike mark to stacks
-                        switch (blueProcessor.getLocation()) {
+                        switch (redProcessor.getLocation()) {
                             case LEFT:
                             case NOT_FOUND:
                                 robot.followTrajectorySequenceAsync(WhiteStackOneLeft);
@@ -431,7 +511,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
                                 robot.followTrajectorySequenceAsync(WhiteStackOneRight);
                                 break;
                         }
-                        driveState = BlueLeftAsyncTruss.State.GENERAL_STACK;
+                        driveState = State.GENERAL_STACK;
                     }
                     break;
                 case GENERAL_STACK:
@@ -440,8 +520,9 @@ public class RedRightAsyncTruss extends LinearOpMode {
 
                     if (!robot.isBusy()) {
                         //Reset timer once we've reached the stacks
+                        robot.setPoseEstimate(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+3.14159));
                         driveTimer.reset();
-                        driveState = BlueLeftAsyncTruss.State.INTAKE_STACK;
+                        driveState = State.INTAKE_STACK;
                     }
                     break;
                 case INTAKE_STACK:
@@ -454,17 +535,28 @@ public class RedRightAsyncTruss extends LinearOpMode {
                         //Bring back the Stack Muncher to idle
                     }
                     if (driveTimer.seconds() >= 1){
-                        driveState = BlueLeftAsyncTruss.State.BACKBOARD_STACK;
-                        robot.followTrajectorySequenceAsync(BackDrop);
+                        driveState = State.BACKBOARD_STACK;
+                        switch (redProcessor.getLocation()) {
+                            case LEFT:
+                            case NOT_FOUND:
+                                robot.followTrajectorySequenceAsync(BackDropLeft);
+                                break;
+                            case MIDDLE:
+                                robot.followTrajectorySequenceAsync(BackDrop);
+                                break;
+                            case RIGHT:
+                                robot.followTrajectorySequenceAsync(BackDropRight);
+                                break;
+                        }
                     }
                     break;
                 case BACKBOARD_STACK:
-                    if (!robot.isBusy()) {
-                        telemetry.addData("UH OH ", "AHHH");
-                        robot.followTrajectorySequenceAsync(WhiteStackTwo);
-                        driveTimer.reset();
-                        driveState = BlueLeftAsyncTruss.State.GENERAL_STACK2;
-                    }
+//                    if (!robot.isBusy()) {
+//                        telemetry.addData("UH OH ", "AHHH");
+//                        robot.followTrajectorySequenceAsync(WhiteStackTwo);
+//                        driveTimer.reset();
+//                        driveState = State.GENERAL_STACK2;
+//                    }
                     break;
                 case GENERAL_STACK2:
                     if (!boxBeam.getState())
@@ -473,7 +565,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
                     if (!robot.isBusy()) {
                         //Reset timer once we've reached the stacks
                         driveTimer.reset();
-                        driveState = BlueLeftAsyncTruss.State.INTAKE_STACK2;
+                        driveState = State.INTAKE_STACK2;
                     }
                     break;
                 case INTAKE_STACK2:
@@ -484,7 +576,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
 
                     //Drive to backstage after x seconds
                     if (driveTimer.seconds() >= 1){
-                        driveState = BlueLeftAsyncTruss.State.BACKBOARD_STACK2;
+                        driveState = State.BACKBOARD_STACK2;
                         robot.followTrajectorySequenceAsync(BackDrop2);
                     }
                     break;
@@ -519,7 +611,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
                     if (leftLift.getCurrentPosition() > 400) {
                         //Deploy box
                         lift.extendBox();
-                        wrist.setPosition(LiftConstants.wristMiddle1);
+                        wrist.setPosition(LiftConstants.wristMiddle2);
                         liftState = LiftState.BOX_EXTEND;
                         liftTimer.reset();
                     }
@@ -572,7 +664,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
             //Updates heading every x seconds using the imu
             if(imuTimer.seconds() >= headingInterval) {
                 //Keeps robots x and y, but assigns a new heading
-                robot.setPoseEstimate(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+3.14159));
+                //robot.setPoseEstimate(new Pose2d(poseEstimate.getX(), poseEstimate.getY(), imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS)+3.14159));
                 imuTimer.reset();
             }
             telemetry.update();

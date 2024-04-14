@@ -364,46 +364,50 @@ public class Driving extends OpMode
 
                 //Individual pixel adjustment up
                 if (gamepad2.right_stick_y < -0.6 && !liftIncrease) {
-                    liftHeight += 225;
+                    //liftHeight += 225;
                     liftIncrease = true;
-//                    if (!wristAngled) {
-//                        for(int i = 0; i < liftFlat.length; i++) {
-//                            //If the current lift height is between the "i"th element of the flat array and the previous array element, then set liftHeight to the "i"th element
-//                            if (liftHeight < liftFlat[i] && liftHeight >= liftFlat[Math.abs(i-1)]) {
-//                                liftHeight = liftFlat[i];
-//                            }
-//                        }
-//                    } else {
-//                        for (int i = 0; i < liftAngled.length; i++) {
-//                            // Same thing here but goes through angled array
-//                            if (liftHeight < liftAngled[i] && liftHeight >= liftAngled[Math.abs(i-1)]){
-//                                liftHeight = liftAngled[i];
-//                            }
-//                        }
-//                    }
+                    if (!wristAngled) {
+                        for(int i = 0; i < liftFlat.length; i++) {
+                            //If the current lift height is between the "i"th element of the flat array and the previous array element, then set liftHeight to the "i"th element
+                            if (liftHeight < liftFlat[i] && liftHeight >= liftFlat[Math.abs(i-1)]) {
+                                liftHeight = liftFlat[i];
+                                break;
+                            }
+                        }
+                    } else {
+                        for (int i = 0; i < liftAngled.length; i++) {
+                            // Same thing here but goes through angled array
+                            if (liftHeight < liftAngled[i] && liftHeight >= liftAngled[Math.abs(i-1)]){
+                                liftHeight = liftAngled[i];
+                                break;
+                            }
+                        }
+                    }
                 }else if (gamepad2.right_stick_y > -0.6 ) {
                     liftIncrease = false;
                 }
 
                 //Individual pixel adjustment down
                 if (gamepad2.right_stick_y > 0.6 && !liftDecrease) {
-                    liftHeight -= 225;
+                    //liftHeight -= 225;
                     liftDecrease = true;
-//                    if (!wristAngled) {
-//                        for(int i = 0; i < liftFlat.length; i++) {
-//                            //If the current lift height is between the "i"th element of the flat array and the previous array element, then set liftHeight to the "i"th element
-//                            if (liftHeight > liftFlat[i] && liftHeight <= liftFlat[Math.abs(i+1)]) {
-//                                liftHeight = liftFlat[i];
-//                            }
-//                        }
-//                    } else {
-//                        for (int i = 0; i < liftAngled.length; i++) {
-//                            // Same thing here but goes through angled array
-//                            if (liftHeight > liftAngled[i] && liftHeight <= liftAngled[Math.abs(i+1)]){
-//                                liftHeight = liftAngled[i];
-//                            }
-//                        }
-//                    }
+                    if (!wristAngled) {
+                        for(int i = 0; i < liftFlat.length; i++) {
+                            //If the current lift height is between the "i"th element of the flat array and the previous array element, then set liftHeight to the "i"th element
+                            if (liftHeight > liftFlat[i] && liftHeight <= liftFlat[Math.abs(i+1)]) {
+                                liftHeight = liftFlat[i];
+                                break;
+                            }
+                        }
+                    } else {
+                        for (int i = 0; i < liftAngled.length; i++) {
+                            // Same thing here but goes through angled array
+                            if (liftHeight > liftAngled[i] && liftHeight <= liftAngled[Math.abs(i+1)]){
+                                liftHeight = liftAngled[i];
+                                break;
+                            }
+                        }
+                    }
                 } else if (gamepad2.right_stick_y < 0.6) {
                     liftDecrease = false;
                 }

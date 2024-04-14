@@ -13,7 +13,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-public class BlueProcessor implements VisionProcessor {
+public class RedProcessor implements VisionProcessor {
     Telemetry telemetry;
 
     //This location is returned from the processor
@@ -23,20 +23,20 @@ public class BlueProcessor implements VisionProcessor {
         RIGHT,
         NOT_FOUND
     }
-    Location location = Location.NOT_FOUND;
+    BlueProcessor.Location location = BlueProcessor.Location.NOT_FOUND;
 
     //The regions of interest
     //X increases left to right / Y increases up to down
     //x & y give top left corner, width and height go out from there
-    private Rect rectLeft = new Rect(560, 500, 220, 250);
-    private Rect rectMiddle = new Rect(1090, 480, 220, 250);
-    private Rect rectRight = new Rect(1640, 500, 220, 250);
+    private Rect rectRight = new Rect(1140, 500, 220, 250);
+    private Rect rectMiddle = new Rect(610, 480, 220, 250);
+    private Rect rectLeft = new Rect(60, 500, 220, 250);
 
     Mat mat = new Mat();
 
-    public BlueProcessor(Telemetry telemetry) {this.telemetry = telemetry;}
+    public RedProcessor(Telemetry telemetry) {this.telemetry = telemetry;}
 
-    public BlueProcessor() {}
+    public RedProcessor() {}
 
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
@@ -44,8 +44,8 @@ public class BlueProcessor implements VisionProcessor {
     @Override
     public Object processFrame(Mat frame, long captureTimeNanos) {
         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(61, 50, 70);
-        Scalar highHSV = new Scalar(120, 255, 255);
+        Scalar lowHSV = new Scalar(0, 50, 50);
+        Scalar highHSV = new Scalar(150, 255, 255);
 
         Core.inRange(frame, lowHSV, highHSV, frame);
 
@@ -113,7 +113,7 @@ public class BlueProcessor implements VisionProcessor {
         android.graphics.Rect drawRectangleMiddle = makeGraphicsRect(rectMiddle, scaleBmpPxToCanvasPx);
         android.graphics.Rect drawRectangleRight = makeGraphicsRect(rectRight, scaleBmpPxToCanvasPx);
 
-        location = (Location) userContext;
+        location = (BlueProcessor.Location) userContext;
         switch (location) {
             case LEFT:
                 canvas.drawRect(drawRectangleLeft, selectedPaint);
@@ -137,7 +137,7 @@ public class BlueProcessor implements VisionProcessor {
                 break;
         }
     }
-    public Location getLocation() {
+    public BlueProcessor.Location getLocation() {
         return location;
     }
 }
