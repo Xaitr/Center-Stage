@@ -107,16 +107,18 @@ public void droneBox () {
         leftServo.setPosition(LiftConstants.droneAngle);
 }
     //Rotates the wrist clockwise to the next wrist position
+    //Why do I have to put them within a range of the values?
+    //Idk, it just adds 0.0000036 to the value lmao
     public double wristRight(double currentPosition) {
-        if (currentPosition == LiftConstants.wristMiddle1)
+        if (currentPosition > LiftConstants.wristMiddle1 - 0.01 && currentPosition < LiftConstants.wristMiddle1 + 0.01)
             return LiftConstants.wristLeft1;
-        else if (currentPosition == LiftConstants.wristLeft1)
+        else if (currentPosition > LiftConstants.wristLeft1 - 0.01 && currentPosition < LiftConstants.wristLeft1 + 0.01)
             return LiftConstants.wristRight2;
-        else if (currentPosition == LiftConstants.wristRight2)
+        else if (currentPosition > LiftConstants.wristRight2 - 0.01 && currentPosition < LiftConstants.wristRight2 + 0.01)
             return LiftConstants.wristMiddle2;
-        else if (currentPosition == LiftConstants.wristMiddle2)
+        else if (currentPosition > LiftConstants.wristMiddle2 - 0.01 && currentPosition < LiftConstants.wristMiddle2 + 0.01)
             return LiftConstants.wristLeft2;
-        else if (currentPosition == LiftConstants.wristLeft2)
+        else if (currentPosition > LiftConstants.wristLeft2 - 0.01 && currentPosition < LiftConstants.wristLeft2 + 0.01)
             return LiftConstants.wristRight1;
         else {
             return LiftConstants.wristMiddle1;
@@ -125,15 +127,15 @@ public void droneBox () {
 
     //Rotates the wrist counter-clockwise to the next wrist position
     public double wristLeft(double currentPosition) {
-        if (currentPosition == LiftConstants.wristMiddle1)
+        if (currentPosition > LiftConstants.wristMiddle1 -0.01 && currentPosition < LiftConstants.wristMiddle1 +0.01)
             return LiftConstants.wristRight1;
-        else if (currentPosition == LiftConstants.wristRight1)
+        else if (currentPosition > LiftConstants.wristRight1 - 0.01 && currentPosition < LiftConstants.wristRight1 + 0.01)
             return LiftConstants.wristLeft2;
-        else if (currentPosition == LiftConstants.wristLeft2)
+        else if (currentPosition > LiftConstants.wristLeft2 - 0.01 && currentPosition < LiftConstants.wristLeft2 + 0.01)
             return LiftConstants.wristMiddle2;
-        else if (currentPosition == LiftConstants.wristMiddle2)
+        else if (currentPosition > LiftConstants.wristMiddle2 - 0.01 && currentPosition < LiftConstants.wristMiddle2 + 0.01)
             return LiftConstants.wristRight2;
-        else if (currentPosition == LiftConstants.wristRight2)
+        else if (currentPosition > LiftConstants.wristRight2 - 0.01 && currentPosition < LiftConstants.wristRight2 + 0.01)
             return LiftConstants.wristLeft1;
         else {
             return LiftConstants.wristMiddle1;

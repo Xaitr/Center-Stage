@@ -11,7 +11,7 @@ public class LiftConstants {
     public static int[] liftAngled = {600, 825, 1050, 1275, 1500, 1725, 1950, 2175};
     //1100, 1700, 2200 MAX
     public static int liftRetracted =0;
-    public static int liftHang = 300;
+    public static int liftHang = 240;
     public static int liftHang2 = 1700;
 
     //Left and Right servo positions
@@ -19,7 +19,7 @@ public class LiftConstants {
     public static double BoxReady = 0.4;
     public static double hang = 0.8;
 
-    public static double droneAngle = 0.74;
+    public static double droneAngle = 0.7;
 
     public static int droneLift = 600;
 
@@ -44,7 +44,7 @@ public class LiftConstants {
    public static double wristMiddle2 = 0.22;
    public static double wristLeft2 = 0.4;
    public static double wristRight2 = 0.04;
-
+    public static double[] wristPos = {0.04, 0.22, 0.4, 0.51, 0.6, 0.78, 0.98};
 
 
 //    public static double AutoBoxReady = 0.4;

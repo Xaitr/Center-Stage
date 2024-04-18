@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristIdle;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristLeft1;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristLeft2;
+import static org.firstinspires.ftc.teamcode.LiftConstants.wristPos;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristRight1;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristRight2;
 
@@ -414,7 +415,7 @@ public class Driving extends OpMode
 
                 //Wrist adjustment clockwise
                 if (gamepad2.right_stick_x > 0.6 && !wristRotateRight) {
-                    wristPosition = lift.wristRight(wristPosition);
+                    wristPosition = lift.wristRight(wristServo.getPosition());
                     wristServo.setPosition(wristPosition);
                     wristRotateRight = true;
                     if(wristPosition == wristLeft2 || wristPosition == wristLeft1 || wristPosition == wristRight1 || wristPosition == wristRight2) {
@@ -425,7 +426,7 @@ public class Driving extends OpMode
                     wristRotateRight = false;
                 //Wrist Adjustment Counter-clockwise
                 if(gamepad2.right_stick_x < -0.6 && !wristRotateLeft) {
-                    wristPosition = lift.wristLeft(wristPosition);
+                    wristPosition = lift.wristLeft(wristServo.getPosition());
                     wristServo.setPosition(wristPosition);
                     wristRotateLeft = true;
                     if(wristPosition == wristLeft2 || wristPosition == wristLeft1 || wristPosition == wristRight1 || wristPosition == wristRight2) {

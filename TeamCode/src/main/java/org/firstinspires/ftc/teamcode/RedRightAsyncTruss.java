@@ -114,7 +114,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
         robot.setPoseEstimate(startPose);
 
         TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52.5,-31.5))
+                .strafeTo(new Vector2d(53,-31.5))
                 // place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift x seconds before reaching the backboard
@@ -126,11 +126,19 @@ public class RedRightAsyncTruss extends LinearOpMode {
                 })
                 .build();
         TrajectorySequence PreDropLeft = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
-                .lineTo(new Vector2d(10, -42))
+                .lineTo(new Vector2d(10.5, -42))
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     preDropRight.setPosition(0.55);
                 })
                 //place pixel on line
+                .build();
+
+        TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
+                .lineTo(new Vector2d(50, -60))
+                .addTemporalMarker(0.5, () -> {
+                    //Close the preDrop servo
+                    preDropRight.setPosition(0.75);
+                })
                 .build();
 
         TrajectorySequence WhiteStackOneLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
@@ -191,7 +199,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
                 .build();
 
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,-44))
+                .strafeTo(new Vector2d(53,-44))
                 //put pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift x seconds before reaching the backboard
@@ -206,6 +214,14 @@ public class RedRightAsyncTruss extends LinearOpMode {
                 .lineTo(new Vector2d(33, -40))
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     preDropRight.setPosition(0.55);
+                })
+                .build();
+
+        TrajectorySequence ParkRight = robot.trajectorySequenceBuilder(PreDropRight.end())
+                .lineTo(new Vector2d(50, -60))
+                .addTemporalMarker(0.5, () -> {
+                    //Close the preDrop servo
+                    preDropRight.setPosition(0.75);
                 })
                 .build();
 
@@ -268,7 +284,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
 
 
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,-38))
+                .strafeTo(new Vector2d(53,-38))
                 // place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift
@@ -283,6 +299,14 @@ public class RedRightAsyncTruss extends LinearOpMode {
                 .lineTo(new Vector2d(26, -32))
                 .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
                     preDropRight.setPosition(0.55);
+                })
+                .build();
+
+        TrajectorySequence ParkMid = robot.trajectorySequenceBuilder(PreDropMid.end())
+                .lineTo(new Vector2d(50, -60))
+                .addTemporalMarker(0.5, () -> {
+                    //Close the preDrop servo
+                    preDropRight.setPosition(0.75);
                 })
                 .build();
 
@@ -502,16 +526,16 @@ public class RedRightAsyncTruss extends LinearOpMode {
                         switch (redProcessor.getLocation()) {
                             case LEFT:
                             case NOT_FOUND:
-                                robot.followTrajectorySequenceAsync(WhiteStackOneLeft);
+                                robot.followTrajectorySequenceAsync(ParkLeft);
                                 break;
                             case MIDDLE:
-                                robot.followTrajectorySequenceAsync(WhiteStackOneMid);
+                                robot.followTrajectorySequenceAsync(ParkMid);
                                 break;
                             case RIGHT:
-                                robot.followTrajectorySequenceAsync(WhiteStackOneRight);
+                                robot.followTrajectorySequenceAsync(ParkRight);
                                 break;
                         }
-                        driveState = State.GENERAL_STACK;
+                        driveState = State.IDLE;
                     }
                     break;
                 case GENERAL_STACK:

@@ -38,6 +38,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
     private enum State {
         BACKBOARD_DROP, //First drop of the yellow preload on the backboard
         PREDROP, //Then place the purple preload on the spikemark
+        PARK,
         GENERAL_STACK, //Then drive to the white stacks
         INTAKE_STACK, //Wait for pixels to intake
         BACKBOARD_STACK, //Drive to backstage to place white pixels
@@ -115,7 +116,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
         robot.setPoseEstimate(startPose);
 
         TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,44))
+                .strafeTo(new Vector2d(53,44))
                 //put pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift x seconds before reaching the backboard
@@ -133,6 +134,11 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 })
                 .build();
                 //put pixel on left line
+
+        TrajectorySequence ParkLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
+                .lineTo(new Vector2d(50, 60))
+                .build();
+
         TrajectorySequence WhiteStackOneLeft = robot.trajectorySequenceBuilder(PreDropLeft.end())
                 .lineTo(new Vector2d(33, 51))
                 .addTemporalMarker(0.5, () -> {
@@ -193,7 +199,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
 
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,31.5))
+                .strafeTo(new Vector2d(53,31.5))
                 //place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift
@@ -210,6 +216,11 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     preDropLeft.setPosition(0.85);
                 })
                 .build();
+
+        TrajectorySequence ParkRight = robot.trajectorySequenceBuilder(PreDropRight.end())
+                .lineTo(new Vector2d(50, 60))
+                .build();
+
         TrajectorySequence WhiteStackOneRight = robot.trajectorySequenceBuilder(PreDropRight.end())
                 .lineTo(new Vector2d(20, 50))
                 .addTemporalMarker(0.5, () -> {
@@ -269,7 +280,7 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
 
 
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(52,37.5))
+                .strafeTo(new Vector2d(53,37.5))
                 // place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift
@@ -286,6 +297,11 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                     preDropLeft.setPosition(0.85);
                 })
                 .build();
+
+        TrajectorySequence ParkMid = robot.trajectorySequenceBuilder(PreDropMid.end())
+                .lineTo(new Vector2d(50, 60))
+                .build();
+
         TrajectorySequence WhiteStackOneMid = robot.trajectorySequenceBuilder(PreDropMid.end())
                 .lineTo(new Vector2d(20, 51))
                 .addTemporalMarker(0.5, () -> {
@@ -498,22 +514,33 @@ public class BlueLeftAsyncTruss extends LinearOpMode {
                 case PREDROP:
                     if (!robot.isBusy()) {
                         //Drop preloaded purple pixel
-
-
-                        //Based on camera detection from beginning, run trajectory from spike mark to stacks
                         switch (blueProcessor.getLocation()) {
                             case LEFT:
                             case NOT_FOUND:
-                                robot.followTrajectorySequenceAsync(WhiteStackOneLeft);
+                                robot.followTrajectorySequenceAsync(ParkLeft);
                                 break;
                             case MIDDLE:
-                                robot.followTrajectorySequenceAsync(WhiteStackOneMid);
+                                robot.followTrajectorySequenceAsync(ParkMid);
                                 break;
                             case RIGHT:
-                                robot.followTrajectorySequenceAsync(WhiteStackOneRight);
+                                robot.followTrajectorySequenceAsync(ParkRight);
                                 break;
                         }
-                        driveState = State.GENERAL_STACK;
+                        driveState = State.IDLE;
+                        //Based on camera detection from beginning, run trajectory from spike mark to stacks
+//                        switch (blueProcessor.getLocation()) {
+//                            case LEFT:
+//                            case NOT_FOUND:
+//                                robot.followTrajectorySequenceAsync(WhiteStackOneLeft);
+//                                break;
+//                            case MIDDLE:
+//                                robot.followTrajectorySequenceAsync(WhiteStackOneMid);
+//                                break;
+//                            case RIGHT:
+//                                robot.followTrajectorySequenceAsync(WhiteStackOneRight);
+//                                break;
+//                        }
+//                        driveState = State.GENERAL_STACK;
                     }
                     break;
                 case GENERAL_STACK:

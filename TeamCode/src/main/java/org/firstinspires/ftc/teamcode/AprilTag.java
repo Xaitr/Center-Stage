@@ -22,7 +22,7 @@ import java.util.List;
 
 
 @TeleOp(name = "Concept: AprilTag Easy", group = "Concept")
-
+@Disabled
 public class AprilTag extends LinearOpMode {
 
 
