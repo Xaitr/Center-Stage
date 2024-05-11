@@ -23,15 +23,20 @@ public class LiftConstants {
 
     public static int droneLift = 600;
 
-    public static double StackMuncher1 = 0.875;
+   //  public static double StackMuncher1 = 0.875;
+    public static double StackMuncher1 = 0.865;
 
+   // public static double StackMuncher2 = 0.890;
     public static double StackMuncher2 = 0.890;
 
-    public static double StackMuncher3 = 0.905;
+  //  public static double StackMuncher3 = 0.905;
+    public static double StackMuncher3 = 0.92;
 
-   public static double StackMuncher4 = 0.92;
+ //  public static double StackMuncher4 = 0.92;
+    public static double StackMuncher4 = 0.95;
 
-   public static double StackMuncher5 = 0.935;
+  // public static double StackMuncher5 = 0.935;
+    public static double StackMuncher5 = 0.935;
 
    public static double StackMuncherReturn = 0;
     public static double AutoBoxReady = 0.4;

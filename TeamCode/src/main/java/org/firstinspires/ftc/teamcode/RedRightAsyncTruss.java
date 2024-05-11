@@ -114,7 +114,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
         robot.setPoseEstimate(startPose);
 
         TrajectorySequence BackBoardDropLeft = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(53,-31.5))
+                .strafeTo(new Vector2d(53.5,-31.5))
                 // place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift x seconds before reaching the backboard
@@ -199,7 +199,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
                 .build();
 
         TrajectorySequence BackBoardDropRight = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(53,-44))
+                .strafeTo(new Vector2d(53.5,-44))
                 //put pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift x seconds before reaching the backboard
@@ -284,7 +284,7 @@ public class RedRightAsyncTruss extends LinearOpMode {
 
 
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(startPose)
-                .strafeTo(new Vector2d(53,-38))
+                .strafeTo(new Vector2d(53.5,-38))
                 // place pixel on backboard
                 .addTemporalMarker(pathTime -> pathTime-1.5,() -> {
                     //Starts extending lift
@@ -419,6 +419,9 @@ public class RedRightAsyncTruss extends LinearOpMode {
                     readyToDrop = true;
                 })
                 .build();
+
+
+
 
         //IMU setup
         imu = hardwareMap.get(IMU.class, "imu");

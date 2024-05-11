@@ -109,6 +109,8 @@ public class BlueRightAsync extends LinearOpMode {
     //Lets the lift state machine know when the trajectory to the backboard is finished
     private boolean readyToDrop = false;
 
+    private boolean ExtraCycle = false;
+
     //Time for robot to drive away and clear the backboard
     private double dropTime = 1.5;
 
@@ -168,6 +170,8 @@ public class BlueRightAsync extends LinearOpMode {
                 .build();
 
         TrajectorySequence AprilTagLeft = robot.trajectorySequenceBuilder(WhiteStackOneLeft.end())
+                .waitSeconds(0.3)
+                .forward(2)
                 .addTemporalMarker(0.5, () -> {
                     intake.setPower(-1);
                 })
@@ -237,13 +241,18 @@ public class BlueRightAsync extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(50,11), Math.toRadians(0))
                 .build();
 
+        TrajectorySequence ParkLeftUno = robot.trajectorySequenceBuilder(BackBoardDropLeft.end())
+                .forward(2)
+                 .splineToConstantHeading(new Vector2d(50,11), Math.toRadians(0))
+                .build();
+
 
         TrajectorySequence PreDropRight = robot.trajectorySequenceBuilder(startPose)
                 .back(2)
                 .splineToConstantHeading(new Vector2d(-34, 25), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(-53.5,17), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-53.5,17), Math.toRadians(185))
                 //place pixel on right line
-                .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
+                .addTemporalMarker(pathTime -> pathTime-0.1,() -> {
                     preDropRight.setPosition(0.65);
                 })
                 .build();
@@ -267,6 +276,8 @@ public class BlueRightAsync extends LinearOpMode {
 
         TrajectorySequence AprilTagRight = robot.trajectorySequenceBuilder(WhiteStackOneLeft.end())
                 //.splineToConstantHeading(new Vector2d(-14,13), Math.toRadians(0))
+                .waitSeconds(0.3)
+                .forward(2)
                 .addTemporalMarker(0.5, () -> {
                     intake.setPower(-1);
                 })
@@ -332,6 +343,11 @@ public class BlueRightAsync extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(50,11), Math.toRadians(0))
                 .build();
 
+        TrajectorySequence ParkRightUno = robot.trajectorySequenceBuilder(BackBoardDropRight.end())
+                .forward(2)
+                .splineToConstantHeading(new Vector2d(50,11), Math.toRadians(0))
+                .build();
+
 
         TrajectorySequence PreDropMid = robot.trajectorySequenceBuilder(startPose)
                 .back(2)
@@ -352,7 +368,7 @@ public class BlueRightAsync extends LinearOpMode {
                 .build();
         TrajectorySequence WhiteStackOneMid = robot.trajectorySequenceBuilder(PreDropMid.end())
                 .lineToLinearHeading(new Pose2d(-48,13, Math.toRadians(180)))
-                .splineToConstantHeading(new Vector2d(-54.5, 13), Math.toRadians(180))
+                .splineToConstantHeading(new Vector2d(-54, 13), Math.toRadians(180))
                 //pick up one white pixel
 //                .addTemporalMarker(pathTime -> pathTime-0.2,() -> {
 //                    preDropRight.setPosition(0.85);
@@ -371,6 +387,8 @@ public class BlueRightAsync extends LinearOpMode {
                 .build();
 
         TrajectorySequence AprilTagMid = robot.trajectorySequenceBuilder(WhiteStackOneMid.end())
+                .waitSeconds(0.3)
+                .forward(2)
                 .addTemporalMarker(0.5, () -> {
                     intake.setPower(-1);
                 })
@@ -397,7 +415,8 @@ public class BlueRightAsync extends LinearOpMode {
                 .build();
         TrajectorySequence WhiteStack2Mid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
                 .splineToConstantHeading(new Vector2d(32, 9), Math.toRadians(180))
-                .lineTo(new Vector2d(-55, 9))
+                .lineTo(new Vector2d(-57, 9))
+
                 .addTemporalMarker(pathTime -> pathTime - 2.8, () -> {
                     DIservo.setPosition(LiftConstants.StackMuncher2);
                 })
@@ -408,20 +427,21 @@ public class BlueRightAsync extends LinearOpMode {
                 .build();
 
         TrajectorySequence AprilTagMid2 = robot.trajectorySequenceBuilder(WhiteStack2Mid.end())
+                .forward(2)
                 .addTemporalMarker(0.5, () -> {
-                    intake.setPower(-1);
-                    DIservo.setPosition(StackMuncherReturn);
-                })
-                .addTemporalMarker(2,()->{
-                    intake.setPower(0);
-                    transfer.setPower(0);
-                })
-                .lineTo(new Vector2d(32,10))
-                .splineToConstantHeading(new Vector2d(40,28), Math.toRadians(0))
-                .addTemporalMarker(pathTime -> pathTime -0.5, () -> {
+                                intake.setPower(-1);
+                                DIservo.setPosition(StackMuncherReturn);
+                            })
+                            .addTemporalMarker(2,()->{
+                                intake.setPower(0);
+                                transfer.setPower(0);
+                            })
+                            .lineTo(new Vector2d(32,10))
+                            .splineToConstantHeading(new Vector2d(40,34), Math.toRadians(0))
+                            .addTemporalMarker(pathTime -> pathTime -0.5, () -> {
 //                    OpenCvVisionPortal.setProcessorEnabled(aprilProcessor, true);
-                    liftState = LiftState.CLOSE_PINCHERS;
-                    alternateWristAngle = LiftConstants.wristMiddle2;
+                                liftState = LiftState.CLOSE_PINCHERS;
+                                alternateWristAngle = LiftConstants.wristMiddle2;
                     storeLiftHeight = 760;
                 })
                 .build();
@@ -433,6 +453,10 @@ public class BlueRightAsync extends LinearOpMode {
                 .build();
 
         TrajectorySequence ParkMid = robot.trajectorySequenceBuilder(BackDropMid2.end())
+                .splineToConstantHeading(new Vector2d(50,11), Math.toRadians(0))
+                .build();
+
+        TrajectorySequence ParkMidUno = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
                 .splineToConstantHeading(new Vector2d(50,11), Math.toRadians(0))
                 .build();
 
@@ -500,7 +524,7 @@ public class BlueRightAsync extends LinearOpMode {
                 .setCameraResolution(new Size(800,600))
                 //   .enableLiveView(true)
                 .build();
-        //sleep(10000);
+        sleep(4000);
         //Sets beginning trajectory and drive state based off the blueProcessor's detection
        switch (location) {
            // switch (blueProcessor.getLocation()) {
@@ -588,7 +612,7 @@ public class BlueRightAsync extends LinearOpMode {
                                 double theta_rad = Math.toRadians(detection.ftcPose.yaw - detection.ftcPose.bearing);
                                 x_prime = Math.sin(theta_rad) * corrected_range;
                                 y_prime = Math.cos(theta_rad) * corrected_range;
-                                robot.setPoseEstimate(new Pose2d(aprilTagLibrary[0].getX() - y_prime, aprilTagLibrary[1].getY() + detection.ftcPose.x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.toRadians(90)));
+                                robot.setPoseEstimate(new Pose2d(aprilTagLibrary[0].getX() - y_prime, aprilTagLibrary[1].getY() + detection.ftcPose.x, poseEstimate.getHeading()));
                                 Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
                                 telemetry.addData("We got it", "Yay!!!!!");
                             }
@@ -610,20 +634,37 @@ public class BlueRightAsync extends LinearOpMode {
                     }
                     break;
                 case BACKBOARD_DROP:
-                    if (!robot.isBusy()) {
-                        switch (location) {
-                            case LEFT:
-                            case NOT_FOUND:
-                                robot.followTrajectorySequenceAsync(WhiteStack2Left);
-                                break;
-                            case MIDDLE:
-                                robot.followTrajectorySequenceAsync(WhiteStack2Mid);
-                                break;
-                            case RIGHT:
-                                robot.followTrajectorySequenceAsync(WhiteStack2Right);
-                                break;
-                        }
-                        driveState = State.STACK2;
+                    if (!robot.isBusy())  {
+                     if (ExtraCycle) {
+                         switch (location) {
+                             case LEFT:
+                             case NOT_FOUND:
+                                 robot.followTrajectorySequenceAsync(WhiteStack2Left);
+                                 break;
+                             case MIDDLE:
+                                 robot.followTrajectorySequenceAsync(WhiteStack2Mid);
+                                 break;
+                             case RIGHT:
+                                 robot.followTrajectorySequenceAsync(WhiteStack2Right);
+                                 break;
+                         }
+                         driveState = State.STACK2;
+                     }
+                     else {
+                         switch (location) {
+                             case LEFT:
+                             case NOT_FOUND:
+                                 robot.followTrajectorySequenceAsync(ParkLeftUno);
+                                 break;
+                             case MIDDLE:
+                                 robot.followTrajectorySequenceAsync(ParkMidUno);
+                                 break;
+                             case RIGHT:
+                                 robot.followTrajectorySequenceAsync(ParkRightUno);
+                                 break;
+                         }
+                         driveState = State.IDLE;
+                     }
                     }
                     break;
                 case STACK2:
@@ -635,7 +676,7 @@ public class BlueRightAsync extends LinearOpMode {
                 case INTAKE_STACK:
                     if(driveTimer.seconds() > 0.3)
                         DIservo.setPosition(StackMuncher3);
-                    if(driveTimer.seconds() > 0.8) {
+                    if(driveTimer.seconds() > 0.7) {
                         switch (location) {
                             case LEFT:
                             case NOT_FOUND:
@@ -662,7 +703,7 @@ public class BlueRightAsync extends LinearOpMode {
                                 double theta_rad = Math.toRadians(detection.ftcPose.yaw - detection.ftcPose.bearing);
                                 x_prime = Math.sin(theta_rad) * corrected_range;
                                 y_prime = Math.cos(theta_rad) * corrected_range;
-                                robot.setPoseEstimate(new Pose2d(aprilTagLibrary[2].getX() - y_prime, aprilTagLibrary[2].getY() + detection.ftcPose.x, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) + Math.toRadians(90)));
+                                robot.setPoseEstimate(new Pose2d(aprilTagLibrary[2].getX() - y_prime, aprilTagLibrary[2].getY() + detection.ftcPose.x, poseEstimate.getHeading()));
                                 Blinky.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE);
                                 telemetry.addData("We got it", "Yay!!!!!");
                             }
