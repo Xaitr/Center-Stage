@@ -11,7 +11,6 @@ import static org.firstinspires.ftc.teamcode.LiftConstants.liftRetracted;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristIdle;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristLeft1;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristLeft2;
-import static org.firstinspires.ftc.teamcode.LiftConstants.wristPos;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristRight1;
 import static org.firstinspires.ftc.teamcode.LiftConstants.wristRight2;
 
@@ -19,24 +18,20 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.CRServo;
 
-import java.util.Arrays;
-import java.util.stream.IntStream;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp
-public class Driving extends OpMode
+public class DrivingFunny extends OpMode
 {
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
@@ -235,10 +230,10 @@ public class Driving extends OpMode
             rightFrontPower /= 2;
             rightBackPower /= 2;
         }
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
+        leftFrontDrive.setPower(gamepad1.right_stick_y);
+        rightFrontDrive.setPower(gamepad1.left_stick_x);
+        leftBackDrive.setPower(gamepad1.right_stick_x);
+        rightBackDrive.setPower(gamepad1.left_stick_y);
 
 
 
@@ -333,7 +328,7 @@ public class Driving extends OpMode
                     backPincher.setPosition(backPincherClose);
                 }
                 //Wait for back pincher to close before extending lift
-                if (liftTimer.seconds() > 0.7) {
+                if (liftTimer.seconds() > 0.6) {
                     liftHeight = storeLiftHeight;
                     liftState = LiftState.LIFT_EXTEND;
                 }

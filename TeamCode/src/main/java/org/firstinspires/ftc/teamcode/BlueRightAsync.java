@@ -408,11 +408,12 @@ public class BlueRightAsync extends LinearOpMode {
                 .build();
 
         TrajectorySequence BackBoardDropMid = robot.trajectorySequenceBuilder(AprilTagMid.end())
-                .lineTo(new Vector2d(49, 37.5))
+                .lineTo(new Vector2d(50.5, 37.5))
                 .addTemporalMarker(pathTime -> pathTime -0.2, () -> {
                     readyToDrop = true;
                 })
                 .build();
+
         TrajectorySequence WhiteStack2Mid = robot.trajectorySequenceBuilder(BackBoardDropMid.end())
                 .splineToConstantHeading(new Vector2d(32, 9), Math.toRadians(180))
                 .lineTo(new Vector2d(-57, 9))
@@ -524,7 +525,7 @@ public class BlueRightAsync extends LinearOpMode {
                 .setCameraResolution(new Size(800,600))
                 //   .enableLiveView(true)
                 .build();
-        sleep(4000);
+        sleep(14000);
         //Sets beginning trajectory and drive state based off the blueProcessor's detection
        switch (location) {
            // switch (blueProcessor.getLocation()) {

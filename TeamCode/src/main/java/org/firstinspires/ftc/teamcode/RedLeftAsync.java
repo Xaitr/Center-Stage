@@ -505,7 +505,7 @@ int[] ids = VisionPortal.makeMultiPortalView(2, VisionPortal.MultiPortalLayout.H
         waitForStart();
       RedProcessorFrontStage.Location location = redProcessorFrontStage.getLocation();
         OpenCvVisionPortal.setProcessorEnabled(redProcessorFrontStage, false);
-        sleep(4000);
+        sleep(14000);
 
         AprilTagVisionPortal = new VisionPortal.Builder()
                 .setCamera(webcam2)
